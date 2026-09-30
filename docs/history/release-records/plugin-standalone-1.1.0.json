@@ -1,0 +1,106 @@
+{
+  "schema_version": 2,
+  "component": "plugin",
+  "channel": "standalone",
+  "version": "1.1.0",
+  "created_at": "2026-09-30T03:20:25+00:00",
+  "stage": "prepared",
+  "source": {
+    "git_commit": "fa70aaaf882fe5c202e0ee54991774266df78f41",
+    "git_tree": "a23cb9753700d5de6fd13b343f575f3e2dbf0846",
+    "working_tree": "clean",
+    "sha256": "7f7fe16159efd64cc0e7d2a10c195d2d6bf314fac67764b923664bf85ea4328e",
+    "files": {
+      "plugins/remote-device-hub/.codex-plugin/plugin.json": "fcdb14562746fc0d93788855ffa3ca68d4aee29df1ed10b95fe4b5c50842d8fb",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-dark-256.png": "07c200a89776c2bbb8ed1553f61bbbac8e6bc38d44491496b5536425b0c4c5ab",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-dark-512.png": "d6e5e7098c0700fb04fb239820266ad2cf93adcd02840548336102d5d1725126",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-light-256.png": "7624daf9d256acda2af166f6927f7bd472836e97d87aea74c020c2c74c996bc7",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-light-512.png": "0f8bad972be97f3364b27248cac5e815c45e9dd3f6248382237160f688d675bc",
+      "plugins/remote-device-hub/mcp.json": "8e4ff088a4d76602f3e80e23731b744bb38b746e930ce11198e39cfd586145c3",
+      "plugins/remote-device-hub/plugin.json": "8eb580e1dd7f84d1d2874e39b4719f37b5841ac9d88074bde5156cfadd3127fb"
+    }
+  },
+  "build": {
+    "python": "3.13.7",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "builder": "scripts/release.py",
+    "builder_sha256": "271eee652d8d9318c373a1bd7655b3e87a58d17d88c0cf33e4e01a00ccf5d4aa",
+    "python-build": "1.3.0",
+    "node": "v26.7.0",
+    "npm": "11.19.0",
+    "profile": "standalone"
+  },
+  "artifact": {
+    "path": "dist/remote-device-hub-plugin-standalone-1.1.0.zip",
+    "sha256": "764f9411d7cbf3f46d6cff11c38cc19599893f8798345adfa37a22812d2b4ac0",
+    "bytes": 424687
+  },
+  "identities": {},
+  "checks": {
+    "package-integrity": "passed",
+    "manifest-contract": "passed",
+    "detail-icon": "unverified",
+    "composer-icon": "unverified",
+    "reload-persistence": "unverified"
+  },
+  "events": [
+    {
+      "stage": "prepared",
+      "at": "2026-09-30T03:20:26+00:00"
+    },
+    {
+      "stage": "prepared",
+      "at": "2026-09-30T03:30:13+00:00",
+      "host": "macOS-local-fixture",
+      "checks": {
+        "package-integrity": "passed",
+        "manifest-contract": "passed",
+        "detail-icon": "unverified",
+        "composer-icon": "unverified",
+        "reload-persistence": "unverified"
+      },
+      "evidence": [
+        {
+          "path": "state/release-evidence/component-isolation-20260930/component-tests.json",
+          "sha256": "954967bd07edf7846d1a8078673791faabee672720c33901e93ff1721d3f3abf"
+        },
+        {
+          "path": "state/release-evidence/component-isolation-20260930/result.json",
+          "sha256": "9f18b2a35a1d2e6d7be917d3ccc386793c49aa8b062f0ebafffadc8794e7be42"
+        },
+        {
+          "path": "state/release-evidence/component-isolation-20260930/node-runtime-result.json",
+          "sha256": "86f5369d81bb23077bd16f3a466eb72b397da2637f5bc59f5e088de9aee1f054"
+        }
+      ],
+      "note": "Local artifact/isolation checks only. Remains prepared; not published, deployed, or verified on remote clients."
+    },
+    {
+      "stage": "prepared",
+      "at": "2026-09-30T03:31:56+00:00",
+      "host": "macOS-local-fixture",
+      "checks": {
+        "package-integrity": "passed",
+        "manifest-contract": "passed",
+        "detail-icon": "unverified",
+        "composer-icon": "unverified",
+        "reload-persistence": "unverified"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/2026-09-30/component-tests.json",
+          "sha256": "954967bd07edf7846d1a8078673791faabee672720c33901e93ff1721d3f3abf"
+        },
+        {
+          "path": "releases/evidence/2026-09-30/result.json",
+          "sha256": "9f18b2a35a1d2e6d7be917d3ccc386793c49aa8b062f0ebafffadc8794e7be42"
+        },
+        {
+          "path": "releases/evidence/2026-09-30/node-runtime-result.json",
+          "sha256": "86f5369d81bb23077bd16f3a466eb72b397da2637f5bc59f5e088de9aee1f054"
+        }
+      ],
+      "note": "Retained non-secret local validation summaries in Git; full local test logs remain under state/. Publication and deployment were not performed."
+    }
+  ]
+}

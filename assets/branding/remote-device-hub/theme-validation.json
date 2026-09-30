@@ -1,0 +1,10 @@
+{
+  "version": "1.0.4",
+  "sha256": "79c30fb94ba9b648fec053f8830d75bda26fb9bae984b61ee1733d2f274dc4ef",
+  "brand_color_contrast": {
+    "brandColor vs white": 5.841445650356761,
+    "brandColorDark vs dark UI": 7.679717565476843
+  },
+  "package_preservation": "passed",
+  "chatgpt_installation": "not_updated"
+}

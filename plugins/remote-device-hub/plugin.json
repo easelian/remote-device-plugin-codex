@@ -1,0 +1,28 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "remote-device-hub",
+  "version": "1.1.0",
+  "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+  "author": {
+    "name": "App developer"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "capabilities": [],
+        "category": "Other",
+        "defaultPrompt": null,
+        "developerName": "App developer",
+        "displayName": "Remote Device Hub",
+        "longDescription": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+        "shortDescription": "安全远程管理 Linux 与 macOS 设备",
+        "composerIcon": "./assets/remote-device-hub-theme-light-256.png",
+        "logo": "./assets/remote-device-hub-theme-light-512.png",
+        "brandColor": "#52677D",
+        "composerIconDark": "./assets/remote-device-hub-theme-dark-256.png",
+        "logoDark": "./assets/remote-device-hub-theme-dark-512.png",
+        "brandColorDark": "#A5B5C5"
+      }
+    }
+  }
+}
