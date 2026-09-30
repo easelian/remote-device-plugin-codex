@@ -32,4 +32,8 @@ Server 提供 `/mcp`、OAuth 授权码、PKCE S256、动态客户端注册和 `d
 
 设备安装使用独立 Agent 发布流程提供的 TGZ；Integrations 不提供 Agent 构建命令。Server、Agent 和集成版本可以分别演进，发生协议或 endpoint 改动时需要显式兼容验证。
 
+Hub `0.5.0` 的工具表增加 8 个文件和搜索接口；这些接口要求设备 Agent 在 hello 中明确声明相应 capabilities。Node Agent `0.6.0` 提供文件元数据、多文件 UTF-8 预览、同 root 文件移动、大文件 chunk/tail，以及后台搜索、分页、取消和任务列表。Python Agent `0.4.0` 继续提供 core 工具，调用扩展接口会明确报不支持。工具来自 Server 的 MCP discovery，此次功能扩展不改变 Plugin `1.1.1` 清单或 App 身份。
+
+新版本客户端验收应另外覆盖：多文件读取中单文件失败、大日志尾部读取、文件移动目标冲突、搜索分页/取消，以及网络短暂断开后使用同一 job ID 继续读取进程输出。应记录实际 Server/Agent 版本与 artifact SHA；本地运行证据不能替代真实客户端验收。
+
 公开发布和 private plugin 上传保持暂停。历史云端实验失败的元数据保留在 `integrations/chatgpt/channels.json` 和 `docs/history/`，本仓库的 `prepared` 状态不代表任何云端动作已经完成。
