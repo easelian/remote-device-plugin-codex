@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "component": "plugin",
+  "channel": "standalone",
+  "version": "1.1.1",
+  "created_at": "2026-09-30T09:39:27+00:00",
+  "stage": "prepared",
+  "source": {
+    "git_commit": "aac23059a10db65077f62a6b99892c375f2b1dca",
+    "git_tree": "e72f51efa8e76aca810accdf564879d5315d47bd",
+    "working_tree": "clean",
+    "sha256": "74b1e957b3fe492d40187c05860a30cd7ef98b0572c738d4214e45f47ddd2798",
+    "files": {
+      "plugins/remote-device-hub/.codex-plugin/plugin.json": "95bde79fc45de05deaecfad2d8291ef60fc747c3d77554101a8faf900b5f367e",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-dark-256.png": "07c200a89776c2bbb8ed1553f61bbbac8e6bc38d44491496b5536425b0c4c5ab",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-dark-512.png": "d6e5e7098c0700fb04fb239820266ad2cf93adcd02840548336102d5d1725126",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-light-256.png": "7624daf9d256acda2af166f6927f7bd472836e97d87aea74c020c2c74c996bc7",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-light-512.png": "0f8bad972be97f3364b27248cac5e815c45e9dd3f6248382237160f688d675bc",
+      "plugins/remote-device-hub/mcp.json": "8e4ff088a4d76602f3e80e23731b744bb38b746e930ce11198e39cfd586145c3",
+      "plugins/remote-device-hub/plugin.json": "76349f26e40028cd984e80a9e087cf6aeb4887efd4d48d215363263666dd29d3"
+    }
+  },
+  "build": {
+    "python": "3.13.7",
+    "builder": "scripts/release.py",
+    "builder_sha256": "445414cd9052538e90793fa61ecd2c77bf9af7b3e803ce4a180bbff97b5f5fa7",
+    "profile": "standalone"
+  },
+  "artifact": {
+    "path": "dist/remote-device-hub-plugin-standalone-1.1.1.zip",
+    "sha256": "b9ae3f1f8a1947568d1f094a0cef9b4a450b5290bac640cc9bf0dd06f83680cc",
+    "bytes": 424688
+  },
+  "identities": {},
+  "checks": {
+    "archive-readback": "passed",
+    "independent-build": "passed",
+    "detail-icon": "unverified",
+    "composer-icon": "unverified",
+    "reload-persistence": "unverified",
+    "account-reuse": "unverified"
+  },
+  "events": [
+    {
+      "stage": "prepared",
+      "at": "2026-09-30T09:39:27+00:00"
+    },
+    {
+      "stage": "prepared",
+      "at": "2026-09-30T09:52:35+00:00",
+      "host": "local-macos-arm64",
+      "checks": {
+        "archive-readback": "passed",
+        "independent-build": "passed",
+        "detail-icon": "unverified",
+        "composer-icon": "unverified",
+        "reload-persistence": "unverified",
+        "account-reuse": "unverified"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/isolation-20260930.json",
+          "sha256": "d315eada8862b4b42067573e7e2359c25ca2e7eed5088ee0ce0739d02a2fa21e"
+        }
+      ],
+      "note": "Independent checkout and two deterministic ZIP profiles passed local tests; no cloud upload or client update."
+    }
+  ]
+}
