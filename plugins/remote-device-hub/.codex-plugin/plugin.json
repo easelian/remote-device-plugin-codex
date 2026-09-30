@@ -15,7 +15,7 @@
     "brandColorDark": "#A5B5C5"
   },
   "name": "remote-device-hub",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
   "author": {
     "name": "App developer"

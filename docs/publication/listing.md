@@ -17,27 +17,31 @@ Remote Device Hub connects ChatGPT or another MCP client to Linux and macOS comp
 
 ## 组件发布线
 
-发布资料对应五条独立版本线：Protocol `1.0.0`、Hub `0.4.0`、Python Agent `0.4.0`、Node Agent `0.4.1`、standalone plugin `1.1.0`。本地构建目标包括 Python wheel/source archive、包含最小 Agent/Protocol runtime 的 npm TGZ，以及不绑定 App 的 standalone plugin ZIP。
+发布资料对应独立集成版本线：standalone plugin `1.1.1`。Server、Protocol 和 Agent artifact
+由各自仓库构建；本仓库只生成不绑定 App 的 plugin ZIP 或显式 connected profile ZIP。
 
-这些版本尚未进入 PyPI、npm、Hosted 下载或 ChatGPT 客户端，也没有替换在线 0.3.0 部署。未来发布应按 Protocol → Python Agent/Hub 的依赖顺序评估；Node TGZ 只引用已经构建并校验的 Agent/Protocol wheels。
+当前 artifact 仅为本地 prepared 状态，尚未进入公共提交或 ChatGPT 客户端。不要把其他仓库
+的在线状态或历史记录写成当前集成状态。
 
 ## Plugin profile
 
-未来公开/standalone plugin 应使用 `plugins/remote-device-hub/mcp.json` 声明真实 HTTPS Streamable HTTP MCP 地址，不声明 App ID。构建命令：
+standalone plugin 使用 `plugins/remote-device-hub/mcp.json` 声明真实 HTTPS Streamable HTTP MCP
+地址，不声明 App ID。构建命令：
 
 ```bash
 .venv/bin/python scripts/release.py build plugin \
-  --profile standalone --channel hosted
+  --profile standalone
 ```
 
 connected profile 只在明确需要复用既有 ChatGPT/App 连接时使用，并从 `integrations/chatgpt/connected-app.json` 读取现有 App 身份：
 
 ```bash
 .venv/bin/python scripts/release.py build plugin \
-  --profile connected --channel hosted-connected
+  --profile connected
 ```
 
-App 配置是可选适配层，不是 canonical plugin、Hub 或 Agent 的依赖。构建命令只生成 artifact 和 prepared 记录；它不会创建插件、上传 private plugin、替换 daily entry 或部署 MCP 服务。
+App 配置是可选适配层，不是 canonical plugin、Hub 或 Agent 的依赖。构建命令只生成 artifact
+和 prepared 记录；它不会创建插件、上传 private plugin、替换 daily entry 或部署 MCP 服务。
 
 ## 审核材料
 
@@ -53,7 +57,7 @@ App 配置是可选适配层，不是 canonical plugin、Hub 或 Agent 的依赖
 
 ## Private plugin 实验边界
 
-此前关联 App 的 private plugin 更新没有通过稳定的图标持久化和页面回读验收，公开发布也已暂停。相关历史证据保留在 `state/cloud-plugin-branding/` 和 `dist/REMOTE-DEVICE-HUB-PACKAGES.md`，仅用于解释为什么不再重复上传。不要把历史上传记录当作当前组件发布证据，也不要继续通过该入口维护代码版本。
+此前关联 App 的 private plugin 更新没有通过稳定的图标持久化和页面回读验收，公开发布也已暂停。分仓前的结果元数据保留在 `integrations/chatgpt/channels.json` 和 `docs/history/release-records/`；私有云端状态没有复制进代码仓库。不要把历史上传记录当作当前组件发布证据。
 
 官方参考：
 
