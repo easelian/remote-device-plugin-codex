@@ -4,7 +4,7 @@
   "channel": "connected",
   "version": "1.1.1",
   "created_at": "2026-09-30T09:39:28+00:00",
-  "stage": "prepared",
+  "stage": "published",
   "source": {
     "git_commit": "aac23059a10db65077f62a6b99892c375f2b1dca",
     "git_tree": "e72f51efa8e76aca810accdf564879d5315d47bd",
@@ -31,14 +31,24 @@
     "sha256": "d9332b5c0f4ad6175eb0b6e69c52ac47606cd302160d5467282890f35865982b",
     "bytes": 424649
   },
-  "identities": {},
+  "identities": {
+    "plugin_id": "Plugin_c037faee8bac8191af422bb13e5ae020",
+    "plugin_url": "https://chatgpt.com/plugins/Plugin_c037faee8bac8191af422bb13e5ae020",
+    "app_id": "asdk_app_6abab5780ce48191a418ea5405cfad47",
+    "current_release_id": "pluginrel_6abe013a1b6c81918c3f0665692fad99",
+    "scope": "USER",
+    "discoverability": "PRIVATE"
+  },
   "checks": {
     "archive-readback": "passed",
     "independent-build": "passed",
     "detail-icon": "unverified",
     "composer-icon": "unverified",
     "reload-persistence": "unverified",
-    "account-reuse": "unverified"
+    "account-reuse": "unverified",
+    "cloud-version": "passed",
+    "app-binding-preservation": "passed",
+    "existing-app-connection": "passed"
   },
   "events": [
     {
@@ -64,6 +74,37 @@
         }
       ],
       "note": "Existing App identity retained in explicit optional adapter; local artifact only, no cloud action."
+    },
+    {
+      "stage": "published",
+      "at": "2026-10-01T06:47:45+00:00",
+      "host": "https://chatgpt.com/plugins/Plugin_c037faee8bac8191af422bb13e5ae020",
+      "checks": {
+        "archive-readback": "passed",
+        "independent-build": "passed",
+        "detail-icon": "unverified",
+        "composer-icon": "unverified",
+        "reload-persistence": "unverified",
+        "account-reuse": "unverified",
+        "cloud-version": "passed",
+        "app-binding-preservation": "passed",
+        "existing-app-connection": "passed"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/plugin-private-preflight-1.1.1-20261001.json",
+          "sha256": "29308b67ed5fd8be82c4db57a77094928de777ae614a7d8320383f76e9e80391"
+        },
+        {
+          "path": "releases/evidence/plugin-private-update-1.1.1-20261001.json",
+          "sha256": "46221d23f5d4feb2d75d8825a1da8c57823e3a6cada805ba8d197ba233f58ef2"
+        },
+        {
+          "path": "releases/evidence/plugin-private-archive-readback-1.1.1-20261001.json",
+          "sha256": "3e2ba1087e4192e809ab69de29b809a55b2106ec12276e5c0b1cdb7625f0e667"
+        }
+      ],
+      "note": "User subsequently authorized updating the existing private plugin. Guarded Plugin Creator update succeeded from 1.0.0 to 1.1.1, preserving exact plugin ID, USER/PRIVATE audience and App dependency. Root/compatibility manifests read back semantically equal to frozen connected ZIP; all four icons and App file byte-identical. Existing connection lists 158 online after update. Current host UI selection, icon rendering and reload behavior remain unverified; no Store submission."
     }
   ]
 }

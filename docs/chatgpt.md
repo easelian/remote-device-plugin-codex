@@ -1,6 +1,6 @@
 # ChatGPT 集成
 
-本仓库维护 MCP plugin 清单、主题资源和可选的既有 App 适配配置。它不创建 App，也不构建或部署 Server/Agent。集成版本为 `1.1.1`；本次只准备本地 ZIP，没有上传或更新 ChatGPT 客户端。
+本仓库维护 MCP plugin 清单、主题资源和可选的既有 App 适配配置。它不创建 App，也不构建或部署 Server/Agent。集成版本为 `1.1.1`。2026-10-01 用户随后授权更新现有私有插件，connected profile 已上传并回读为 `1.1.1`；standalone profile 仍用于独立 HTTPS 下载分发。
 
 ## Standalone profile
 
@@ -36,8 +36,23 @@ Hub `0.5.0` 的工具表增加 8 个文件和搜索接口；这些接口要求�
 
 新版本客户端验收应另外覆盖：多文件读取中单文件失败、大日志尾部读取、文件移动目标冲突、搜索分页/取消，以及网络短暂断开后使用同一 job ID 继续读取进程输出。应记录实际 Server/Agent 版本与 artifact SHA；本地运行证据不能替代真实客户端验收。
 
-本次发布范围为服务、Agent、公开下载包和 npm；ChatGPT 商店提交和 private plugin
-云端更新不在本次范围内。`integrations/chatgpt/channels.json` 保留分仓前的暂停状态与
-入口基线，`docs/history/` 保留历史云端实验结果。当前版本的实际下载发布结果以
+初始发布范围为服务、Agent、公开下载包和自托管 npm TGZ；用户随后明确授权 private
+plugin 云端更新。ChatGPT 商店提交仍不在本次范围内。`integrations/chatgpt/channels.json`
+保留分仓前的暂停状态与入口基线，`docs/history/` 保留历史云端实验结果。当前版本的实际发布结果以
 `releases/` 记录和 [2026-10-01 发布验证记录](../../remote-device-server/docs/release-validation-20261001.md)
 为准；本地构建不表示任何云端动作已经完成。
+
+## 当前私有插件更新
+
+[Remote Device Hub](https://chatgpt.com/plugins/Plugin_c037faee8bac8191af422bb13e5ae020)
+已由 `1.0.0` 更新为 `1.1.1`，保持 `USER / PRIVATE` 以及原插件 ID 和 App ID。
+当前 release 为 `pluginrel_6abe013a1b6c81918c3f0665692fad99`。
+
+云端 root/compatibility 清单均已回读；除版本号外，其配置语义与旧包相同。四个图标和
+`.app.json` 的字节与旧包及 connected ZIP 一致，提示词和 App 绑定保持不变。更新后
+现有 App 连接仍能列出 158 设备 online。
+
+记录见 [connected 1.1.1](../releases/plugin-connected-1.1.1.json)、
+[云端更新](../releases/evidence/plugin-private-update-1.1.1-20261001.json) 和
+[完整包回读](../releases/evidence/plugin-private-archive-readback-1.1.1-20261001.json)。
+云端版本已确认；当前宿主 UI 选中的插件 release、图标显示和会话重载仍需单独验证。

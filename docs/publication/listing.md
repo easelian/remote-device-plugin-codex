@@ -60,8 +60,10 @@ App 配置是可选适配层，不是 canonical plugin、Hub 或 Agent 的依赖
 ## Private plugin 实验边界
 
 此前关联 App 的 private plugin 更新没有通过稳定的图标持久化和页面回读验收。该实验的
-结果元数据保留在 `docs/history/release-records/`；本次服务和下载发布保留既有 App 连接，
-未执行私有插件云端更新或公开商店提交。不要把历史上传记录当作当前组件发布证据。
+结果元数据保留在 `docs/history/release-records/`。本次服务和下载发布之后，用户明确授权
+更新原私有插件，connected `1.1.1` 已保存到相同插件 ID，云端文件和版本已回读，原 App
+绑定保留。详见 [当前私有插件更新](../chatgpt.md#当前私有插件更新)。公开商店提交仍未执行。
+不要把历史图标验收失败或旧上传记录当作当前云端版本；宿主 UI 图标与会话重载验证需分别记录。
 
 官方参考：
 

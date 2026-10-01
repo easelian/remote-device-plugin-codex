@@ -1,0 +1,24 @@
+{
+  "schema": "plugin-update-preflight/v1",
+  "plugin_id": "Plugin_c037faee8bac8191af422bb13e5ae020",
+  "expected_release_id": "pluginrel_6abc7457f6608191936610da0c1e1150",
+  "scope": "USER",
+  "discoverability": "PRIVATE",
+  "old_version": "1.0.0",
+  "new_version": "1.1.1",
+  "current_archive_sha256": "25d0f19d817b5920b9298733163df29d80b19e5a393af75fb170f407b9c28a9f",
+  "candidate_archive_sha256": "d9332b5c0f4ad6175eb0b6e69c52ac47606cd302160d5467282890f35865982b",
+  "file_count": 7,
+  "preservation": {
+    ".app.json": "same App binding",
+    "plugin.json": "only version changes semantically",
+    ".codex-plugin/plugin.json": "only version changes semantically",
+    "assets/remote-device-hub-theme-dark-256.png": "byte-identical",
+    "assets/remote-device-hub-theme-dark-512.png": "byte-identical",
+    "assets/remote-device-hub-theme-light-256.png": "byte-identical",
+    "assets/remote-device-hub-theme-light-512.png": "byte-identical"
+  },
+  "default_prompt_preserved": true,
+  "app_id_preserved": "asdk_app_6abab5780ce48191a418ea5405cfad47",
+  "no_files_removed": true
+}
