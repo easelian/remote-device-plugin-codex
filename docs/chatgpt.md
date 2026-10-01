@@ -56,3 +56,7 @@ plugin 云端更新。ChatGPT 商店提交仍不在本次范围内。`integratio
 [云端更新](../releases/evidence/plugin-private-update-1.1.1-20261001.json) 和
 [完整包回读](../releases/evidence/plugin-private-archive-readback-1.1.1-20261001.json)。
 云端版本已确认；当前宿主 UI 选中的插件 release、图标显示和会话重载仍需单独验证。
+
+本次 [页面核对](../releases/evidence/plugin-host-ui-1.1.1-20261001.json) 的浏览器导航请求
+超时，目标页仍为 `about:blank`，因此保持宿主 UI 检查为 `unverified`；该观察不改变
+已经完成的云端保存和完整包回读结果。

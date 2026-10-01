@@ -1,0 +1,29 @@
+{
+  "schema": "plugin-host-ui-observation/v1",
+  "checked_at": "2026-10-01T07:02:40.681Z",
+  "plugin_id": "Plugin_c037faee8bac8191af422bb13e5ae020",
+  "plugin_url": "https://chatgpt.com/plugins/Plugin_c037faee8bac8191af422bb13e5ae020",
+  "cloud_version": "1.1.1",
+  "cloud_release_id": "pluginrel_6abe013a1b6c81918c3f0665692fad99",
+  "cloud_readback_passed": true,
+  "browser": "Codex In-app Browser",
+  "action": "Single focused navigation to the exact updated plugin URL",
+  "observation": {
+    "navigation": "timed_out_after_30_seconds; UI runtime reset",
+    "subsequent_inventory": {
+      "tab_id": "3",
+      "title": "about:blank",
+      "url": "about:blank"
+    },
+    "credentials_entered": false,
+    "install_disconnect_or_uninstall_clicked": false
+  },
+  "checks": {
+    "host_selected_plugin_release": "unverified",
+    "detail_icon": "unverified",
+    "composer_icon": "unverified",
+    "reload_persistence": "unverified"
+  },
+  "interpretation": "Cloud save and archive/source readback succeeded. Browser navigation did not yield an inspectable plugin page; current-chat selection/reload and icon rendering are not proven.",
+  "temporary_tab": "unmarked; automatic end-of-turn cleanup"
+}

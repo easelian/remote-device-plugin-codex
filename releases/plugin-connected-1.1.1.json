@@ -105,6 +105,29 @@
         }
       ],
       "note": "User subsequently authorized updating the existing private plugin. Guarded Plugin Creator update succeeded from 1.0.0 to 1.1.1, preserving exact plugin ID, USER/PRIVATE audience and App dependency. Root/compatibility manifests read back semantically equal to frozen connected ZIP; all four icons and App file byte-identical. Existing connection lists 158 online after update. Current host UI selection, icon rendering and reload behavior remain unverified; no Store submission."
+    },
+    {
+      "stage": "published",
+      "at": "2026-10-01T07:02:40+00:00",
+      "host": "Codex In-app Browser, attempted exact private plugin page navigation",
+      "checks": {
+        "archive-readback": "passed",
+        "independent-build": "passed",
+        "detail-icon": "unverified",
+        "composer-icon": "unverified",
+        "reload-persistence": "unverified",
+        "account-reuse": "unverified",
+        "cloud-version": "passed",
+        "app-binding-preservation": "passed",
+        "existing-app-connection": "passed"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/plugin-host-ui-1.1.1-20261001.json",
+          "sha256": "c192488fa245f4f748bd27774233d601c480a40565f6301806925a52a7e89049"
+        }
+      ],
+      "note": "Cloud 1.1.1 and full archive/source readback remain passed. One focused page navigation timed out after 30 seconds and reset the UI runtime; followup inventory showed the created tab still at about:blank. No credentials or installation/disconnection actions were performed. Current-chat selected release, icon rendering and reload behavior cannot be confirmed from this UI attempt."
     }
   ]
 }
