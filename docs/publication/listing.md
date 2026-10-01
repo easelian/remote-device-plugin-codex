@@ -1,6 +1,8 @@
 # Remote Device Hub — 发布资料
 
-状态：公开发布暂停。本文保存未来发布所需的产品文案和边界；它不表示任何组件已经发布、部署或通过客户端运行验证。
+本次发布范围已确认为服务、Agent、公开下载包和 npm。集成 ZIP 按下载包发布；ChatGPT
+公开商店提交不在本次范围内。各渠道实际发布结果与验证证据分别记录，见
+[2026-10-01 发布验证记录](../../../remote-device-server/docs/release-validation-20261001.md)。
 
 ## 产品资料
 
@@ -20,8 +22,8 @@ Remote Device Hub connects ChatGPT or another MCP client to Linux and macOS comp
 发布资料对应独立集成版本线：standalone plugin `1.1.1`。Server、Protocol 和 Agent artifact
 由各自仓库构建；本仓库只生成不绑定 App 的 plugin ZIP 或显式 connected profile ZIP。
 
-当前 artifact 仅为本地 prepared 状态，尚未进入公共提交或 ChatGPT 客户端。不要把其他仓库
-的在线状态或历史记录写成当前集成状态。
+集成包是否已进入公开下载目录，以 `releases/` 中的当前记录和下载回读证据为准。下载包
+发布不表示已上传或提交 ChatGPT 商店，也不替代图标和插件页面的客户端验收。
 
 ## Plugin profile
 
@@ -57,7 +59,9 @@ App 配置是可选适配层，不是 canonical plugin、Hub 或 Agent 的依赖
 
 ## Private plugin 实验边界
 
-此前关联 App 的 private plugin 更新没有通过稳定的图标持久化和页面回读验收，公开发布也已暂停。分仓前的结果元数据保留在 `integrations/chatgpt/channels.json` 和 `docs/history/release-records/`；私有云端状态没有复制进代码仓库。不要把历史上传记录当作当前组件发布证据。
+此前关联 App 的 private plugin 更新没有通过稳定的图标持久化和页面回读验收。该实验的
+结果元数据保留在 `docs/history/release-records/`；本次服务和下载发布保留既有 App 连接，
+未执行私有插件云端更新或公开商店提交。不要把历史上传记录当作当前组件发布证据。
 
 官方参考：
 

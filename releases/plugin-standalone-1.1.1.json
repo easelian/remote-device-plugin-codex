@@ -4,7 +4,7 @@
   "channel": "standalone",
   "version": "1.1.1",
   "created_at": "2026-09-30T09:39:27+00:00",
-  "stage": "prepared",
+  "stage": "published",
   "source": {
     "git_commit": "aac23059a10db65077f62a6b99892c375f2b1dca",
     "git_tree": "e72f51efa8e76aca810accdf564879d5315d47bd",
@@ -38,7 +38,8 @@
     "detail-icon": "unverified",
     "composer-icon": "unverified",
     "reload-persistence": "unverified",
-    "account-reuse": "unverified"
+    "account-reuse": "unverified",
+    "http-download-readback": "passed"
   },
   "events": [
     {
@@ -64,6 +65,27 @@
         }
       ],
       "note": "Independent checkout and two deterministic ZIP profiles passed local tests; no cloud upload or client update."
+    },
+    {
+      "stage": "published",
+      "at": "2026-10-01T02:52:56+00:00",
+      "host": "https://mcp.xdistribute.site/releases/20261001/remote-device-hub-plugin-standalone-1.1.1.zip",
+      "checks": {
+        "archive-readback": "passed",
+        "independent-build": "passed",
+        "detail-icon": "unverified",
+        "composer-icon": "unverified",
+        "reload-persistence": "unverified",
+        "account-reuse": "unverified",
+        "http-download-readback": "passed"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/public-downloads-curl-20261001.json",
+          "sha256": "14a0513dd2a42728d31607abcdc87bb418e6c2b3ce50ba515a09cdbbf5a4d230"
+        }
+      ],
+      "note": "Actual standalone ZIP HTTP download publication completed on 2026-10-01 and matched frozen SHA-256/size. ChatGPT Store submission and private cloud plugin update are excluded from this task. Client icon/reload/account checks remain unverified; connected ZIP remains prepared."
     }
   ]
 }

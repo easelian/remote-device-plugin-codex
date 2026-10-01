@@ -36,4 +36,8 @@ Hub `0.5.0` 的工具表增加 8 个文件和搜索接口；这些接口要求�
 
 新版本客户端验收应另外覆盖：多文件读取中单文件失败、大日志尾部读取、文件移动目标冲突、搜索分页/取消，以及网络短暂断开后使用同一 job ID 继续读取进程输出。应记录实际 Server/Agent 版本与 artifact SHA；本地运行证据不能替代真实客户端验收。
 
-公开发布和 private plugin 上传保持暂停。历史云端实验失败的元数据保留在 `integrations/chatgpt/channels.json` 和 `docs/history/`，本仓库的 `prepared` 状态不代表任何云端动作已经完成。
+本次发布范围为服务、Agent、公开下载包和 npm；ChatGPT 商店提交和 private plugin
+云端更新不在本次范围内。`integrations/chatgpt/channels.json` 保留分仓前的暂停状态与
+入口基线，`docs/history/` 保留历史云端实验结果。当前版本的实际下载发布结果以
+`releases/` 记录和 [2026-10-01 发布验证记录](../../remote-device-server/docs/release-validation-20261001.md)
+为准；本地构建不表示任何云端动作已经完成。
