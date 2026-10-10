@@ -31,7 +31,7 @@ def test_asset_paths_are_contained(tmp_path, reference):
 def test_profiles_have_distinct_contracts():
     source = Path(__file__).parents[1] / "plugins/remote-device-hub"
     standalone, files = release.plugin_files(source, "standalone")
-    assert standalone["version"] == "1.2.1"
+    assert standalone["version"] == "1.2.2"
     assert ".app.json" not in files and "apps" not in standalone["extensions"]["com.openai"]
     assert json.loads(files["mcp.json"])["mcpServers"]["remote-device-hub"]["type"] == "streamable-http"
     connected, connected_files = release.plugin_files(source, "connected")
@@ -72,10 +72,10 @@ def test_build_is_deterministic_and_reads_archive(tmp_path, monkeypatch):
     monkeypatch.setattr(release, "ROOT", tmp_path)
     monkeypatch.setattr(release, "PLUGIN", tmp_path / "plugins/remote-device-hub")
     first = release.build_plugin("standalone", "fixture")
-    first_bytes = (tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.1.zip").read_bytes()
-    assert release._archive_contents(tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.1.zip")["mcp.json"]
+    first_bytes = (tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.2.zip").read_bytes()
+    assert release._archive_contents(tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.2.zip")["mcp.json"]
     assert release.build_plugin("standalone", "fixture") == first
-    assert (tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.1.zip").read_bytes() == first_bytes
+    assert (tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.2.zip").read_bytes() == first_bytes
 
 
 def test_renderer_change_cannot_reuse_version(tmp_path, monkeypatch):
@@ -103,8 +103,8 @@ def test_archive_rejects_duplicate_normalized_entries(tmp_path):
 
 def test_cli_check_uses_release_record_path():
     root = Path(__file__).parents[1]
-    record = root / "releases" / "plugin-cli-test-1.2.1.json"
-    artifact = root / "dist" / "remote-device-hub-plugin-standalone-1.2.1.zip"
+    record = root / "releases" / "plugin-cli-test-1.2.2.json"
+    artifact = root / "dist" / "remote-device-hub-plugin-standalone-1.2.2.zip"
     artifact_sha = artifact.with_suffix(artifact.suffix + ".sha256")
     existed = artifact.exists(), artifact_sha.exists()
     try:
@@ -124,7 +124,7 @@ def test_cli_check_uses_release_record_path():
 def test_record_requires_checks_and_evidence(tmp_path, monkeypatch):
     monkeypatch.setattr(release, "ROOT", tmp_path)
     artifact = tmp_path / "dist/a.zip"; artifact.parent.mkdir(); artifact.write_bytes(b"artifact")
-    record = release.save_prepared("1.2.1", artifact, {"plugin.json": b"source"}, "fixture", "standalone")
+    record = release.save_prepared("1.2.2", artifact, {"plugin.json": b"source"}, "fixture", "standalone")
     evidence = tmp_path / "proof.txt"; evidence.write_text("proof")
     args = Namespace(record=str(record.relative_to(tmp_path)), stage="published", host="local", evidence=["proof.txt"], check=[], note="")
     release.record_result(args)

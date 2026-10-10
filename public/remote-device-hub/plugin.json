@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "remote-device-hub",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Connect ChatGPT to Linux and macOS devices that you enroll and authorize with Remote Device Hub. Inspect device status, browse and read files, make reviewed file changes, run remote commands, and manage Agent-started jobs. A Hub account and a running device Agent are required. Available actions depend on device permissions and Agent capabilities. File tools use configured roots; shell commands run with the Agent operating-system account and are not sandboxed by those roots. The hosted service is currently in free public testing. Free allowance and paid subscriptions are planned; this plugin can use existing entitlements when enabled. This plugin reports current entitlement and does not initiate purchases or promote upgrades. Results are verified with tool readback; timeouts can leave an operation outcome unknown.",
   "extensions": {
     "com.openai": {
