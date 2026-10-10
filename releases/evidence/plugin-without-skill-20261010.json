@@ -1,0 +1,306 @@
+{
+  "schema": "private-app-without-skill-web-acceptance/v1",
+  "at": "2026-10-10T06:26:31.520Z",
+  "scope": "Private account; no public submission or publication",
+  "app": {
+    "app_id": "asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
+    "plugin_id": "plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
+    "plugin_url": "https://chatgpt.com/plugins/plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
+    "permission_mode": "ask_before_writes",
+    "oauth_connection": "existing account preserved"
+  },
+  "package": {
+    "plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
+    "name": "remote-device-hub",
+    "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+    "version": "1.2.3",
+    "current_release_id": "pluginrel_6ac9d919e4008191984e37f127cebc8f",
+    "scope": "USER",
+    "discoverability": "PRIVATE",
+    "plugin_url": "https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d",
+    "release_id": "pluginrel_6ac9d919e4008191984e37f127cebc8f",
+    "latest_release_id": "pluginrel_6ac9d919e4008191984e37f127cebc8f",
+    "status": "updated"
+  },
+  "skill_files_deleted": [
+    "skills/remote-device-operations/SKILL.md",
+    "skills/remote-device-operations/references/files.md",
+    "skills/remote-device-operations/references/processes.md",
+    "skills/remote-device-operations/references/recovery.md"
+  ],
+  "checks": {
+    "cloud_skill_files_absent": "passed",
+    "cloud_app_binding_unchanged": "passed",
+    "package_uninstalled": "passed",
+    "sole_installed_hub_entry": "passed",
+    "app_only_read_before_uninstall": "passed",
+    "native_write_approval_card": "observed",
+    "single_successful_write_and_readback": "passed",
+    "post_removal_new_chat_read": "first attempt failed; one new read succeeded",
+    "path_traversal_read": "Agent error; no file content returned; precise rejection reason not exposed",
+    "fixture_cleanup": "passed",
+    "delete_uninstalled_cloud_catalog_records": "unavailable in inspected UI"
+  },
+  "limitations": [
+    "Native write approval appeared before package uninstall; the conversation explicitly used only the App. The automation did not click Allow once: the card disappeared before details could be opened, and independent audit showed exactly one successful write. The approving actor was not observed.",
+    "The read-only proof captured after the card disappeared already contained the successful write; it is not evidence of the state while approval was pending. An earlier pre-write fixture proof had zero writes.",
+    "Settings lists one installed Remote Device Hub. Personal/Created by you still lists uninstalled package records: plugins_6ac993be7294819188f638f4e00f2b5d (now no-Skill 1.2.3) and Plugin_c037faee8bac8191af422bb13e5ae020 (legacy 1.1.1). Their inspected menus provide no cloud-record delete operation.",
+    "Plugin Management permission lookup by private auto-plugin ID returned not_installed despite live Web showing the App installed, connected and usable; live Web settings and tool calls were used for acceptance.",
+    "No server code change, deployment, public release, or full long-duration stability test performed."
+  ],
+  "proxy_observation": {
+    "window_epoch": [
+      1791613250,
+      1791613440
+    ],
+    "mcp_status_counts": {
+      "200": 1,
+      "408": 1
+    },
+    "timeout_at": "2026-10-10T14:23:40+08:00",
+    "timeout_upstream": "-",
+    "interpretation": "408 occurred in the failed normal-read window and had no upstream; request-to-Web-error attribution is inferred, not proven by a shared request identifier."
+  },
+  "conversations": [
+    "https://chatgpt.com/c/6ac9d6c7-d6d0-8328-9870-5f7e50feb933",
+    "https://chatgpt.com/c/6ac9d983-13c8-832d-880e-bffb0b44bfec"
+  ],
+  "before_write": {
+    "at_epoch": 1791612698.3371596,
+    "device_id": "rdh-web-noskill-20261010",
+    "content": "original-read-only\n",
+    "sha256": "7c1cd5f41738335293db2465b1f422e0bf3b43f47996bfcb74ff3415bec282b7",
+    "audit": [
+      {
+        "time": 1791612637.8954492,
+        "operation": "device_info",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "688b824cdfe22b72c035ba8a429935da",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612637.9216793,
+        "operation": "device_info",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "688b824cdfe22b72c035ba8a429935da",
+        "duration_ms": 26.725900010205805
+      },
+      {
+        "time": 1791612649.9790637,
+        "operation": "read_file",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "4161962a19fb145a2119127bc66e6ab8",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612649.9880774,
+        "operation": "read_file",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "4161962a19fb145a2119127bc66e6ab8",
+        "duration_ms": 9.024985018186271
+      }
+    ],
+    "allow_write": false,
+    "allow_shell": false,
+    "success_counts": {
+      "device_info": 1,
+      "read_file": 1
+    },
+    "agent_pid": 395966,
+    "write_enabled_after_proof": true
+  },
+  "final_independent_proof_and_cleanup": {
+    "at_epoch": 1791613529.9984558,
+    "device_id": "rdh-web-noskill-20261010",
+    "content": "confirmed-no-skill\n",
+    "sha256": "c6ac6f7cd351bd731c63526b9871e922e4634d403b1ad599dbb3a6b6256abb74",
+    "audit": [
+      {
+        "time": 1791612637.8954492,
+        "operation": "device_info",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "688b824cdfe22b72c035ba8a429935da",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612637.9216793,
+        "operation": "device_info",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "688b824cdfe22b72c035ba8a429935da",
+        "duration_ms": 26.725900010205805
+      },
+      {
+        "time": 1791612649.9790637,
+        "operation": "read_file",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "4161962a19fb145a2119127bc66e6ab8",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612649.9880774,
+        "operation": "read_file",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "4161962a19fb145a2119127bc66e6ab8",
+        "duration_ms": 9.024985018186271
+      },
+      {
+        "time": 1791612763.1053042,
+        "operation": "device_info",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "7f5d6e301790190c37ed39fe790894cc",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612763.1358066,
+        "operation": "device_info",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "7f5d6e301790190c37ed39fe790894cc",
+        "duration_ms": 30.603362014517188
+      },
+      {
+        "time": 1791612792.8530173,
+        "operation": "write_file",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "8816fe761280f72b11aba5bcfee28e6c",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612792.8623488,
+        "operation": "write_file",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "8816fe761280f72b11aba5bcfee28e6c",
+        "duration_ms": 9.344331920146942
+      },
+      {
+        "time": 1791612801.0449893,
+        "operation": "read_file",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "862700115bcd7482956f9f0b4730394b",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612801.0717025,
+        "operation": "read_file",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "862700115bcd7482956f9f0b4730394b",
+        "duration_ms": 26.73151600174606
+      },
+      {
+        "time": 1791612952.221971,
+        "operation": "device_info",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "51b411472b1fc75d6d7cdf6c4fe02e29",
+        "duration_ms": null
+      },
+      {
+        "time": 1791612952.2301688,
+        "operation": "device_info",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "51b411472b1fc75d6d7cdf6c4fe02e29",
+        "duration_ms": 8.237867965362966
+      },
+      {
+        "time": 1791613391.1536,
+        "operation": "read_file",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "7df74ba3d331badb7bd051620f854e11",
+        "duration_ms": null
+      },
+      {
+        "time": 1791613391.1607823,
+        "operation": "read_file",
+        "outcome": "error",
+        "error_code": "agent_error",
+        "request_id": "7df74ba3d331badb7bd051620f854e11",
+        "duration_ms": 7.225329987704754
+      },
+      {
+        "time": 1791613485.3047316,
+        "operation": "read_file",
+        "outcome": "requested",
+        "error_code": null,
+        "request_id": "a25449728c5532dafa22ca45538b83ad",
+        "duration_ms": null
+      },
+      {
+        "time": 1791613485.3325305,
+        "operation": "read_file",
+        "outcome": "ok",
+        "error_code": null,
+        "request_id": "a25449728c5532dafa22ca45538b83ad",
+        "duration_ms": 27.832617051899433
+      }
+    ],
+    "allow_write": true,
+    "allow_shell": false,
+    "success_counts": {
+      "device_info": 3,
+      "read_file": 3,
+      "write_file": 1
+    },
+    "cleanup": {
+      "revoked": true,
+      "agent_stopped": true,
+      "fixture_directory_removed": true
+    }
+  },
+  "ui": {
+    "read_before_removal": {
+      "path": "/c/6ac9d6c7-d6d0-8328-9870-5f7e50feb933",
+      "text": "Skip to content\nHome\nSpace\nScheduled\nPlugins\nExplore\nSites\n读取文件验收\nShare\nYou said:\n\nRemote Device Hub 仅使用当前选中的 Remote Device Hub App 做私人连接验收，不加载额外 Skill。目标设备 ID：rdh-web-noskill-20261010。请调用 device_info 检查能力，然后读取根目录 test 内的 probe.txt，报告原文与 SHA-256。不修改文件，不执行命令。\n\nWorked for 38s\nChatGPT said:\n\n我会仅使用当前选中的 Remote Device Hub App，检查指定设备能力，再读取 test/probe.txt，报告原文和 SHA-256。\n\n⁨Used⁩ ⁨Remote Device Hub⁩\n\nChatGPT said:\n\n连接验收成功，设备：rdh-web-noskill-20261010。\n\n系统：Linux，aarch64，主机名 raspberrypiex\n能力：allow_write=false，allow_shell=false\ntest 根目录：/home/pi/projects/remote-device-hub/state/web-selftest-20261010-noskill/files\n\ntest/probe.txt 完整原文：\n\nPlain text\noriginal-read-only\n\n末尾有一个真正的 LF 换行，共 19 字节，无截断。\n\nSHA-256：\n\nPlain text\n7c1cd5f41738335293db2465b1f422e0bf3b43f47996bfcb74ff3415bec282b7\n\n未加载额外 Skill，未修改文件，未执行命令。\n\nChatGPT can make mistakes. Check important info.\nLatest response\n\n\n\n\nGPT-6.1 Sol\nMedium\nNone\nMinimal\nLight\nMedium\nHigh\nExtra High\nMax\nUltra\nPersistent\nOutputs\nCreate a file or site\nSources\nAttach files or connect apps\nResponse complete",
+      "draft": "\n",
+      "running": false
+    },
+    "native_approval": {
+      "path": "/c/6ac9d6c7-d6d0-8328-9870-5f7e50feb933",
+      "text": "Skip to content\nHome\nSpace\nScheduled\nPlugins\nExplore\nSites\n读取文件验收\nShare\nYou said:\n\nRemote Device Hub 仅使用当前选中的 Remote Device Hub App 做私人连接验收，不加载额外 Skill。目标设备 ID：rdh-web-noskill-20261010。请调用 device_info 检查能力，然后读取根目录 test 内的 probe.txt，报告原文与 SHA-256。不修改文件，不执行命令。\n\nWorked for 38s\nChatGPT said:\n\n连接验收成功，设备：rdh-web-noskill-20261010。\n\n系统：Linux，aarch64，主机名 raspberrypiex\n能力：allow_write=false，allow_shell=false\ntest 根目录：/home/pi/projects/remote-device-hub/state/web-selftest-20261010-noskill/files\n\ntest/probe.txt 完整原文：\n\nPlain text\noriginal-read-only\n\n末尾有一个真正的 LF 换行，共 19 字节，无截断。\n\nSHA-256：\n\nPlain text\n7c1cd5f41738335293db2465b1f422e0bf3b43f47996bfcb74ff3415bec282b7\n\n未加载额外 Skill，未修改文件，未执行命令。\n\nYou said:\n管理员已只为这台临时测试设备开启文件写入，Shell 仍禁用。请重新调用 device_info 核实，然后把 rdh-web-noskill-20261010 的 test/probe.txt 改成 confirmed-no-skill 后跟一个真正的 LF 换行，并用此前读到的 SHA-256 防止覆盖冲突。只允许这一次替换，写后回读验证；保留 ChatGPT 原生批准提示，不使用 Shell 或额外 Skill。\nWorked for 7s\nChatGPT said:\n\n我会先核实设备能力，再用此前的 SHA-256 保护这一次替换，写后回读验证；保留工具触发的原生批准提示。\n\n⁨Used⁩ ⁨Remote Device Hub⁩\n\nRemote Device Hub\nAllow ChatGPT to use Remote Device Hub?\nChatGPT will call Remote Device Hub's Write File tool. See details\nDeny\nEsc\nAllow once\n⏎\nChatGPT can make mistakes. Check important info.\nLatest response\n\n\n\n\nGPT-6.1 Sol\nMedium\nNone\nMinimal\nLight\nMedium\nHigh\nExtra High\nMax\nUltra\nPersistent\nOutputs\nCreate a file or site\nSources\nAttach files or connect apps\nResponse complete",
+      "running": false,
+      "buttons": [
+        "See details",
+        "Deny\nEsc",
+        "Allow once\n⏎"
+      ]
+    },
+    "write_result": {
+      "path": "/c/6ac9d6c7-d6d0-8328-9870-5f7e50feb933",
+      "text": "Skip to content\nHome\nSpace\nScheduled\nPlugins\nExplore\nSites\n读取文件验收\nShare\nYou said:\n\nRemote Device Hub 仅使用当前选中的 Remote Device Hub App 做私人连接验收，不加载额外 Skill。目标设备 ID：rdh-web-noskill-20261010。请调用 device_info 检查能力，然后读取根目录 test 内的 probe.txt，报告原文与 SHA-256。不修改文件，不执行命令。\n\nWorked for 38s\nChatGPT said:\n\n连接验收成功，设备：rdh-web-noskill-20261010。\n\n系统：Linux，aarch64，主机名 raspberrypiex\n能力：allow_write=false，allow_shell=false\ntest 根目录：/home/pi/projects/remote-device-hub/state/web-selftest-20261010-noskill/files\n\ntest/probe.txt 完整原文：\n\nPlain text\noriginal-read-only\n\n末尾有一个真正的 LF 换行，共 19 字节，无截断。\n\nSHA-256：\n\nPlain text\n7c1cd5f41738335293db2465b1f422e0bf3b43f47996bfcb74ff3415bec282b7\n\n未加载额外 Skill，未修改文件，未执行命令。\n\nYou said:\n管理员已只为这台临时测试设备开启文件写入，Shell 仍禁用。请重新调用 device_info 核实，然后把 rdh-web-noskill-20261010 的 test/probe.txt 改成 confirmed-no-skill 后跟一个真正的 LF 换行，并用此前读到的 SHA-256 防止覆盖冲突。只允许这一次替换，写后回读验证；保留 ChatGPT 原生批准提示，不使用 Shell 或额外 Skill。\nWorked for 15s\nChatGPT said:\n\n已完成唯一一次替换，并回读验证成功。\n\n设备：rdh-web-noskill-20261010\n能力核实：allow_write=true、allow_shell=false\n文件：test/probe.txt\n已使用此前 SHA-256 做覆盖冲突保护。\n\n实际内容为 confirmed-no-skill，末尾一个真正的 LF，共 19 字节。写入与回读的 SHA-256 一致：\n\nPlain text\nc6ac6f7cd351bd731c63526b9871e922e4634d403b1ad599dbb3a6b6256abb74\n\n未使用 Shell 或额外 Skill。\n\nChatGPT can make mistakes. Check important info.\nLatest response\n\n\n\n\nGPT-6.1 Sol\nMedium\nNone\nMinimal\nLight\nMedium\nHigh\nExtra High\nMax\nUltra\nPersistent\nOutputs\nCreate a file or site\nSources\nAttach files or connect apps\nResponse complete"
+    },
+    "retired_package": {
+      "path": "/plugins/plugins_6ac993be7294819188f638f4e00f2b5d",
+      "text": "Skip to content\nHome\nSpace\nScheduled\nPlugins\nExplore\nSites\nPlugins\nRemote Device Hub\nRemote Device Hub\nBy Hongfei Shang\nInstall plugin\n\n连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。\n\nApps\n1\nRemote Device Hub\n管理已授权的 Linux 与 macOS 设备，查看状态、执行命令、读写文件和管理进程。\nInformation\nDeveloper\nHongfei Shang\nCategory\nOther\nVersion\n1.2.3\nWebsite\nUnavailable\n\nWhen connected to Remote Device Hub, ChatGPT may share relevant chats and memories with this app to help provide context for your requests. Remote Device Hub’s use of this data is subject to their terms and privacy policy. If you have Memory enabled, data from the app may be used to proactively provide helpful information or suggestions. ChatGPT always respects your training data preferences, including for data from connected apps. Use of apps may come with elevated risk. You can manage your preferences or disconnect from apps anytime in your settings. Learn more"
+    },
+    "installed_list": {
+      "path": "/settings/plugins-settings",
+      "text": "Skip to content\nHome\nSpace\nScheduled\nPlugins\nExplore\nSites\nSettings\nSearch settings\nPersonal\nGeneral\nAppearance\nNotifications\nProfile\nSecurity and login\nAccount\nArchived chats\nParental controls\nTrusted contact\nVoice\nStorage\nPersonalization\nPets\nKeyboard\nUsage\nBilling\nData controls\nIntegrations\nPlugins\nPasswords\nCloud computer\nCoding\nCodex Cloud\nLegacy Codex Cloud\nCode Review\nPlugins\nManage your plugins, connected accounts, and permissions\nBrowse directory\nSearch installed plugins\nDefault permission\nAllow low-risk tools\nLearn more about plugin permissions\nCodex Security Cloud\nFind and fix vulnerabilities across your repositories\nAllow low-risk tools\nFinances\nPersonalized finance insights\nAllow low-risk tools\nGitHub\nTriage PRs, issues, CI, and publish flows\nAllow low-risk tools\nPlugin Creator\nCreate and edit plugins\nAllow low-risk tools\nProduct Design\nExplore and prototype ideas\nRemote Desktop Commander\nBuild and automate, anywhere\nAllow low-risk tools\nRemote Device Hub\n管理已授权的 Linux 与 macOS 设备，查看状态、执行命令、读写文件和管理进程。\nAllow read-only tools",
+      "hubLinks": [
+        {
+          "text": "Remote Device Hub\n管理已授权的 Linux 与 macOS 设备，查看状态、执行命令、读写文件和管理进程。",
+          "href": "/settings/plugins-settings/plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3"
+        }
+      ]
+    },
+    "final_chat": {
+      "path": "/c/6ac9d983-13c8-832d-880e-bffb0b44bfec",
+      "text": "Skip to content\nHome\nSpace\nScheduled\nPlugins\nExplore\nSites\n读取验收结果\nShare\nYou said:\n\nRemote Device Hub Remote Device Hub 已去掉 Skill。这是专用临时测试设备的最终只读验收：只访问 rdh-web-noskill-20261010，读取 test 根目录里的 probe.txt 并报告内容和 SHA-256。随后用 read_file 对 root=test、path=../outside-marker.txt 做一次根目录越界负向测试；文件是同一测试环境的合成标记，预期服务端拒绝。拒绝后停止，不换绝对路径、不执行 Shell、不修改任何文件。\n\nWorked for 1m 19s\nChatGPT said:\n\n仅对 rdh-web-noskill-20261010 调用了两次 read_file：\n\nroot=test、path=probe.txt：读取失败，未获得内容或 SHA-256。原始错误：\n\nPlain text\nMcp error: -32603: Internal error\n\nroot=test、path=../outside-marker.txt：返回错误，未返回文件内容：\n\nJSON\n{\"error_code\":\"agent_error\",\"support_id\":\"7df74ba3d331badb7bd051620f854e11\",\"message\":\"The device Agent could not complete the operation.\"}\n\n结构化错误码：INVALID_ARGUMENT。错误未明确说明根目录越界，因此无法确认拒绝原因。\n\n已停止，无重试、无 Shell、无文件修改。\n\nYou said:\n越界测试到此结束，不再重复。请现在只对 rdh-web-noskill-20261010 发起一次新的只读调用：读取 root=test、path=probe.txt，报告内容与 SHA-256；不改文件，不执行其他操作。如果再次失败，保留原始错误并停止。\nWorked for 19s\nChatGPT said:\n\n我会只读取一次指定的 probe.txt，返回内容与 SHA-256；若失败，保留原始错误后停止。\n\nUsed ⁨Remote Device Hub⁩ integration\n\nChatGPT said:\n\n读取成功：rdh-web-noskill-20261010 的 test/probe.txt。\n\n内容为 confirmed-no-skill，末尾一个真正的 LF 换行，共 19 字节。\n\nSHA-256：\n\nPlain text\nc6ac6f7cd351bd731c63526b9871e922e4634d403b1ad599dbb3a6b6256abb74\n\n仅调用一次读取，已停止。\n\nChatGPT can make mistakes. Check important info.\nLatest response\n\n\n\n\nGPT-6.1 Sol\nMedium\nNone\nMinimal\nLight\nMedium\nHigh\nExtra High\nMax\nUltra\nPersistent\nOutputs\nCreate a file or site\nSources\nAttach files or connect apps\nResponse complete",
+      "running": false
+    }
+  },
+  "supersedes": "releases/evidence/plugin-single-entry-20261010.json"
+}

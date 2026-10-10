@@ -1,84 +1,81 @@
 # ChatGPT 集成与私人网页测试
 
-当前私人插件版本为 **1.2.2**。在 ChatGPT 网页使用
-[Remote Device Hub](https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d)，
-插件详情应显示 `Version 1.2.2`、一个 Connected App 和 `remote-device-operations` Skill。
-点击 **Try in chat** 创建新 Work 会话，确保加载当前 Skill。公开发布保持暂停。
+当前使用不带 Skill 的
+[Remote Device Hub App](https://chatgpt.com/plugins/plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3)。
+这是设置页中唯一已安装的 Remote Device Hub 入口，复用现有 OAuth 账户；权限为
+**Allow read-only tools**，读取免确认、修改前询问。点击 **Try in chat** 创建新会话。
+公开发布保持暂停。
 
 ## 连接和版本
 
-私人包使用 `connected` profile，复用已完成 OAuth 授权的
-`asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3`，由
-[`connected-app.json`](../integrations/chatgpt/connected-app.json) 生成 `.app.json`。
-账户中的插件 ID 保持 `plugins_6ac993be7294819188f638f4e00f2b5d`，可见性为 `USER / PRIVATE`。
-此次升级删除该包原有的 `mcp.json` 和 `.mcp.json`，改为引用现有 App，并明确不要求本地执行器。
-自动生成的 App 包不能通过当前 Plugin Creator 编辑 Skill，因此操作说明由这个已有的私人包承载。
+App ID 为 `asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3`，连接公网
+`https://mcp.xdistribute.site/mcp`。该开发 App 在详情页显示 `1.0.0`，
+服务端仍是已部署的 Hub 0.8.0。两者分别版本化，App 页面版本不代表 Hub 代码版本。
+Hub 使用 SDK 2.3.0 支持 MCP `2026-07-28`，保留无状态传输、OAuth 和设备访问检查。
 
-Hub 服务与插件分别版本化。本轮已部署 Hub 0.8.0，使用 SDK 2.3.0 原生支持 ChatGPT 的
-MCP `2026-07-28` 请求，并保留无状态传输、权限和读取长度说明。插件版本以详情页和云端 release 为准，
-`device_info` 返回的是设备环境，不能用它推断插件版本。旧会话也可能仍加载旧 Skill。
+按照用户“先去掉 Skill”的决定，额外私人包 `plugins_6ac993be7294819188f638f4e00f2b5d`
+已卸载，并更新为 **1.2.3**：删除 `remote-device-operations/SKILL.md` 和三个参考文件，
+保留原 `.app.json` 连接、身份、资源和私人可见性。没有改用上一轮候选的直接 MCP 连接方式。
+这个未安装的包不再是网页日常入口。
 
-当前入口与版本记录在 [`channels.json`](../integrations/chatgpt/channels.json)。本轮恢复了被删除的
-OAuth App，因此 App ID 已更新；承载 Skill 的私人包 ID 保持不变。1.2.1 保存读取规则修复，
-1.2.2 进一步绑定恢复后的 App。日常测试选择上面的 **1.2.2 私人包**；自动 App 条目负责连接。
+**已安装入口唯一，不等于 Personal 目录的历史记录已全部删除。**
+Personal / Created by you 仍显示未安装的 1.2.3 私人包，以及旧的
+`Plugin_c037faee8bac8191af422bb13e5ae020`（1.1.1）。实测管理菜单只有编辑、下载和上传版本，
+没有删除云端包记录的选项。不得将“卸载成功”写成“云端记录已删除”。
 
-## 构建
-
-### 单入口迁移的当前状态
-
-2026-10-10 的单入口迁移尚未完成，当前网页仍保留两个入口。已准备
-`dist/remote-device-hub-plugin-direct-1.2.3.zip` 候选包：保留完整 Skill、资源和 OAuth DCR
-配置，将私人包的外部 App 绑定改为直接声明远程 MCP。包格式校验不能证明 ChatGPT web
-可以执行这种连接，必须实际验证 OAuth、Skill 加载、设备权限和原生批准卡后才能删除多余入口。
-
-自动审批在执行前拒绝了移除 `.app.json` 的测试更新，认为它可能暂时使私人 Skill 入口失去
-OAuth 连接；已请求明确批准。云端回读仍为私人版 1.2.2，现有 App 未删除。恢复包位于
-`.build/single-entry-restore-1.2.4.zip`；如果获准测试后失败，应恢复原 App 绑定并移除实验
-`mcp.json`，再回读核实。更新前仍需重新检查云端 release，不能覆盖并发修改。
-
-直接编辑现有自动 App 的 Skill 目前不可用；Platform 上传入口实测跳转到开发者身份验证页。
-官方的 MCP Skill 导入走提交草稿流程，尚未证明该路径支持本任务要求的私人网页预览。
-因此，不将完成身份验证描述为必然能完成单入口迁移，也不为此次私人测试提交公开审核。
-具体包哈希、检查和阻塞记录见
-[单入口迁移记录](../releases/evidence/plugin-single-entry-20261010.json)。
-
-### 构建当前包
-
-在仓库根目录准备 `requirements-dev.lock` 对应的 Python 环境，然后运行：
-
-```bash
-python3 -m pytest tests -q
-python3 scripts/release.py build plugin --profile connected
-python3 scripts/release.py check releases/plugin-connected-1.2.2.json
-```
-
-构建器只收集清单、引用的图标、已列入白名单的 Skill 文件和对应连接配置，回读 ZIP 后记录 SHA-256。
-构建不会上传插件、部署服务或公开发布。已记录版本的输入和产物不可变。
-
-`standalone` profile 使用公网 `https://mcp.xdistribute.site/mcp` 及 OAuth DCR 配置，
-不包含私人 App ID。它可用于支持原始 MCP 配置的客户端；不能把这个包的校验成功当成网页可用证据。
-公开提交使用独立的 `public/remote-device-hub/` 源目录，准备要求见
-[公开提交说明](publication/submission-1.2.0.md)。公共包不携带私人 `.app.json`。
+当前入口与状态见 [`channels.json`](../integrations/chatgpt/channels.json)。
+本轮移除及网页验证记录见
+[无 Skill 网页验收](../releases/evidence/plugin-without-skill-20261010.json)。
+上一轮 [完整 Skill 单入口尝试](../releases/evidence/plugin-single-entry-20261010.json)
+保留为历史记录；其直接 MCP 候选包与恢复包未上传，等待批准的方案已被本轮决定取代。
 
 ## 权限与操作确认的边界
 
-Skill 要求先选择设备、查询能力和允许的根目录；禁止通过 Shell 绕过禁写或文件访问限制。
-写入已有文件应先读取当前内容及 SHA-256，再在授权范围内修改并回读。
-不明确的目标、覆盖范围或不可逆影响需要先确认；已明确授权的同一操作不重复索取确认。
-
-这套 Skill 约束助手的操作流程。实际的设备归属、根目录、`allow_write`、`allow_shell` 和
-哈希冲突由 Hub 与 Agent 执行。它不是服务器强制校验的逐操作批准凭证。
-0.8.0 网页验收时，私人 App 设为 **Allow read-only tools / Read-only**：读取免确认，修改前询问。
-网页已实际显示 Write File 的 **Allow once / Deny** 批准卡；批准前文件未变化，批准后恰好写入一次。
-若把 App 权限改回 **Allow all tools**，原生批准提示的行为也会改变。
-单入口迁移检查时，网页设置已显示 **Allow all**；本轮尚未调整。重新验证操作确认前应设回
-**Read-only**，不能沿用历史设置状态作为当前证明。
+去掉 Skill 后，不再加载原来的设备选择、文件修改和进程管理流程说明。
+设备归属、根目录、`allow_write`、`allow_shell`、参数范围和哈希冲突检查仍由 Hub 与 Agent 执行。
+文件读写、命令和进程工具继续由 App 提供；实际能执行哪些操作取决于设备配置和 OAuth 权限。
 Shell 使用 Agent 的系统账户权限，文件根目录不能作为 Shell 沙箱。
+
+ChatGPT App 的 **Allow read-only tools** 设置独立于 Skill：读取免确认，修改前询问。
+本轮从 App 入口实际观察到 Write File 的 **Allow once / Deny** 批准卡，之后服务端记录一次成功
+写入，回读内容与哈希一致。工具批准不能代替服务端权限校验；若将权限改成 **Allow all tools**，
+原生提示行为会改变。不要依靠已移除 Skill 的对话流程作为强制批准机制。
+
+## 可选集成包的源码与构建
+
+`plugins/remote-device-hub/` 保留 1.2.2 的可选 Skill 源码，供后续恢复或其他客户端使用；
+它不是当前网页 App 的运行时依赖。`public/remote-device-hub/` 仍是未公开提交的独立草稿。
+不要把这两个带 Skill 的源目录重新上传为当前网页入口，除非用户要求恢复 Skill。
+
+```bash
+python3 -m pytest tests -q
+python3 scripts/release.py build plugin --profile standalone
+```
+
+构建器只收集白名单文件并记录 ZIP 哈希。构建不会安装插件、改动网页 App、部署 Hub 或公开发布。
+`standalone` 使用远程 MCP 和 OAuth DCR 配置，不包含私人 App ID；`connected` 使用
+[`connected-app.json`](../integrations/chatgpt/connected-app.json) 引用现有 App。
+两种可选包的构建成功均不能代替目标客户端验收。历史版本的输入和产物不可变。
+公开提交说明见 [公开提交资料](publication/submission-1.2.0.md)。
 
 ## 验收记录
 
 每次验收应区分：包保存及回读、网页加载 Skill、实际 MCP 调用、Agent 副作用检查。
 健康检查、OAuth 成功和本地测试不能替代网页验收；网络错误也不能证明操作未执行。
+
+### 去掉 Skill 后的私人 App
+
+- [云端回读](../releases/evidence/plugin-without-skill-1.2.3-readback.json)：1.2.3 私人包中没有 Skill 文件，原 App 绑定完全保留，包处于未安装状态。
+- [网页与独立审计](../releases/evidence/plugin-without-skill-20261010.json)：只通过 App 入口读取、观察原生写入批准卡、检查单次写入和回读，并在卸载 Skill 后的新会话再次读取。
+
+新会话的首次正常读取返回内部错误；同一时间窗口的代理日志有一次 HTTP 408、上游为 `-`。
+后续一次明确的新读取成功，内容与哈希一致。时间相关性不等于请求级归因，也不能据此宣称连接
+已完全稳定。越界读取返回 `agent_error`，没有泄露标记文件内容；错误未暴露具体拒绝原因。
+
+原生批准卡出现后，在自动化打开详情前已经消失，随后审计显示恰好一次成功写入。
+自动化没有执行批准点击，未观察到批准者身份；不能将之后采集的文件状态当作批准等待期间的证明。
+最终专用设备的成功操作为 3 次 `device_info`、3 次 `read_file` 和 1 次 `write_file`，
+另有一次失败读取。临时设备已撤销，Agent、合成文件和凭据已清理，审计保留。
 
 ### 1.2.2 与 Hub 0.8.0
 

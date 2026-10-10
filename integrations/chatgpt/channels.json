@@ -8,10 +8,22 @@
     "development_plugin_url": "https://chatgpt.com/plugins/plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
     "packaged_plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
     "packaged_plugin_url": "https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d",
-    "daily_entry": "packaged_plugin",
-    "reason": "Private connected 1.2.2 restores the deleted Web App binding and clarifies bounded reads. Public publication remains paused.",
-    "packaged_plugin_status": "installed",
-    "version": "1.2.2"
+    "daily_entry": "development_plugin",
+    "reason": "User chose the existing OAuth App as the sole installed Web entry without Skill. The extra private package is uninstalled and its four Skill files were removed. Public publication remains paused.",
+    "packaged_plugin_status": "uninstalled",
+    "version": "1.0.0",
+    "packaged_plugin_version": "1.2.3",
+    "packaged_plugin_release_id": "pluginrel_6ac9d919e4008191984e37f127cebc8f",
+    "skill_status": "disabled; removed from the extra private package",
+    "permission_mode": "ask_before_writes",
+    "personal_directory_cleanup": "Historical uninstalled packages remain visible; current UI exposes no cloud-package delete operation.",
+    "legacy_packaged_plugins": [
+      {
+        "plugin_id": "Plugin_c037faee8bac8191af422bb13e5ae020",
+        "version": "1.1.1",
+        "status": "uninstalled"
+      }
+    ]
   },
   "release_policy": {
     "components": [
