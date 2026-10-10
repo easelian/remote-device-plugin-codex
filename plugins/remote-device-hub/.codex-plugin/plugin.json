@@ -15,7 +15,7 @@
     "shortDescription": "安全远程管理 Linux 与 macOS 设备"
   },
   "name": "remote-device-hub",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
   "author": {
     "name": "Hongfei Shang",

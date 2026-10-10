@@ -27,6 +27,10 @@ current host; names below refer to MCP tool names, not a fixed host namespace.
 
 ## Authorize the intended change
 
+For file reads, omit `length` (default 32768 bytes) or use at most 65536 bytes
+per call. The 1 MiB file-size limit is not the read length. Read the file workflow
+below before editing or paginating.
+
 For a read-only request, use read-only tools. Do not expand it into a write or
 command execution merely to inspect the device. For a requested change, state
 the target device, relevant path or job, and meaningful side effects. A clear
