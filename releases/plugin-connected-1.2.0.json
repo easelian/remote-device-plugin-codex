@@ -38,7 +38,11 @@
   "identities": {},
   "checks": {
     "archive-readback": "passed",
-    "account-reuse": "passed"
+    "account-reuse": "passed",
+    "web-skill-permissions": "passed",
+    "confirmation-preview": "passed",
+    "confirmed-write-readback": "passed",
+    "test-fixture-cleanup": "passed"
   },
   "events": [
     {
@@ -60,6 +64,26 @@
         }
       ],
       "note": "Updated existing USER/PRIVATE plugin to 1.2.0; installed on Web with one connected App and one Skill. Public publication remains paused."
+    },
+    {
+      "stage": "uploaded",
+      "at": "2026-10-10T03:12:06+00:00",
+      "host": "ChatGPT Web private account",
+      "checks": {
+        "archive-readback": "passed",
+        "account-reuse": "passed",
+        "web-skill-permissions": "passed",
+        "confirmation-preview": "passed",
+        "confirmed-write-readback": "passed",
+        "test-fixture-cleanup": "passed"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/plugin-private-1.2.0-web-tests.json",
+          "sha256": "9fcde43ad3b97c213dfd21b98227802b6f339ad01933b4d4e0ff29a7ce010314"
+        }
+      ],
+      "note": "Private Web capability refusal and explicit-confirmation flow passed on a synthetic device. Preview needed correction to read_file length=128 after connection failure and oversized argument. No native approval card observed; path traversal remains unverified after timeout. Temporary device revoked, Agent stopped and credentials removed. Public publication remains paused."
     }
   ]
 }
