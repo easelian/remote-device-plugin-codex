@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "remote-device-hub"
 REQUIRED_CHECKS = {"archive-readback", "detail-icon", "composer-icon", "reload-persistence", "account-reuse"}
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+ICON_BYTE_LIMIT = 10_000
 SKILL_FILES = (
     "skills/remote-device-operations/SKILL.md",
     "skills/remote-device-operations/references/files.md",
@@ -88,7 +89,9 @@ def validate_mcp(data: dict) -> None:
 
 
 def validate_png(key: str, data: bytes) -> None:
-    if len(data) > 5 * 1024 * 1024 or len(data) < 24 or data[:8] != PNG_SIGNATURE:
+    if len(data) >= ICON_BYTE_LIMIT:
+        raise ValueError(f"PNG icon must be below {ICON_BYTE_LIMIT} bytes: {key}")
+    if len(data) < 24 or data[:8] != PNG_SIGNATURE:
         raise ValueError(f"Invalid PNG icon: {key}")
     width, height = struct.unpack(">II", data[16:24])
     if width != height or not 48 <= width <= 4096:

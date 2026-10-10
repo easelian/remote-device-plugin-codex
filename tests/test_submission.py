@@ -15,6 +15,19 @@ def files():
     return submission.source_files(submission.SOURCE)
 
 
+@pytest.mark.parametrize("size", [9_999, 10_000, 10_001])
+def test_icon_byte_limit(size):
+    source = files()
+    manifest = json.loads(source["plugin.json"])
+    name = submission.local_path(manifest["extensions"]["com.openai"]["interface"]["logo"])
+    source[name] += b"\0" * (size - len(source[name]))
+    if size < 10_000:
+        submission.validate(source)
+    else:
+        with pytest.raises(ValueError, match="below 10000 bytes"):
+            submission.validate(source)
+
+
 @pytest.mark.parametrize("field,value", [("apps", "./.app.json"), ("hooks", {}), ("clientSecret", "do-not-package")])
 def test_rejects_private_bindings_and_secrets(field, value):
     source = files()

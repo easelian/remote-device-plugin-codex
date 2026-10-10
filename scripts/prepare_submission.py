@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "public" / "remote-device-hub"
 URL_FIELDS = ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
+ICON_BYTE_LIMIT = 10_000
 
 
 def https_url(value):
@@ -92,7 +93,9 @@ def validate(files):
         name = local_path(ui[key])
         allowed.add(name)
         data = files[name]
-        if len(data) < 24 or len(data) > 5 * 1024 * 1024 or data[:8] != b"\x89PNG\r\n\x1a\n":
+        if len(data) >= ICON_BYTE_LIMIT:
+            raise ValueError(f"PNG icon must be below {ICON_BYTE_LIMIT} bytes: {name}")
+        if len(data) < 24 or data[:8] != b"\x89PNG\r\n\x1a\n":
             raise ValueError(f"Invalid PNG: {name}")
         width, height = struct.unpack(">II", data[16:24])
         minimum = 256 if key.startswith("logo") else 48

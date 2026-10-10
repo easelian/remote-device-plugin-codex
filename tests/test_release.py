@@ -101,8 +101,12 @@ def test_archive_rejects_duplicate_normalized_entries(tmp_path):
         release._archive_contents(archive)
 
 
-def test_cli_check_uses_release_record_path():
-    root = Path(__file__).parents[1]
+def test_cli_check_uses_release_record_path(tmp_path):
+    original = Path(__file__).parents[1]
+    root = tmp_path
+    for directory in ("plugins", "integrations", "scripts"):
+        shutil.copytree(original / directory, root / directory)
+    (root / ".build").mkdir()
     record = root / "releases" / "plugin-cli-test-1.2.2.json"
     artifact = root / "dist" / "remote-device-hub-plugin-standalone-1.2.2.zip"
     artifact_sha = artifact.with_suffix(artifact.suffix + ".sha256")
@@ -119,6 +123,17 @@ def test_cli_check_uses_release_record_path():
         record.unlink(missing_ok=True)
         if not existed[0]: artifact.unlink(missing_ok=True)
         if not existed[1]: artifact_sha.unlink(missing_ok=True)
+
+
+@pytest.mark.parametrize("size", [9_999, 10_000, 10_001])
+def test_icon_byte_limit(size):
+    icon = next(iter(release.render_icons().values()))
+    data = icon + b"\0" * (size - len(icon))
+    if size < 10_000:
+        release.validate_png("composerIcon", data)
+    else:
+        with pytest.raises(ValueError, match="below 10000 bytes"):
+            release.validate_png("composerIcon", data)
 
 
 def test_record_requires_checks_and_evidence(tmp_path, monkeypatch):
