@@ -24,6 +24,26 @@ OAuth App，因此 App ID 已更新；承载 Skill 的私人包 ID 保持不变�
 
 ## 构建
 
+### 单入口迁移的当前状态
+
+2026-10-10 的单入口迁移尚未完成，当前网页仍保留两个入口。已准备
+`dist/remote-device-hub-plugin-direct-1.2.3.zip` 候选包：保留完整 Skill、资源和 OAuth DCR
+配置，将私人包的外部 App 绑定改为直接声明远程 MCP。包格式校验不能证明 ChatGPT web
+可以执行这种连接，必须实际验证 OAuth、Skill 加载、设备权限和原生批准卡后才能删除多余入口。
+
+自动审批在执行前拒绝了移除 `.app.json` 的测试更新，认为它可能暂时使私人 Skill 入口失去
+OAuth 连接；已请求明确批准。云端回读仍为私人版 1.2.2，现有 App 未删除。恢复包位于
+`.build/single-entry-restore-1.2.4.zip`；如果获准测试后失败，应恢复原 App 绑定并移除实验
+`mcp.json`，再回读核实。更新前仍需重新检查云端 release，不能覆盖并发修改。
+
+直接编辑现有自动 App 的 Skill 目前不可用；Platform 上传入口实测跳转到开发者身份验证页。
+官方的 MCP Skill 导入走提交草稿流程，尚未证明该路径支持本任务要求的私人网页预览。
+因此，不将完成身份验证描述为必然能完成单入口迁移，也不为此次私人测试提交公开审核。
+具体包哈希、检查和阻塞记录见
+[单入口迁移记录](../releases/evidence/plugin-single-entry-20261010.json)。
+
+### 构建当前包
+
 在仓库根目录准备 `requirements-dev.lock` 对应的 Python 环境，然后运行：
 
 ```bash
@@ -48,9 +68,11 @@ Skill 要求先选择设备、查询能力和允许的根目录；禁止通过 S
 
 这套 Skill 约束助手的操作流程。实际的设备归属、根目录、`allow_write`、`allow_shell` 和
 哈希冲突由 Hub 与 Agent 执行。它不是服务器强制校验的逐操作批准凭证。
-当前私人 App 已设为 **Allow read-only tools / Read-only**：读取免确认，修改前询问。
+0.8.0 网页验收时，私人 App 设为 **Allow read-only tools / Read-only**：读取免确认，修改前询问。
 网页已实际显示 Write File 的 **Allow once / Deny** 批准卡；批准前文件未变化，批准后恰好写入一次。
 若把 App 权限改回 **Allow all tools**，原生批准提示的行为也会改变。
+单入口迁移检查时，网页设置已显示 **Allow all**；本轮尚未调整。重新验证操作确认前应设回
+**Read-only**，不能沿用历史设置状态作为当前证明。
 Shell 使用 Agent 的系统账户权限，文件根目录不能作为 Shell 沙箱。
 
 ## 验收记录
