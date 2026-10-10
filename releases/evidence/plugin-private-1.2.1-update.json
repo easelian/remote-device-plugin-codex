@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-10",
+  "plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
+  "version": "1.2.1",
+  "release_id": "pluginrel_6ac9b03693c88191ad42e198c9b10031",
+  "scope": "USER",
+  "visibility": "PRIVATE",
+  "cloud_readback": "Updated manifests and Skill files were read back successfully.",
+  "host_status": "Superseded by 1.2.2 after user deleted the underlying Web App. Installation with the old unresolved App dependency did not complete.",
+  "replacement": "plugin-connected-1.2.2.json",
+  "public_submission": false
+}

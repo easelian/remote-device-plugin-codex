@@ -3,15 +3,15 @@
   "public_publication": "paused",
   "private": {
     "mcp_url": "https://mcp.xdistribute.site/mcp",
-    "app_id": "asdk_app_6ac9a56160088191b8aca17b9705392a",
-    "development_plugin_id": "plugin_asdk_app_6ac9a56160088191b8aca17b9705392a",
-    "development_plugin_url": "https://chatgpt.com/plugins/plugin_asdk_app_6ac9a56160088191b8aca17b9705392a",
+    "app_id": "asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
+    "development_plugin_id": "plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
+    "development_plugin_url": "https://chatgpt.com/plugins/plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
     "packaged_plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
     "packaged_plugin_url": "https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d",
     "daily_entry": "packaged_plugin",
-    "reason": "Private connected 1.2.0 includes the operations Skill and reuses the authorized Web App. See current release evidence for test limits.",
+    "reason": "Private connected 1.2.2 restores the deleted Web App binding and clarifies bounded reads. Public publication remains paused.",
     "packaged_plugin_status": "installed",
-    "version": "1.2.0"
+    "version": "1.2.2"
   },
   "release_policy": {
     "components": [

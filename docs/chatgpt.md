@@ -1,26 +1,26 @@
 # ChatGPT 集成与私人网页测试
 
-当前私人插件版本为 **1.2.0**。在 ChatGPT 网页使用
+当前私人插件版本为 **1.2.2**。在 ChatGPT 网页使用
 [Remote Device Hub](https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d)，
-插件详情应显示 `Version 1.2.0`、一个 Connected App 和 `remote-device-operations` Skill。
+插件详情应显示 `Version 1.2.2`、一个 Connected App 和 `remote-device-operations` Skill。
 点击 **Try in chat** 创建新 Work 会话，确保加载当前 Skill。公开发布保持暂停。
 
 ## 连接和版本
 
 私人包使用 `connected` profile，复用已完成 OAuth 授权的
-`asdk_app_6ac9a56160088191b8aca17b9705392a`，由
+`asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3`，由
 [`connected-app.json`](../integrations/chatgpt/connected-app.json) 生成 `.app.json`。
 账户中的插件 ID 保持 `plugins_6ac993be7294819188f638f4e00f2b5d`，可见性为 `USER / PRIVATE`。
 此次升级删除该包原有的 `mcp.json` 和 `.mcp.json`，改为引用现有 App，并明确不要求本地执行器。
 自动生成的 App 包不能通过当前 Plugin Creator 编辑 Skill，因此操作说明由这个已有的私人包承载。
 
-Hub 服务与插件分别版本化。本轮插件升级未部署 Hub，线上仍为 0.7.0；本地服务器代码中的
-MCP 权限说明和计费输出调整尚未上线。插件版本以详情页和云端 release 为准，
+Hub 服务与插件分别版本化。本轮已部署 Hub 0.8.0，使用 SDK 2.3.0 原生支持 ChatGPT 的
+MCP `2026-07-28` 请求，并保留无状态传输、权限和读取长度说明。插件版本以详情页和云端 release 为准，
 `device_info` 返回的是设备环境，不能用它推断插件版本。旧会话也可能仍加载旧 Skill。
 
-当前入口与版本记录在 [`channels.json`](../integrations/chatgpt/channels.json)。目录中两个旧条目
-不代表它们已删除：旧独立包 `Plugin_c037faee8bac8191af422bb13e5ae020` 已停用，
-自动 App 条目负责当前连接；日常测试应选择上面的 **1.2.0 私人包**。
+当前入口与版本记录在 [`channels.json`](../integrations/chatgpt/channels.json)。本轮恢复了被删除的
+OAuth App，因此 App ID 已更新；承载 Skill 的私人包 ID 保持不变。1.2.1 保存读取规则修复，
+1.2.2 进一步绑定恢复后的 App。日常测试选择上面的 **1.2.2 私人包**；自动 App 条目负责连接。
 
 ## 构建
 
@@ -29,7 +29,7 @@ MCP 权限说明和计费输出调整尚未上线。插件版本以详情页和�
 ```bash
 python3 -m pytest tests -q
 python3 scripts/release.py build plugin --profile connected
-python3 scripts/release.py check releases/plugin-connected-1.2.0.json
+python3 scripts/release.py check releases/plugin-connected-1.2.2.json
 ```
 
 构建器只收集清单、引用的图标、已列入白名单的 Skill 文件和对应连接配置，回读 ZIP 后记录 SHA-256。
@@ -48,13 +48,36 @@ Skill 要求先选择设备、查询能力和允许的根目录；禁止通过 S
 
 这套 Skill 约束助手的操作流程。实际的设备归属、根目录、`allow_write`、`allow_shell` 和
 哈希冲突由 Hub 与 Agent 执行。它不是服务器强制校验的逐操作批准凭证。
-ChatGPT 是否显示原生批准卡片还取决于该账户的 App 工具权限设置，不能保证每次调用都弹窗。
+当前私人 App 已设为 **Allow read-only tools / Read-only**：读取免确认，修改前询问。
+网页已实际显示 Write File 的 **Allow once / Deny** 批准卡；批准前文件未变化，批准后恰好写入一次。
+若把 App 权限改回 **Allow all tools**，原生批准提示的行为也会改变。
 Shell 使用 Agent 的系统账户权限，文件根目录不能作为 Shell 沙箱。
 
 ## 验收记录
 
 每次验收应区分：包保存及回读、网页加载 Skill、实际 MCP 调用、Agent 副作用检查。
 健康检查、OAuth 成功和本地测试不能替代网页验收；网络错误也不能证明操作未执行。
+
+### 1.2.2 与 Hub 0.8.0
+
+- [私有包云端回读](../releases/evidence/plugin-private-1.2.2-readback.json)：包 ID 保持不变，恢复已删除的 App 绑定并确认安装成功。
+- [新版网页验收](../releases/evidence/plugin-private-1.2.2-hub-0.8.0-web-tests.json)：包含对话、原生批准参数、批准前后的文件检查、审计及清理结果。
+- [此前 0.7.1 网页记录](../releases/evidence/plugin-private-1.2.2-web-tests.json)：业务操作通过，但当时仍有协议版本导致的 HTTP 400。
+- [1.2.2 发布记录](../releases/plugin-connected-1.2.2.json)：保存私人上传、回读和验收证据。
+
+新版使用专用设备 `rdh-web-080-20261010` 和合成文件。未向网页提供 `length` 数值，
+读取直接成功；禁写和禁 Shell 时拒绝绕过，仅授权预览时没有修改文件。
+对话确认后，写入仍等待原生批准。核对目标、内容及 SHA-256 后选择 **Allow once**，
+服务端审计确认恰好一次写入，回读内容和哈希一致。
+
+之后连续三次只读调用均成功，未额外重试。整个验收窗口约 330 秒，代理记录 57 次 HTTP 200、
+1 次未单独归因的 HTTP 401，未出现 HTTP 400 或 5xx。临时设备已撤销，Agent、合成文件和凭据
+已清理；专用网页测试标签保留。该有限窗口不能代表长期网络可用性。
+
+服务端本地全套测试为 539 项通过、1 项因平台限制跳过；覆盖新旧 MCP 协议、跨用户拒绝、
+令牌撤销、根目录和读取长度边界。网页验收使用一个账户，不能替代全部公开发布用例。
+
+### 1.2.0 历史记录
 
 - [1.2.0 云端包回读](../releases/evidence/plugin-private-1.2.0-readback.json)：确认版本、私人可见性、App 绑定及 Skill 内容。
 - [1.2.0 网页权限与确认测试](../releases/evidence/plugin-private-1.2.0-web-tests.json)：包含实际对话、独立文件检查、审计记录和临时设备清理结果。
@@ -76,7 +99,7 @@ Shell 使用 Agent 的系统账户权限，文件根目录不能作为 Shell 沙
 `read_file` 的文件大小上限为 1 MiB，但单次 `length` 上限是 65536 字节，默认 32768；
 读取小文件可省略 `length`，读取较长文件应分段。1.2.0 包未因本轮测试再作修改。
 
-当前账户下未观察到原生批准卡片；本次验证的是对话中的预览和明确确认。
+上述 1.2.0 验收时未观察到原生批准卡片；当时验证的是对话中的预览和明确确认。
 另一次根目录越界读取测试超时且没有对应审计，结果仍未验证。本轮未测试跨用户隔离，
 也未执行全部公开提交用例，不能据此认定已满足公开发布要求。
 

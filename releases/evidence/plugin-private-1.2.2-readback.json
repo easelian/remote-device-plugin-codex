@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-10",
+  "plugin": {
+    "plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
+    "name": "remote-device-hub",
+    "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+    "version": "1.2.2",
+    "current_release_id": "pluginrel_6ac9b297564081918ee2f3f5c8098623",
+    "scope": "USER",
+    "discoverability": "PRIVATE"
+  },
+  "archive": "dist/remote-device-hub-plugin-connected-1.2.2.zip",
+  "archive_sha256": "6716c0988adab7d46bfdb6f35344c381a2d583bc40a2b79ae948cc54b0dde89b",
+  "readback": "Root manifest, App binding and all four Skill files match the built archive; compatibility manifest differs only by backend-added skills path.",
+  "new_app_id": "asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3",
+  "previous_app_id": "asdk_app_6ac9a56160088191b8aca17b9705392a",
+  "reason_for_rebinding": "User reported deleting the Web plugin during this task; its old App dependency became unresolved. Recreated private OAuth App and preserved editable package identity.",
+  "browser_installation": {
+    "version": "1.2.2",
+    "app_count": 1,
+    "app_status": "Connected",
+    "skill_count": 1,
+    "entry": "Try in chat"
+  },
+  "tests": {
+    "command": "../remote-device-server/.venv/bin/python -m pytest -q tests",
+    "result": "20 passed, 1 warning in 0.18s",
+    "warning": "Intentional duplicate ZIP rejection test"
+  },
+  "public_submission": false
+}

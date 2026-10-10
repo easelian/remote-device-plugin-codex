@@ -3,7 +3,7 @@
 本仓库维护 Remote Device Hub 的可选集成层：canonical standalone MCP plugin、可选的
 connected ChatGPT adapter、品牌资源和公开提交资料。Hub 服务端和设备 Agent 位于独立仓库。
 
-当前集成版本线为 `1.2.0`。默认构建是 standalone，不需要 App ID；connected profile 才读取
+当前集成版本线为 `1.2.2`。默认构建是 standalone，不需要 App ID；connected profile 才读取
 [`integrations/chatgpt/connected-app.json`](integrations/chatgpt/connected-app.json) 中的既有
 身份。ChatGPT 网页自测使用 connected profile，复用已授权 App；standalone 的原始 MCP 包不能据此声称已通过网页验收。该配置不是服务端或 Agent 的运行时依赖。
 

@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "component": "plugin",
+  "channel": "connected",
+  "version": "1.2.2",
+  "created_at": "2026-10-10T03:35:41+00:00",
+  "stage": "uploaded",
+  "source": {
+    "git_commit": "b3528c8eeffbf41d3bbd337c6c44a79ba77f9b32",
+    "git_tree": "e86b836f3c7718b6ac53c0fc97f184a43e785bf4",
+    "working_tree": "clean",
+    "sha256": "526e49bf126039692840ef7310e2f6c1f8de992a656bccf13913277cf793bf0a",
+    "files": {
+      "integrations/chatgpt/connected-app.json": "9b202aa1fb21406faaf18d8130f1fce57853371b092c238fc798f29b3fdf0060",
+      "plugins/remote-device-hub/.codex-plugin/plugin.json": "6ba3d457da629292ebf8623ab5e2e9c1e5b034c6cdfe6f1a104cb87ea1348b8e",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-dark-256.png": "07c200a89776c2bbb8ed1553f61bbbac8e6bc38d44491496b5536425b0c4c5ab",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-dark-512.png": "d6e5e7098c0700fb04fb239820266ad2cf93adcd02840548336102d5d1725126",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-light-256.png": "7624daf9d256acda2af166f6927f7bd472836e97d87aea74c020c2c74c996bc7",
+      "plugins/remote-device-hub/assets/remote-device-hub-theme-light-512.png": "0f8bad972be97f3364b27248cac5e815c45e9dd3f6248382237160f688d675bc",
+      "plugins/remote-device-hub/plugin.json": "d7d4960c10dbbd70c08c03b1b1cd42182228e3472b10d85d5139a2e4cb90c0eb",
+      "plugins/remote-device-hub/skills/remote-device-operations/SKILL.md": "7a58151a7805acec9d668b89e602486be4af3e0b45bffa4bdff240ae0fafb907",
+      "plugins/remote-device-hub/skills/remote-device-operations/references/files.md": "0896e188aab40ff5adab4f471c85e2539f9d2fbee60b0a7d71a7b94423890849",
+      "plugins/remote-device-hub/skills/remote-device-operations/references/processes.md": "6aa287c94009888b6ba5ed7bd708c36167932d33a217ceaa707241343a814a26",
+      "plugins/remote-device-hub/skills/remote-device-operations/references/recovery.md": "80c0eb66035fa8f24b5ece676ada6201c4058e4fef12dcb640ec6c2fd3b9e224"
+    }
+  },
+  "build": {
+    "python": "3.12.3",
+    "builder": "scripts/release.py",
+    "builder_sha256": "c4caddd1272c665b04ac99c2989f345175860fd069bf4c9286087b87d733a884",
+    "profile": "connected"
+  },
+  "artifact": {
+    "path": "dist/remote-device-hub-plugin-connected-1.2.2.zip",
+    "sha256": "6716c0988adab7d46bfdb6f35344c381a2d583bc40a2b79ae948cc54b0dde89b",
+    "bytes": 430187
+  },
+  "identities": {},
+  "checks": {
+    "archive-readback": "passed",
+    "account-reuse": "passed",
+    "web-connection": "passed",
+    "read-limits": "passed",
+    "permission-boundaries": "passed",
+    "native-write-approval": "passed"
+  },
+  "events": [
+    {
+      "stage": "prepared",
+      "at": "2026-10-10T03:35:41+00:00"
+    },
+    {
+      "stage": "uploaded",
+      "at": "2026-10-10T03:40:58+00:00",
+      "host": "ChatGPT Web private account",
+      "checks": {
+        "archive-readback": "passed",
+        "account-reuse": "passed"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/plugin-private-1.2.2-readback.json",
+          "sha256": "866e48bec7ce1997090fbf3af2459e0f69863c25b1ea3d38583364e84b2266e4"
+        }
+      ],
+      "note": "Restored deleted OAuth App and rebound existing USER/PRIVATE package; installed 1.2.2 with one connected App and operations Skill. Public publication paused."
+    },
+    {
+      "stage": "uploaded",
+      "at": "2026-10-10T04:14:09+00:00",
+      "host": "ChatGPT Web private account",
+      "checks": {
+        "archive-readback": "passed",
+        "account-reuse": "passed",
+        "web-connection": "passed",
+        "read-limits": "passed",
+        "permission-boundaries": "passed",
+        "native-write-approval": "passed"
+      },
+      "evidence": [
+        {
+          "path": "releases/evidence/plugin-private-1.2.2-web-tests.json",
+          "sha256": "51810c3305656a86a561a46aec5aaa6b90fbc2643daf822d7309f2be4b9f847c"
+        },
+        {
+          "path": "releases/evidence/plugin-private-1.2.2-hub-0.8.0-web-tests.json",
+          "sha256": "c899437c573b0fd43e9a278e9ab0b70f35eefaf9f1c8962eb476845b85496c88"
+        }
+      ],
+      "note": "Private functional acceptance passed with Hub 0.8.0. Read-only App policy shows native Write File approval; exactly one write after Allow once. Public submission paused; icon/reload visual checks are outside this acceptance."
+    }
+  ]
+}
