@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and record the standalone Remote Device Hub plugin only."""
+"""Build and record standalone or connected Remote Device Hub plugins."""
 from __future__ import annotations
 
 import argparse
@@ -19,6 +19,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "remote-device-hub"
 REQUIRED_CHECKS = {"archive-readback", "detail-icon", "composer-icon", "reload-persistence", "account-reuse"}
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+SKILL_FILES = (
+    "skills/remote-device-operations/SKILL.md",
+    "skills/remote-device-operations/references/files.md",
+    "skills/remote-device-operations/references/processes.md",
+    "skills/remote-device-operations/references/recovery.md",
+)
 
 
 def digest(data: bytes) -> str:
@@ -109,7 +115,7 @@ def _manifest(source: Path) -> tuple[dict, dict | None]:
         raise ValueError("Root and compatibility manifests differ")
     if overlay is not None and "apps" in overlay:
         raise ValueError("Canonical compatibility manifest must not bind an App identity")
-    if any(key in manifest["extensions"]["com.openai"] for key in ("hooks", "skills", "onboardingSkill")) or (source / "skills").exists():
+    if any(key in manifest["extensions"]["com.openai"] for key in ("hooks", "skills", "onboardingSkill")):
         raise ValueError("Only the explicit plugin allowlist is supported")
     return manifest, overlay
 
@@ -119,6 +125,14 @@ def plugin_files(source: Path = PLUGIN, profile: str = "standalone") -> tuple[di
     manifest, overlay = _manifest(source)
     interface = manifest["extensions"]["com.openai"]["interface"]
     files: dict[str, bytes] = {}
+    if (source / "skills").exists():
+        for name in SKILL_FILES:
+            relative, data = contained_file(source, "./" + name)
+            data.decode("utf-8")
+            files[relative] = data
+        skill = files[SKILL_FILES[0]].decode("utf-8")
+        if not skill.startswith("---\nname: remote-device-operations\ndescription: "):
+            raise ValueError("Invalid operations skill frontmatter")
     for key in ("composerIcon", "composerIconDark", "logo", "logoDark"):
         if key in interface:
             relative, data = contained_file(source, interface[key])
@@ -138,9 +152,11 @@ def plugin_files(source: Path = PLUGIN, profile: str = "standalone") -> tuple[di
             raise ValueError("Connected profile requires verified existing App IDs")
         files[".app.json"] = data
         manifest["extensions"]["com.openai"]["apps"] = "./.app.json"
+        manifest["extensions"]["com.openai"]["requires_local_executor"] = False
         if overlay is not None:
             overlay = dict(overlay)
             overlay["apps"] = "./.app.json"
+            overlay["requires_local_executor"] = False
     else:
         raise ValueError("Unknown plugin profile")
     files["plugin.json"] = canonical_json(manifest)

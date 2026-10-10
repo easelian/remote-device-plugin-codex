@@ -1,62 +1,67 @@
-# ChatGPT 集成
+# ChatGPT 集成与私人网页测试
 
-本仓库维护 MCP plugin 清单、主题资源和可选的既有 App 适配配置。它不创建 App，也不构建或部署 Server/Agent。集成版本为 `1.1.1`。2026-10-01 用户随后授权更新现有私有插件，connected profile 已上传并回读为 `1.1.1`；standalone profile 仍用于独立 HTTPS 下载分发。
+当前私人插件版本为 **1.2.0**。在 ChatGPT 网页使用
+[Remote Device Hub](https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d)，
+插件详情应显示 `Version 1.2.0`、一个 Connected App 和 `remote-device-operations` Skill。
+点击 **Try in chat** 创建新 Work 会话，确保加载当前 Skill。公开发布保持暂停。
 
-## Standalone profile
+## 连接和版本
 
-默认 profile 使用 `plugins/remote-device-hub/mcp.json` 中配置的 HTTPS Streamable HTTP MCP endpoint，当前配置值为 `https://mcp.xdistribute.site/mcp`。该值是包配置，不是本次线上可达性证明。
+私人包使用 `connected` profile，复用已完成 OAuth 授权的
+`asdk_app_6ac9a56160088191b8aca17b9705392a`，由
+[`connected-app.json`](../integrations/chatgpt/connected-app.json) 生成 `.app.json`。
+账户中的插件 ID 保持 `plugins_6ac993be7294819188f638f4e00f2b5d`，可见性为 `USER / PRIVATE`。
+此次升级删除该包原有的 `mcp.json` 和 `.mcp.json`，改为引用现有 App，并明确不要求本地执行器。
+自动生成的 App 包不能通过当前 Plugin Creator 编辑 Skill，因此操作说明由这个已有的私人包承载。
+
+Hub 服务与插件分别版本化。本轮插件升级未部署 Hub，线上仍为 0.7.0；本地服务器代码中的
+MCP 权限说明和计费输出调整尚未上线。插件版本以详情页和云端 release 为准，
+`device_info` 返回的是设备环境，不能用它推断插件版本。旧会话也可能仍加载旧 Skill。
+
+当前入口与版本记录在 [`channels.json`](../integrations/chatgpt/channels.json)。目录中两个旧条目
+不代表它们已删除：旧独立包 `Plugin_c037faee8bac8191af422bb13e5ae020` 已停用，
+自动 App 条目负责当前连接；日常测试应选择上面的 **1.2.0 私人包**。
+
+## 构建
+
+在仓库根目录准备 `requirements-dev.lock` 对应的 Python 环境，然后运行：
 
 ```bash
-.venv/bin/python scripts/release.py build plugin --profile standalone
-.venv/bin/python scripts/release.py check releases/plugin-standalone-1.1.1.json
+python3 -m pytest tests -q
+python3 scripts/release.py build plugin --profile connected
+python3 scripts/release.py check releases/plugin-connected-1.2.0.json
 ```
 
-包内只有清单、MCP 配置和清单引用的图标。它不绑定 App ID，也不包含 Server 源码、设备运行时、部署配置或 token。
+构建器只收集清单、引用的图标、已列入白名单的 Skill 文件和对应连接配置，回读 ZIP 后记录 SHA-256。
+构建不会上传插件、部署服务或公开发布。已记录版本的输入和产物不可变。
 
-## Connected profile
+`standalone` profile 使用公网 `https://mcp.xdistribute.site/mcp` 及 OAuth DCR 配置，
+不包含私人 App ID。它可用于支持原始 MCP 配置的客户端；不能把这个包的校验成功当成网页可用证据。
+公开提交使用独立的 `public/remote-device-hub/` 源目录，准备要求见
+[公开提交说明](publication/submission-1.2.0.md)。公共包不携带私人 `.app.json`。
 
-只有显式选择时，构建器才读取 `integrations/chatgpt/connected-app.json`，并生成引用既有 App 身份的 `.app.json`：
+## 权限与操作确认的边界
 
-```bash
-.venv/bin/python scripts/release.py build plugin --profile connected
-.venv/bin/python scripts/release.py check releases/plugin-connected-1.1.1.json
-```
+Skill 要求先选择设备、查询能力和允许的根目录；禁止通过 Shell 绕过禁写或文件访问限制。
+写入已有文件应先读取当前内容及 SHA-256，再在授权范围内修改并回读。
+不明确的目标、覆盖范围或不可逆影响需要先确认；已明确授权的同一操作不重复索取确认。
 
-这是已有连接的适配与验证产物。它不能作为当前公共 Plugin 提交流程的 standalone 包替代物。`channels.json` 保存分仓前的入口元数据与暂停状态，不能据此推断客户端仍有该入口或已经更新。
+这套 Skill 约束助手的操作流程。实际的设备归属、根目录、`allow_write`、`allow_shell` 和
+哈希冲突由 Hub 与 Agent 执行。它不是服务器强制校验的逐操作批准凭证。
+ChatGPT 是否显示原生批准卡片还取决于该账户的 App 工具权限设置，不能保证每次调用都弹窗。
+Shell 使用 Agent 的系统账户权限，文件根目录不能作为 Shell 沙箱。
 
-## 服务契约与客户端验收
+## 验收记录
 
-Server 提供 `/mcp`、OAuth 授权码、PKCE S256、动态客户端注册和 `devices:control` scope。实际 URL、OAuth metadata、callback 和账号策略由 Server 的部署配置决定。
+每次验收应区分：包保存及回读、网页加载 Skill、实际 MCP 调用、Agent 副作用检查。
+健康检查、OAuth 成功和本地测试不能替代网页验收；网络错误也不能证明操作未执行。
 
-一次集成验收应记录实际包版本和 SHA、服务器版本、客户端授权结果，再从客户端调用 `list_devices`、`device_info`，以及隔离测试设备上的文件和进程操作。HTTP 健康检查或 ZIP 校验不能替代客户端调用。
+- [1.2.0 云端包回读](../releases/evidence/plugin-private-1.2.0-readback.json)：确认版本、私人可见性、App 绑定及 Skill 内容。
+- [此前网页连接测试](../releases/evidence/plugin-web-connection-20261010.json)：使用自动 App 包，第一次内部错误，第二次只读查询成功。
+- [1.2.0 发布记录](../releases/plugin-connected-1.2.0.json)：收录当前验收证据与检查状态。
 
-设备安装使用独立 Agent 发布流程提供的 TGZ；Integrations 不提供 Agent 构建命令。Server、Agent 和集成版本可以分别演进，发生协议或 endpoint 改动时需要显式兼容验证。
+测试仅使用专用设备和合成文件；结束时撤销临时设备并停止 Agent。连接失败、超时及未覆盖场景
+必须保留在证据中，不将一次通过描述为稳定性或所有客户端兼容性证明。
 
-Hub `0.5.0` 的工具表增加 8 个文件和搜索接口；这些接口要求设备 Agent 在 hello 中明确声明相应 capabilities。Node Agent `0.6.0` 提供文件元数据、多文件 UTF-8 预览、同 root 文件移动、大文件 chunk/tail，以及后台搜索、分页、取消和任务列表。Python Agent `0.4.0` 继续提供 core 工具，调用扩展接口会明确报不支持。工具来自 Server 的 MCP discovery，此次功能扩展不改变 Plugin `1.1.1` 清单或 App 身份。
-
-新版本客户端验收应另外覆盖：多文件读取中单文件失败、大日志尾部读取、文件移动目标冲突、搜索分页/取消，以及网络短暂断开后使用同一 job ID 继续读取进程输出。应记录实际 Server/Agent 版本与 artifact SHA；本地运行证据不能替代真实客户端验收。
-
-初始发布范围为服务、Agent、公开下载包和自托管 npm TGZ；用户随后明确授权 private
-plugin 云端更新。ChatGPT 商店提交仍不在本次范围内。`integrations/chatgpt/channels.json`
-保留分仓前的暂停状态与入口基线，`docs/history/` 保留历史云端实验结果。当前版本的实际发布结果以
-`releases/` 记录和 [2026-10-01 发布验证记录](../../remote-device-server/docs/release-validation-20261001.md)
-为准；本地构建不表示任何云端动作已经完成。
-
-## 当前私有插件更新
-
-[Remote Device Hub](https://chatgpt.com/plugins/Plugin_c037faee8bac8191af422bb13e5ae020)
-已由 `1.0.0` 更新为 `1.1.1`，保持 `USER / PRIVATE` 以及原插件 ID 和 App ID。
-当前 release 为 `pluginrel_6abe013a1b6c81918c3f0665692fad99`。
-
-云端 root/compatibility 清单均已回读；除版本号外，其配置语义与旧包相同。四个图标和
-`.app.json` 的字节与旧包及 connected ZIP 一致，提示词和 App 绑定保持不变。更新后
-现有 App 连接仍能列出 158 设备 online。
-
-记录见 [connected 1.1.1](../releases/plugin-connected-1.1.1.json)、
-[云端更新](../releases/evidence/plugin-private-update-1.1.1-20261001.json) 和
-[完整包回读](../releases/evidence/plugin-private-archive-readback-1.1.1-20261001.json)。
-云端版本已确认；当前宿主 UI 选中的插件 release、图标显示和会话重载仍需单独验证。
-
-本次 [页面核对](../releases/evidence/plugin-host-ui-1.1.1-20261001.json) 的浏览器导航请求
-超时，目标页仍为 `about:blank`，因此保持宿主 UI 检查为 `unverified`；该观察不改变
-已经完成的云端保存和完整包回读结果。
+1.1.1 的旧更新和图标验证边界保留在 `releases/plugin-connected-1.1.1.json` 与
+`releases/evidence/plugin-*-1.1.1-20261001.json`；这些记录描述当时状态，不代表当前入口。

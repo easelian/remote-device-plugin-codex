@@ -1,0 +1,24 @@
+{
+  "version": "1.2.0",
+  "plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
+  "app_id": "asdk_app_6ac9a56160088191b8aca17b9705392a",
+  "release_id": "pluginrel_6ac9a835c93881918bac6c8faf722515",
+  "scope": "USER",
+  "discoverability": "PRIVATE",
+  "sha256": "b750c6229fda02662c56a147e1572f869692f1000f7a2a508a63b72b81fb8766",
+  "readback": {
+    "plugin.json": "byte match",
+    ".codex-plugin/plugin.json": "semantic match; backend adds skills discovery path and normalizes JSON",
+    ".app.json": "byte match",
+    "skills/remote-device-operations/SKILL.md": "byte match",
+    "skills/remote-device-operations/references/files.md": "byte match",
+    "skills/remote-device-operations/references/processes.md": "byte match",
+    "skills/remote-device-operations/references/recovery.md": "byte match"
+  },
+  "removed_files": [
+    "mcp.json",
+    ".mcp.json"
+  ],
+  "public_submission": false,
+  "host_tests": "pending"
+}

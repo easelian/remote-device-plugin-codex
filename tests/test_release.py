@@ -31,12 +31,24 @@ def test_asset_paths_are_contained(tmp_path, reference):
 def test_profiles_have_distinct_contracts():
     source = Path(__file__).parents[1] / "plugins/remote-device-hub"
     standalone, files = release.plugin_files(source, "standalone")
-    assert standalone["version"] == "1.1.1"
+    assert standalone["version"] == "1.2.0"
     assert ".app.json" not in files and "apps" not in standalone["extensions"]["com.openai"]
     assert json.loads(files["mcp.json"])["mcpServers"]["remote-device-hub"]["type"] == "streamable-http"
     connected, connected_files = release.plugin_files(source, "connected")
     assert connected["extensions"]["com.openai"]["apps"] == "./.app.json"
     assert ".app.json" in connected_files and "mcp.json" not in connected_files
+    assert ".mcp.json" not in connected_files
+    assert connected["extensions"]["com.openai"]["requires_local_executor"] is False
+    assert json.loads(connected_files[".codex-plugin/plugin.json"])["requires_local_executor"] is False
+    for name in release.SKILL_FILES:
+        assert files[name] == connected_files[name]
+
+
+def test_connected_and_public_skills_match():
+    root = Path(__file__).parents[1]
+    _, files = release.plugin_files(root / "plugins/remote-device-hub", "connected")
+    for name in release.SKILL_FILES:
+        assert files[name] == (root / "public/remote-device-hub" / name).read_bytes()
 
 
 def test_extra_private_and_symlink_files_are_not_packaged(tmp_path):
@@ -60,10 +72,10 @@ def test_build_is_deterministic_and_reads_archive(tmp_path, monkeypatch):
     monkeypatch.setattr(release, "ROOT", tmp_path)
     monkeypatch.setattr(release, "PLUGIN", tmp_path / "plugins/remote-device-hub")
     first = release.build_plugin("standalone", "fixture")
-    first_bytes = (tmp_path / "dist/remote-device-hub-plugin-standalone-1.1.1.zip").read_bytes()
-    assert release._archive_contents(tmp_path / "dist/remote-device-hub-plugin-standalone-1.1.1.zip")["mcp.json"]
+    first_bytes = (tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.0.zip").read_bytes()
+    assert release._archive_contents(tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.0.zip")["mcp.json"]
     assert release.build_plugin("standalone", "fixture") == first
-    assert (tmp_path / "dist/remote-device-hub-plugin-standalone-1.1.1.zip").read_bytes() == first_bytes
+    assert (tmp_path / "dist/remote-device-hub-plugin-standalone-1.2.0.zip").read_bytes() == first_bytes
 
 
 def test_renderer_change_cannot_reuse_version(tmp_path, monkeypatch):
@@ -91,8 +103,8 @@ def test_archive_rejects_duplicate_normalized_entries(tmp_path):
 
 def test_cli_check_uses_release_record_path():
     root = Path(__file__).parents[1]
-    record = root / "releases" / "plugin-cli-test-1.1.1.json"
-    artifact = root / "dist" / "remote-device-hub-plugin-standalone-1.1.1.zip"
+    record = root / "releases" / "plugin-cli-test-1.2.0.json"
+    artifact = root / "dist" / "remote-device-hub-plugin-standalone-1.2.0.zip"
     artifact_sha = artifact.with_suffix(artifact.suffix + ".sha256")
     existed = artifact.exists(), artifact_sha.exists()
     try:
@@ -112,7 +124,7 @@ def test_cli_check_uses_release_record_path():
 def test_record_requires_checks_and_evidence(tmp_path, monkeypatch):
     monkeypatch.setattr(release, "ROOT", tmp_path)
     artifact = tmp_path / "dist/a.zip"; artifact.parent.mkdir(); artifact.write_bytes(b"artifact")
-    record = release.save_prepared("1.1.1", artifact, {"plugin.json": b"source"}, "fixture", "standalone")
+    record = release.save_prepared("1.2.0", artifact, {"plugin.json": b"source"}, "fixture", "standalone")
     evidence = tmp_path / "proof.txt"; evidence.write_text("proof")
     args = Namespace(record=str(record.relative_to(tmp_path)), stage="published", host="local", evidence=["proof.txt"], check=[], note="")
     release.record_result(args)

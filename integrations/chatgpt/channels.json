@@ -3,14 +3,15 @@
   "public_publication": "paused",
   "private": {
     "mcp_url": "https://mcp.xdistribute.site/mcp",
-    "app_id": "asdk_app_6abab5780ce48191a418ea5405cfad47",
-    "development_plugin_id": "plugin_asdk_app_6abab5780ce48191a418ea5405cfad47",
-    "development_plugin_url": "https://chatgpt.com/plugins/plugin_asdk_app_6abab5780ce48191a418ea5405cfad47",
-    "packaged_plugin_id": "Plugin_c037faee8bac8191af422bb13e5ae020",
-    "packaged_plugin_url": "https://chatgpt.com/plugins/Plugin_c037faee8bac8191af422bb13e5ae020",
-    "daily_entry": "development_plugin",
-    "reason": "Private experiment did not pass icon persistence. Component maintenance/release is now the primary workflow; plugin cloud updates are optional and are not performed by builds.",
-    "packaged_plugin_status": "failed"
+    "app_id": "asdk_app_6ac9a56160088191b8aca17b9705392a",
+    "development_plugin_id": "plugin_asdk_app_6ac9a56160088191b8aca17b9705392a",
+    "development_plugin_url": "https://chatgpt.com/plugins/plugin_asdk_app_6ac9a56160088191b8aca17b9705392a",
+    "packaged_plugin_id": "plugins_6ac993be7294819188f638f4e00f2b5d",
+    "packaged_plugin_url": "https://chatgpt.com/plugins/plugins_6ac993be7294819188f638f4e00f2b5d",
+    "daily_entry": "packaged_plugin",
+    "reason": "Private connected 1.2.0 includes the operations Skill and reuses the authorized Web App. See current release evidence for test limits.",
+    "packaged_plugin_status": "installed",
+    "version": "1.2.0"
   },
   "release_policy": {
     "components": [
