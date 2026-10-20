@@ -43,8 +43,9 @@ macOS 上 curl 获取 OAuth 元数据返回 200，发现地址、DCR、PKCE S256
 在本仓库根目录执行：
 
 ```bash
-python3 -m pytest tests -q
-python3 scripts/prepare_submission.py --allow-incomplete
+npm ci
+npm test
+npm run submission -- --allow-incomplete
 ```
 
 输出在 `dist/`：插件 ZIP、`.zip.sha256` 校验文件和 `.report.json`。报告中的 `missing_materials` 列出尚未填入 ZIP 的材料。补齐材料后，去掉 `--allow-incomplete` 再构建；缺项时命令会失败。`submission_ready` 保持为 `false`，因为本地脚本无法替代身份验证、演示回放、网页版实测、Portal 扫描和最终声明。

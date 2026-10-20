@@ -1,0 +1,116 @@
+{
+  "profiles": {
+    "standalone": {
+      "manifest": {
+        "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+        "author": {
+          "email": "shfwin6@gmail.com",
+          "name": "Hongfei Shang"
+        },
+        "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+        "extensions": {
+          "com.openai": {
+            "interface": {
+              "brandColor": "#52677D",
+              "brandColorDark": "#A5B5C5",
+              "capabilities": [],
+              "category": "Other",
+              "composerIcon": "./assets/remote-device-hub-theme-light-256.png",
+              "composerIconDark": "./assets/remote-device-hub-theme-dark-256.png",
+              "defaultPrompt": null,
+              "developerName": "Hongfei Shang",
+              "displayName": "Remote Device Hub",
+              "logo": "./assets/remote-device-hub-theme-light-512.png",
+              "logoDark": "./assets/remote-device-hub-theme-dark-512.png",
+              "longDescription": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+              "shortDescription": "安全远程管理 Linux 与 macOS 设备"
+            }
+          }
+        },
+        "name": "remote-device-hub",
+        "version": "1.2.2"
+      },
+      "fingerprint": "5ebdadc1ccfad9931688a071d81c04be8cef74469dfc707c1e8c0ea442873d4a",
+      "hashes": {
+        ".codex-plugin/plugin.json": "fb5e8be3b975527ee2273a32afebd354708323cd32cd047da8f12320565747f5",
+        "assets/remote-device-hub-theme-dark-256.png": "71a0d17ee588c1a43203eeb19a32096bbd4d0edbeacca93763e8f33b4bce93b6",
+        "assets/remote-device-hub-theme-dark-512.png": "5eca4bd27a5d36ee6aa90bace043d087ba2dc5fb8fc6823275a0e2bf5c77f0bd",
+        "assets/remote-device-hub-theme-light-256.png": "24001a8afd64d910be95c0413922ab8b5c414ae41350219bb3f6896757aa1b3c",
+        "assets/remote-device-hub-theme-light-512.png": "0be9c29ee105d02288ee5892ce274d4c6d2d40c0a9988ecffa1c891b5df12ff6",
+        "mcp.json": "96ed8064d21dc6d082ccb9f1d6c7dd19be562efa53e07997b4bb8773f77c6515",
+        "plugin.json": "a4efe09e45c71ab214a50ee47f6fac54a53debf4a6e7d3c227e7461d0a74efc0",
+        "skills/remote-device-operations/SKILL.md": "7a58151a7805acec9d668b89e602486be4af3e0b45bffa4bdff240ae0fafb907",
+        "skills/remote-device-operations/references/files.md": "0896e188aab40ff5adab4f471c85e2539f9d2fbee60b0a7d71a7b94423890849",
+        "skills/remote-device-operations/references/processes.md": "6aa287c94009888b6ba5ed7bd708c36167932d33a217ceaa707241343a814a26",
+        "skills/remote-device-operations/references/recovery.md": "80c0eb66035fa8f24b5ece676ada6201c4058e4fef12dcb640ec6c2fd3b9e224"
+      }
+    },
+    "connected": {
+      "manifest": {
+        "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+        "author": {
+          "email": "shfwin6@gmail.com",
+          "name": "Hongfei Shang"
+        },
+        "description": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+        "extensions": {
+          "com.openai": {
+            "interface": {
+              "brandColor": "#52677D",
+              "brandColorDark": "#A5B5C5",
+              "capabilities": [],
+              "category": "Other",
+              "composerIcon": "./assets/remote-device-hub-theme-light-256.png",
+              "composerIconDark": "./assets/remote-device-hub-theme-dark-256.png",
+              "defaultPrompt": null,
+              "developerName": "Hongfei Shang",
+              "displayName": "Remote Device Hub",
+              "logo": "./assets/remote-device-hub-theme-light-512.png",
+              "logoDark": "./assets/remote-device-hub-theme-dark-512.png",
+              "longDescription": "连接并管理你授权的 Linux 和 macOS 设备。查看设备状态、执行终端命令、读写文件和管理进程，操作在选定设备上运行。",
+              "shortDescription": "安全远程管理 Linux 与 macOS 设备"
+            },
+            "apps": "./.app.json",
+            "requires_local_executor": false
+          }
+        },
+        "name": "remote-device-hub",
+        "version": "1.2.2"
+      },
+      "fingerprint": "a18540f738f1e5cc3ff8597ac618c6f70ab28d217aee9db51023e94f4c0ae9a2",
+      "hashes": {
+        ".app.json": "9b202aa1fb21406faaf18d8130f1fce57853371b092c238fc798f29b3fdf0060",
+        ".codex-plugin/plugin.json": "6ba3d457da629292ebf8623ab5e2e9c1e5b034c6cdfe6f1a104cb87ea1348b8e",
+        "assets/remote-device-hub-theme-dark-256.png": "71a0d17ee588c1a43203eeb19a32096bbd4d0edbeacca93763e8f33b4bce93b6",
+        "assets/remote-device-hub-theme-dark-512.png": "5eca4bd27a5d36ee6aa90bace043d087ba2dc5fb8fc6823275a0e2bf5c77f0bd",
+        "assets/remote-device-hub-theme-light-256.png": "24001a8afd64d910be95c0413922ab8b5c414ae41350219bb3f6896757aa1b3c",
+        "assets/remote-device-hub-theme-light-512.png": "0be9c29ee105d02288ee5892ce274d4c6d2d40c0a9988ecffa1c891b5df12ff6",
+        "plugin.json": "d7d4960c10dbbd70c08c03b1b1cd42182228e3472b10d85d5139a2e4cb90c0eb",
+        "skills/remote-device-operations/SKILL.md": "7a58151a7805acec9d668b89e602486be4af3e0b45bffa4bdff240ae0fafb907",
+        "skills/remote-device-operations/references/files.md": "0896e188aab40ff5adab4f471c85e2539f9d2fbee60b0a7d71a7b94423890849",
+        "skills/remote-device-operations/references/processes.md": "6aa287c94009888b6ba5ed7bd708c36167932d33a217ceaa707241343a814a26",
+        "skills/remote-device-operations/references/recovery.md": "80c0eb66035fa8f24b5ece676ada6201c4058e4fef12dcb640ec6c2fd3b9e224"
+      }
+    }
+  },
+  "zip_base64": "UEsDBBQAAAAIAAAAIQBzjAUpBQEAAAABAAAcAAAAcmVtb3RlLWRldmljZS1odWIvYmluYXJ5LmJpbgEAAf/+AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/1BLAwQUAAAACAAAACEAAAAAAAIAAAAAAAAAGwAAAHJlbW90ZS1kZXZpY2UtaHViL2VtcHR5LnR4dAMAUEsDBBQAAAgIAAAAIQB7hV4HEwAAABAAAAAkAAAAcmVtb3RlLWRldmljZS1odWIvdW5pY29kZS/mlofku7YudHh0ezat/cnubU/bWp+u2/loRjMXAFBLAQIUAxQAAAAIAAAAIQBzjAUpBQEAAAABAAAcAAAAAAAAAAAAAACkgQAAAAByZW1vdGUtZGV2aWNlLWh1Yi9iaW5hcnkuYmluUEsBAhQDFAAAAAgAAAAhAAAAAAACAAAAAAAAABsAAAAAAAAAAAAAAKSBPwEAAHJlbW90ZS1kZXZpY2UtaHViL2VtcHR5LnR4dFBLAQIUAxQAAAgIAAAAIQB7hV4HEwAAABAAAAAkAAAAAAAAAAAAAACkgXoBAAByZW1vdGUtZGV2aWNlLWh1Yi91bmljb2RlL+aWh+S7ti50eHRQSwUGAAAAAAMAAwDlAAAAzwEAAAAA",
+  "zip_contents": {
+    "empty.txt": "",
+    "unicode/文件.txt": "5paH5Lu25YaF5a654piDCg==",
+    "binary.bin": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="
+  },
+  "canonical_samples": [
+    {
+      "input": {
+        "unicode": "文件☃",
+        "line": "one\ntwo",
+        "nested": [
+          true,
+          null,
+          1.25
+        ]
+      },
+      "output_base64": "ewogICJ1bmljb2RlIjogIuaWh+S7tuKYgyIsCiAgImxpbmUiOiAib25lXG50d28iLAogICJuZXN0ZWQiOiBbCiAgICB0cnVlLAogICAgbnVsbCwKICAgIDEuMjUKICBdCn0K"
+    }
+  ]
+}

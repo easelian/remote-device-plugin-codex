@@ -48,8 +48,9 @@ ChatGPT App 的 **Allow read-only tools** 设置独立于 Skill：读取免确�
 不要把这两个带 Skill 的源目录重新上传为当前网页入口，除非用户要求恢复 Skill。
 
 ```bash
-python3 -m pytest tests -q
-python3 scripts/release.py build plugin --profile standalone
+npm ci
+npm test
+npm run release -- build plugin --profile standalone
 ```
 
 构建器只收集白名单文件并记录 ZIP 哈希。构建不会安装插件、改动网页 App、部署 Hub 或公开发布。

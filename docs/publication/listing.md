@@ -28,17 +28,17 @@ Remote Device Hub connects ChatGPT or another MCP client to Linux and macOS comp
 ## Plugin profile
 
 standalone plugin 使用 `plugins/remote-device-hub/mcp.json` 声明真实 HTTPS Streamable HTTP MCP
-地址，不声明 App ID。构建命令：
+地址，不声明 App ID。先在仓库根目录执行 `npm ci` 和 `npm run build`，再构建：
 
 ```bash
-.venv/bin/python scripts/release.py build plugin \
+npm run release -- build plugin \
   --profile standalone
 ```
 
 connected profile 只在明确需要复用既有 ChatGPT/App 连接时使用，并从 `integrations/chatgpt/connected-app.json` 读取现有 App 身份：
 
 ```bash
-.venv/bin/python scripts/release.py build plugin \
+npm run release -- build plugin \
   --profile connected
 ```
 

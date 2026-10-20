@@ -18,10 +18,12 @@ ChatGPT 网页当前只安装既有的 OAuth App，暂不加载 Skill。额外�
 - `docs/chatgpt.md`：客户端连接和验证边界。
 - `docs/publication/`：listing、数据处理和审核测试资料。
 
+开发工具需要 Node.js 22 或更新版本。TypeScript 编译到 `.build/tooling/`，插件 ZIP 仍只包含清单、Skill 和资源文件。
+
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements-dev.lock
-.venv/bin/python scripts/release.py build plugin --profile standalone
+npm ci
+npm run build
+npm run release -- build plugin --profile standalone
 ```
 
 本地构建只产生可审计 ZIP 和 prepared 记录，不上传插件、不改变 daily entry、不部署 MCP

@@ -12,24 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
-      - run: python -m pip install -r requirements-dev.lock
-      - run: pytest -q
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
       - name: Build and check both plugin profiles
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/release.py build plugin --profile standalone --channel ci-standalone
-          python scripts/release.py build plugin --profile connected --channel ci-connected
-          version="$(python - <<'PY'
-          import json
-          print(json.load(open('plugins/remote-device-hub/plugin.json'))['version'])
-          PY
-          )"
-          python scripts/release.py check "releases/plugin-ci-standalone-${version}.json"
-          python scripts/release.py check "releases/plugin-ci-connected-${version}.json"
+          npm run release -- build plugin --profile standalone --channel ci-standalone
+          npm run release -- build plugin --profile connected --channel ci-connected
+          version="$(node -p "JSON.parse(require('node:fs').readFileSync('plugins/remote-device-hub/plugin.json', 'utf8')).version")"
+          npm run release -- check "releases/plugin-ci-standalone-${version}.json"
+          npm run release -- check "releases/plugin-ci-connected-${version}.json"
       - uses: actions/upload-artifact@v4
         with:
           name: remote-device-hub-plugin-zips
