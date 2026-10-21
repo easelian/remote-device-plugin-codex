@@ -29,3 +29,13 @@ npm run release -- build plugin --profile standalone
 本地构建只产生可审计 ZIP 和 prepared 记录，不上传插件、不改变 daily entry、不部署 MCP
 服务，也不发布 registry。公开发布当前暂停。服务器 URL 和 OAuth 契约由
 `remote-device-server` 维护；必须以真实客户端工具调用证据说明集成已验证。
+
+## 代码风格
+
+`npm run format` 格式化开发脚本和测试；`npm run style:check` 检查格式及 Lint，
+`npm run lint` 只运行 Lint。Biome 以固定版本作为开发依赖。统一使用两空格、
+单引号、分号、尾逗号，一行一条语句；显式标记类型导入，禁止显式 `any` 和
+`@ts-ignore`。插件清单、资源、历史发布记录与固定样本不参与格式化。
+
+清单和发布记录在读取时解析为业务类型，保留原有字段及序列化顺序。ZIP 构建沿用
+既有格式，并通过旧 Python 工具生成的固定样本核对文件哈希和归档字节。

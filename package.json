@@ -2,13 +2,23 @@
   "name": "remote-device-plugin-codex-tooling",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test .build/tooling/tests/*.test.js",
     "release": "node .build/tooling/scripts/release.js",
-    "submission": "node .build/tooling/scripts/prepare_submission.js"
+    "submission": "node .build/tooling/scripts/prepare_submission.js",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "style:check": "biome check ."
   },
-  "devDependencies": { "@types/node": "22.20.5", "typescript": "7.0.2" }
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@types/node": "22.20.5",
+    "typescript": "7.0.2"
+  }
 }
