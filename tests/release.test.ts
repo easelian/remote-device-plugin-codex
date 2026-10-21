@@ -296,12 +296,26 @@ test('canonical JSON preserves UTF-8, indentation, order and trailing newline', 
     ),
   );
 });
-test('Python golden fixture preserves canonical bytes, profile hashes and ZIP format', () => {
+test('Python golden fixture preserves historical canonical bytes, profile hashes and ZIP format', (t) => {
   const golden = parseJson(readFileSync(join(ROOT, 'tests/fixtures/python-compatibility.json')));
   const profiles = object(golden.profiles);
+  const root = temporary(t);
+  fixture(root);
+  const source = join(root, 'plugins/remote-device-hub');
+  // The Python fixture records historical copy. Restore those input values so
+  // current editorial changes do not weaken the byte-for-byte compatibility test.
+  const original = object(object(profiles.standalone).manifest);
+  writeFileSync(join(source, 'plugin.json'), canonicalJson(original));
+  const overlayPath = join(source, '.codex-plugin/plugin.json');
+  const overlay = parseJson(readFileSync(overlayPath));
+  overlay.interface = object(object(object(original.extensions)['com.openai']).interface);
+  const description = original.description;
+  assert.ok(typeof description === 'string');
+  overlay.description = description;
+  writeFileSync(overlayPath, canonicalJson(overlay));
   for (const profile of ['standalone', 'connected'] as const) {
     const expected = object(profiles[profile]);
-    const [manifest, files] = pluginFiles(PLUGIN, profile);
+    const [manifest, files] = pluginFiles(source, profile, root);
     assert.deepEqual(manifest, expected.manifest);
     assert.equal(fingerprint(files), expected.fingerprint);
     assert.deepEqual(

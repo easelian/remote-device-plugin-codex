@@ -1,71 +1,61 @@
-# Remote Device Hub — 发布资料
+# Remote Device Hub listing materials
 
-本次发布范围已确认为服务、Agent、公开下载包和 npm。集成 ZIP 按下载包发布；ChatGPT
-公开商店提交不在本次范围内。各渠道实际发布结果与验证证据分别记录，见
-[2026-10-01 发布验证记录](../../../remote-device-server/docs/release-validation-20261001.md)。
+The approved release scope covered the service, Agent, public downloads, and npm. The integration ZIP was distributed as a download; ChatGPT public-store submission was outside that scope. Each channel's publication result and validation evidence are recorded separately in the [2026-10-01 release validation record](../../../remote-device-server/docs/release-validation-20261001.md).
 
-## 产品资料
+## Product details
 
-- 英文名称：Remote Device Hub
-- 中文说明：远程设备中心
-- 简介：Connect your Linux and macOS devices. Run commands, manage files, and monitor processes.
-- 中文简介：连接你的 Linux 和 macOS 设备，运行命令、管理文件与进程。
-- 分类：Productivity
-- MCP URL：`https://mcp.xdistribute.site/mcp`
-- 认证：OAuth、PKCE S256、`devices:control`
-- 支持平台：Linux 和 macOS
+- English name: Remote Device Hub
+- Chinese name: 远程设备中心
+- Summary: Connect your Linux and macOS devices. Run commands, manage files, and monitor processes.
+- Chinese summary: 连接你的 Linux 和 macOS 设备，运行命令、管理文件与进程。
+- Category: Productivity
+- MCP URL: `https://mcp.xdistribute.site/mcp`
+- Authentication: OAuth, PKCE S256, `devices:control`
+- Supported platforms: Linux and macOS
 
 Remote Device Hub connects ChatGPT or another MCP client to Linux and macOS computers that a user enrolls and authorizes. It can list devices, inspect directories, run terminal commands, read and edit files, and manage Agent processes. Commands run with the selected device Agent account. Shell commands are not sandboxed by the file root configuration; production deployments should use a dedicated account and operating-system isolation.
 
-## 组件发布线
+## Component release lines
 
-发布资料对应独立集成版本线：standalone plugin `1.1.1`。Server、Protocol 和 Agent artifact
-由各自仓库构建；本仓库只生成不绑定 App 的 plugin ZIP 或显式 connected profile ZIP。
+These materials describe the independent standalone plugin `1.1.1` release line. Server, Protocol, and Agent artifacts are built by their own repositories. This repository produces only a plugin ZIP without an App binding or an explicitly selected connected-profile ZIP.
 
-集成包是否已进入公开下载目录，以 `releases/` 中的当前记录和下载回读证据为准。下载包
-发布不表示已上传或提交 ChatGPT 商店，也不替代图标和插件页面的客户端验收。
+Current records and download-readback evidence under `releases/` establish whether an integration package reached the public download directory. A published download does not imply upload or submission to the ChatGPT store, nor replace client acceptance of icons and plugin pages.
 
-## Plugin profile
+## Plugin profiles
 
-standalone plugin 使用 `plugins/remote-device-hub/mcp.json` 声明真实 HTTPS Streamable HTTP MCP
-地址，不声明 App ID。先在仓库根目录执行 `npm ci` 和 `npm run build`，再构建：
+The standalone plugin declares its real HTTPS Streamable HTTP MCP URL in `plugins/remote-device-hub/mcp.json` and does not declare an App ID. Run `npm ci` and `npm run build` from the repository root, then build:
 
 ```bash
 npm run release -- build plugin \
   --profile standalone
 ```
 
-connected profile 只在明确需要复用既有 ChatGPT/App 连接时使用，并从 `integrations/chatgpt/connected-app.json` 读取现有 App 身份：
+Use the connected profile only when explicitly reusing an existing ChatGPT/App connection. It reads the existing App identity from `integrations/chatgpt/connected-app.json`:
 
 ```bash
 npm run release -- build plugin \
   --profile connected
 ```
 
-App 配置是可选适配层，不是 canonical plugin、Hub 或 Agent 的依赖。构建命令只生成 artifact
-和 prepared 记录；它不会创建插件、上传 private plugin、替换 daily entry 或部署 MCP 服务。
+App configuration is an optional adapter, not a dependency of the canonical plugin, Hub, or Agent. Builds create artifacts and prepared records only. They do not create or upload a private plugin, replace the daily entry point, or deploy the MCP service.
 
-## 审核材料
+## Review materials
 
-未来提交前需要维护者补齐：
+Before a future submission, maintainers must supply:
 
-- 已验证的发布者身份、支持邮箱和产品主页；
-- 可公开访问的隐私政策和服务条款；
-- 与公开环境隔离的演示账号和演示设备；
-- 实际提交系统生成的域名验证、扫描和最终身份；
-- 逐项记录 artifact、版本、校验值、构建输入、客户端和设备验证证据。
+- A verified publisher identity, support email, and product homepage.
+- Publicly accessible privacy policy and terms of service.
+- A demo account and device isolated from production.
+- Domain verification, scan results, and final identity from the actual submission system.
+- Artifact, version, checksum, build inputs, and client/device validation evidence for each step.
 
-提交审核不等于公开发布；审核通过后仍需在目标平台明确选择发布。构建、上传、部署和运行验证必须分别记录，不能用其中一个状态替代另一个。
+Submission for review is distinct from public publication. Even after approval, the publisher must explicitly publish on the target platform. Record building, uploading, deployment, and runtime validation separately.
 
-## Private plugin 实验边界
+## Private-plugin experiment limits
 
-此前关联 App 的 private plugin 更新没有通过稳定的图标持久化和页面回读验收。该实验的
-结果元数据保留在 `docs/history/release-records/`。本次服务和下载发布之后，用户明确授权
-更新原私有插件，connected `1.1.1` 已保存到相同插件 ID，云端文件和版本已回读，原 App
-绑定保留。详见 [当前私有插件更新](../chatgpt.md#当前私有插件更新)。公开商店提交仍未执行。
-不要把历史图标验收失败或旧上传记录当作当前云端版本；宿主 UI 图标与会话重载验证需分别记录。
+An earlier App-linked private-plugin update did not pass stable icon-persistence and page-readback acceptance. Its result metadata remains under `docs/history/release-records/`. After the service and download release, the user explicitly authorized updating the original private plugin. Connected `1.1.1` was saved under the same plugin ID; cloud files and version were read back, and the original App binding was preserved. See the [current integration and historical records](../chatgpt.md). Public-store submission has not been performed. Historical icon failures and old upload records do not identify the current cloud version. Record host UI icons and conversation reload behavior separately.
 
-官方参考：
+Official references:
 
 - <https://developers.openai.com/plugins/deploy/submission>
 - <https://developers.openai.com/plugins/build/plugins>
