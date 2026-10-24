@@ -37,5 +37,6 @@
     "automatic_registry_publication": false,
     "plugin_default_profile": "standalone",
     "chatgpt_app_required_for_hub_or_agent_release": false
-  }
+  },
+  "snapshot_note": "Historical account state recorded before domain migration. Not a build input or live endpoint configuration; reverify the installed App before publishing."
 }

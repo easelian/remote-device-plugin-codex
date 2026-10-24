@@ -302,6 +302,7 @@ test('Python golden fixture preserves historical canonical bytes, profile hashes
   const root = temporary(t);
   fixture(root);
   const source = join(root, 'plugins/remote-device-hub');
+  cpSync(join(ROOT, 'tests/fixtures/python-mcp.json'), join(source, 'mcp.json'));
   // The Python fixture records historical copy. Restore those input values so
   // current editorial changes do not weaken the byte-for-byte compatibility test.
   const original = object(object(profiles.standalone).manifest);

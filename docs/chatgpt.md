@@ -1,5 +1,7 @@
 # ChatGPT integration and private web testing
 
+This page records the pre-migration account state. Its endpoint and acceptance results are historical; current build URLs come from generated manifests. The installed App has not been reverified by the domain refactor.
+
 The current entry point is the [Remote Device Hub App](https://chatgpt.com/plugins/plugin_asdk_app_6ac9b1c6f14c8191a89b4858d1c265a3), without a Skill. It is the only installed Remote Device Hub entry in settings and reuses the existing OAuth account. Its permission setting is **Allow read-only tools**: reads do not require confirmation; changes do. Select **Try in chat** to start a new conversation. Public publication remains on hold.
 
 ## Connection and versions

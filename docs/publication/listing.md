@@ -9,7 +9,7 @@ The approved release scope covered the service, Agent, public downloads, and npm
 - Summary: Connect your Linux and macOS devices. Run commands, manage files, and monitor processes.
 - Chinese summary: 连接你的 Linux 和 macOS 设备，运行命令、管理文件与进程。
 - Category: Productivity
-- MCP URL: `https://mcp.xdistribute.site/mcp`
+- MCP URL: the generated `url` in `public/remote-device-hub/mcp.json`
 - Authentication: OAuth, PKCE S256, `devices:control`
 - Supported platforms: Linux and macOS
 
