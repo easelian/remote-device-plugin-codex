@@ -17,10 +17,10 @@
         "composerIconDark": "./assets/remote-device-hub-theme-dark-256.png",
         "logoDark": "./assets/remote-device-hub-theme-dark-512.png",
         "brandColorDark": "#A5B5C5",
-        "websiteURL": "https://easelian.com/",
-        "supportURL": "https://easelian.com/contact",
-        "privacyPolicyURL": "https://easelian.com/privacy",
-        "termsOfServiceURL": "https://easelian.com/terms"
+        "websiteURL": "https://rdh.easelian.com/",
+        "supportURL": "https://rdh.easelian.com/contact",
+        "privacyPolicyURL": "https://rdh.easelian.com/privacy",
+        "termsOfServiceURL": "https://rdh.easelian.com/terms"
       },
       "review": {
         "test_cases": {

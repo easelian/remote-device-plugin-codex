@@ -3,7 +3,7 @@
   "mcpServers": {
     "remote-device-hub": {
       "type": "streamable-http",
-      "url": "https://mcp.easelian.com/mcp",
+      "url": "https://rdh.easelian.com/mcp",
       "extensions": {
         "com.openai": {
           "auth": {
