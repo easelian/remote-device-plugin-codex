@@ -14,7 +14,11 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint": "biome lint .",
-    "style:check": "biome check ."
+    "style:check": "biome check .",
+    "package": "npm run build && npm run submission",
+    "check:codex": "python3 scripts/check_codex_plugin.py",
+    "package:standalone": "npm run build && npm run release -- build plugin --profile standalone",
+    "package:draft": "npm run build && npm run submission -- --allow-incomplete"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

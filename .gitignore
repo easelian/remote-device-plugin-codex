@@ -14,4 +14,5 @@ workspace/
 *.local.txt
 client_secret_*.json
 .DS_Store
-releases/*.tmp
+/releases/
+/docs/history/

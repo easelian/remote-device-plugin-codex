@@ -25,6 +25,7 @@ import {
   parseJson,
   requiredFile,
   type Files,
+  type Json,
 } from '../scripts/common.js';
 import {
   PLUGIN,
@@ -82,9 +83,14 @@ test('component references reject traversal, private paths and symlinks', (t) =>
 });
 test('profiles preserve separate transport and App contracts and shared skill bytes', () => {
   const [standalone, files] = pluginFiles();
-  assert.equal(standalone.version, '1.2.2');
+  assert.equal(standalone.version, parseJson(readFileSync(join(PLUGIN, 'plugin.json'))).version);
   assert.ok(!files.has('.app.json'));
   assert.ok(!('apps' in openai(standalone)));
+  assert.equal(openai(standalone).requires_local_executor, false);
+  assert.equal(
+    parseJson(requiredFile(files, '.codex-plugin/plugin.json')).requires_local_executor,
+    false,
+  );
   assert.equal(
     object(object(parseJson(requiredFile(files, 'mcp.json')).mcpServers)['remote-device-hub']).type,
     'streamable-http',
@@ -115,6 +121,58 @@ test('allowlist excludes unrelated private files', (t) => {
   writeFileSync(join(source, 'owner-password.local.txt'), 'secret');
   symlinkSync(join(source, 'owner-password.local.txt'), join(source, 'unused-link'));
   assert.ok(sameFiles(pluginFiles(source)[1], expected));
+});
+test('new releases reject invalid default prompts and preserve valid prompt forms', (t) => {
+  const root = temporary(t);
+  fixture(root);
+  const source = join(root, 'plugins/remote-device-hub');
+  const manifest = parseJson(readFileSync(join(source, 'plugin.json')));
+  const overlay = parseJson(readFileSync(join(source, '.codex-plugin/plugin.json')));
+  const ui = object(openai(manifest).interface);
+  const update = (prompt: Json) => {
+    ui.defaultPrompt = prompt;
+    overlay.interface = ui;
+    writeFileSync(join(source, 'plugin.json'), canonicalJson(manifest));
+    writeFileSync(join(source, '.codex-plugin/plugin.json'), canonicalJson(overlay));
+  };
+  for (const prompt of [
+    null,
+    42,
+    {},
+    '',
+    [''],
+    ['one', null],
+    ['a', 'b', 'c', 'd'],
+    'x'.repeat(513),
+  ]) {
+    update(prompt);
+    for (const profile of ['standalone', 'connected'] as const) {
+      assert.throws(() => buildPlugin(profile, 'prompt-test', root), /defaultPrompt/);
+    }
+  }
+  for (const prompt of ['Inspect my devices', ['Inspect my devices', 'List jobs'], []]) {
+    update(prompt);
+    const validRoot = temporary(t);
+    cpSync(source, join(validRoot, 'plugins/remote-device-hub'), { recursive: true });
+    buildPlugin('standalone', 'prompt-test', validRoot);
+  }
+});
+test('new standalone releases require packaged OAuth DCR and reject embedded credentials', (t) => {
+  const root = temporary(t);
+  fixture(root);
+  const path = join(root, 'plugins/remote-device-hub/mcp.json');
+  const original = parseJson(readFileSync(path));
+  const mcp = parseJson(readFileSync(path));
+  const server = object(object(mcp.mcpServers)['remote-device-hub']);
+  delete server.extensions;
+  writeFileSync(path, canonicalJson(mcp));
+  assert.throws(() => buildPlugin('standalone', 'auth-test', root));
+  writeFileSync(path, canonicalJson(original));
+  buildPlugin('standalone', 'auth-test', root);
+  const originalServer = object(object(original.mcpServers)['remote-device-hub']);
+  originalServer.headers = { Authorization: 'Bearer do-not-package' };
+  writeFileSync(path, canonicalJson(original));
+  assert.throws(() => buildPlugin('standalone', 'auth-test', root), /forbidden/);
 });
 test('both profiles produce deterministic archives and retain immutable release records', (t) => {
   const root = temporary(t);
@@ -195,7 +253,7 @@ test('CLI builds and checks a record in an isolated checkout', (t) => {
   assert.equal(built.status, 0, built.stderr);
   const checked = spawnSync(
     process.execPath,
-    [cli, 'check', 'releases/plugin-cli-test-1.2.2.json'],
+    [cli, 'check', `.build/release/plugin-cli-test-${pluginFiles()[0].version}.json`],
     { cwd: root, encoding: 'utf8' },
   );
   assert.equal(checked.status, 0, checked.stderr);
@@ -257,8 +315,11 @@ test('release state requires evidence and all checks, rejects backwards transiti
   const event = object(saved.events.at(-1));
   assert.ok(Array.isArray(event.evidence));
   assert.equal(object(event.evidence[0]).sha256, digest(Buffer.from('proof')));
-  symlinkSync(record, join(root, 'releases/linked.json'));
-  assert.throws(() => loadRecord('releases/linked.json', root), /directly under releases/);
+  symlinkSync(record, join(root, '.build/release/linked.json'));
+  assert.throws(
+    () => loadRecord('.build/release/linked.json', root),
+    /directly under \.build\/release/,
+  );
 });
 test('evidence containment rejects Windows parent paths and other drives', () => {
   const root = 'C:\\project';
@@ -303,6 +364,7 @@ test('Python golden fixture preserves historical canonical bytes, profile hashes
   fixture(root);
   const source = join(root, 'plugins/remote-device-hub');
   cpSync(join(ROOT, 'tests/fixtures/python-mcp.json'), join(source, 'mcp.json'));
+  cpSync(join(ROOT, 'tests/fixtures/python-skills'), join(source, 'skills'), { recursive: true });
   // The Python fixture records historical copy. Restore those input values so
   // current editorial changes do not weaken the byte-for-byte compatibility test.
   const original = object(object(profiles.standalone).manifest);
@@ -313,6 +375,9 @@ test('Python golden fixture preserves historical canonical bytes, profile hashes
   const description = original.description;
   assert.ok(typeof description === 'string');
   overlay.description = description;
+  assert.ok(typeof original.version === 'string');
+  overlay.version = original.version;
+  delete overlay.requires_local_executor;
   writeFileSync(overlayPath, canonicalJson(overlay));
   for (const profile of ['standalone', 'connected'] as const) {
     const expected = object(profiles[profile]);

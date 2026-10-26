@@ -9,6 +9,27 @@ Use the connected Remote Device Hub MCP tools for operations on an enrolled
 remote device. Follow the user's language. Discover the tools available in the
 current host; names below refer to MCP tool names, not a fixed host namespace.
 
+## First use and account connection
+
+If the host has not connected the plugin, guide the user to its Connect action
+and the Hub's normal OAuth sign-in. Never ask the user to paste an access token,
+copy the publisher's connection ID, or create a private custom MCP App as a
+workaround for an unavailable published plugin. Report host installation or
+connection failures separately from device failures.
+
+After authorization, call `list_devices`. An empty list is a valid result for
+a new Hub account; it does not mean the plugin connection failed. Direct the
+user to https://rdh.easelian.com/admin to sign in to the same Hub account and
+follow the device Agent installation and pairing instructions there. Device
+pairing requires the user's explicit approval. Do not silently pair a machine,
+reuse the publisher's device, switch Hub accounts, or change device permissions.
+Do not request pairing secrets or passwords in chat.
+
+After the user finishes pairing, call `list_devices` again. Select only a device
+returned for the authenticated account and confirm its details below. If no
+devices appear, help check the Hub account and Agent connection status without
+inventing a device ID or claiming enrollment succeeded.
+
 ## Establish the device and authority
 
 1. Call `list_devices` and select a device that belongs to the authenticated

@@ -1,3 +1,4 @@
+import { validateHubMcp } from './mcp_contract.js';
 import { mkdirSync, readFileSync, readdirSync, lstatSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -64,6 +65,12 @@ export function validate(files: Files): [PluginManifest, string[]] {
     if (name === '.app.json' || name.split('/').some((part) => part.startsWith('.env'))) {
       throw new Error('Private file in public upload');
     }
+    if (name.endsWith('.json') || name.endsWith('.md')) {
+      const content = utf8(requiredFile(files, name));
+      if (/\b(?:plugin_)?asdk_app_[a-zA-Z0-9_-]+/.test(content)) {
+        throw new Error(`Account-specific registered App ID in public upload: ${name}`);
+      }
+    }
   }
   const manifest = readPluginManifest(requiredFile(files, 'plugin.json'));
   const mcp = parseJson(requiredFile(files, 'mcp.json'));
@@ -78,6 +85,45 @@ export function validate(files: Files): [PluginManifest, string[]] {
   const ext = openai(manifest);
   const ui = ext.interface;
   const gaps: string[] = [];
+  const categories = new Set([
+    'Business & Operations',
+    'Communication',
+    'Creativity',
+    'Data & Analytics',
+    'Developer Tools',
+    'Education & Research',
+    'Entertainment',
+    'Finance',
+    'Healthcare',
+    'Other',
+    'Productivity',
+    'Scientific Research',
+    'Security',
+    'Travel',
+  ]);
+  if (!categories.has(text(ui.category))) {
+    throw new Error('Unsupported public plugin category');
+  }
+  if ('defaultPrompt' in ui) {
+    const prompts = ui.defaultPrompt;
+    if (
+      !Array.isArray(prompts) ||
+      prompts.length > 3 ||
+      prompts.some(
+        (prompt) =>
+          typeof prompt !== 'string' ||
+          !prompt.trim() ||
+          /[\r\n]/.test(prompt) ||
+          [...prompt].length > 128,
+      )
+    ) {
+      throw new Error('Public defaultPrompt requires at most three nonblank single-line prompts');
+    }
+    const normalized = prompts.map((prompt) => text(prompt).trim().replace(/\s+/g, ' '));
+    if (new Set(normalized).size !== normalized.length) {
+      throw new Error('Public defaultPrompt entries must be unique');
+    }
+  }
   for (const [key, limit] of [
     ['displayName', 30],
     ['shortDescription', 30],
@@ -156,17 +202,7 @@ export function validate(files: Files): [PluginManifest, string[]] {
   if (server.type !== 'streamable-http') {
     throw new Error('Expected remote Streamable HTTP transport');
   }
-  const auth = object(object(object(server.extensions)['com.openai']).auth);
-  if (auth.type !== 'oauth' || object(auth.client).mode !== 'dcr') {
-    throw new Error('Preserve the Hub OAuth DCR configuration');
-  }
-  if (
-    !Array.isArray(auth.baseScopes) ||
-    auth.baseScopes.length !== 1 ||
-    auth.baseScopes[0] !== 'devices:control'
-  ) {
-    throw new Error("Use the Hub's supported authorization scope");
-  }
+  validateHubMcp(mcp);
   const review = object(ext.review ?? {});
   const casesByKind = object(review.test_cases ?? {});
   for (const [kind, count] of [
@@ -238,6 +274,9 @@ export interface SubmissionReport extends JsonObject {
   package_metadata_complete: boolean;
   missing_materials: string[];
   submission_ready: false;
+  distribution: 'public-directory';
+  account_bound: false;
+  clean_chatgpt_account_verified: false;
   note: string;
   files: JsonObject;
 }
@@ -275,7 +314,10 @@ export function build(
     package_metadata_complete: gaps.length === 0,
     missing_materials: gaps,
     submission_ready: false,
-    note: 'Local checks do not verify publication identity, policy content, demo playback, reviewer access, host behavior, deployment, or Portal scans.',
+    distribution: 'public-directory',
+    account_bound: false,
+    clean_chatgpt_account_verified: false,
+    note: 'An author upload is not an installed cross-account release. Publication identity, demo, reviewer access, Portal checks, approval, publication, and clean ChatGPT/Codex account acceptance must be verified separately.',
     files: hashes(files),
   };
   writeFileSync(archive.replace(/\.zip$/, '.report.json'), canonicalJson(report));

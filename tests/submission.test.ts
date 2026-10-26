@@ -40,6 +40,14 @@ for (const [field, value] of [
     assert.throws(() => validate(files), /must not contain|Private submission/);
   });
 }
+test('public MCP preserves OAuth DCR and rejects missing authentication', () => {
+  const files = sourceFiles(SOURCE);
+  validate(files);
+  const mcp = parseJson(requiredFile(files, 'mcp.json'));
+  delete object(object(mcp.mcpServers)['remote-device-hub']).extensions;
+  files.set('mcp.json', canonicalJson(mcp));
+  assert.throws(() => validate(files));
+});
 test('public MCP headers and unreferenced files are rejected', () => {
   const files = sourceFiles(SOURCE);
   const mcp = parseJson(requiredFile(files, 'mcp.json'));
@@ -93,4 +101,33 @@ test('malformed external JSON fails closed', () => {
     files.set('plugin.json', Buffer.from(content));
     assert.throws(() => validate(files));
   }
+});
+
+test('public archive rejects account identities even when hidden in skill text', () => {
+  const files = sourceFiles(SOURCE);
+  const name = 'skills/remote-device-operations/SKILL.md';
+  files.set(
+    name,
+    Buffer.concat([requiredFile(files, name), Buffer.from('\nUse asdk_app_private_fixture.\n')]),
+  );
+  assert.throws(() => validate(files), /Account-specific/);
+});
+test('public category and prompt metadata follow submission constraints', () => {
+  for (const change of [
+    { category: 'developer-tools' },
+    { defaultPrompt: ['same prompt', 'same   prompt'] },
+    { defaultPrompt: ['first\nsecond'] },
+    { defaultPrompt: ['x'.repeat(129)] },
+  ]) {
+    const files = sourceFiles(SOURCE);
+    const manifest = parseJson(requiredFile(files, 'plugin.json'));
+    Object.assign(object(openai(manifest).interface), change);
+    files.set('plugin.json', canonicalJson(manifest));
+    assert.throws(() => validate(files), /category|defaultPrompt/);
+  }
+});
+test('default package command cannot silently build the personal-account adapter', () => {
+  const pkg = parseJson(readFileSync(join(SOURCE, '../../package.json')));
+  const command = object(pkg.scripts).package;
+  assert.equal(command, 'npm run build && npm run submission');
 });

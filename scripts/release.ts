@@ -1,3 +1,4 @@
+import { validateHubMcp } from './mcp_contract.js';
 import {
   existsSync,
   lstatSync,
@@ -250,7 +251,7 @@ export function recordPath(version: string, channel: string, root = ROOT): strin
   if (!fullMatch(/\d+\.\d+\.\d+/, version)) {
     throw new Error('Use a numeric semantic version');
   }
-  return join(root, 'releases', `plugin-${channel}-${version}.json`);
+  return join(root, '.build/release', `plugin-${channel}-${version}.json`);
 }
 export function savePrepared(
   version: string,
@@ -289,7 +290,7 @@ export function savePrepared(
       builder: '.build/tooling/scripts/release.js',
       builder_sha256: digest(readFileSync(fileURLToPath(import.meta.url))),
       builder_files: Object.fromEntries(
-        ['release.js', 'common.js', 'archive.js', 'models.js'].map((name) => [
+        ['release.js', 'common.js', 'archive.js', 'models.js', 'mcp_contract.js'].map((name) => [
           name,
           digest(readFileSync(fileURLToPath(new URL(name, import.meta.url)))),
         ]),
@@ -314,6 +315,25 @@ export function buildPlugin(
   root = ROOT,
 ): string {
   const [manifest, files] = pluginFiles(join(root, 'plugins/remote-device-hub'), profile, root);
+  // Validate new releases without rewriting historical renderer fixtures or artifacts.
+  if (profile === 'standalone') {
+    validateHubMcp(parseJson(requiredFile(files, 'mcp.json')));
+  }
+  const ui = openai(manifest).interface;
+  if ('defaultPrompt' in ui) {
+    const prompts = typeof ui.defaultPrompt === 'string' ? [ui.defaultPrompt] : ui.defaultPrompt;
+    if (
+      !Array.isArray(prompts) ||
+      prompts.length > 3 ||
+      prompts.some(
+        (prompt) => typeof prompt !== 'string' || !prompt.trim() || [...prompt].length > 512,
+      )
+    ) {
+      throw new Error(
+        'defaultPrompt must be a nonblank string or up to three strings; omit it when unused',
+      );
+    }
+  }
   const inputs: Files = new Map(
     [...files]
       .filter(([name]) => name !== '.app.json')
@@ -348,11 +368,11 @@ export function buildPlugin(
 export function loadRecord(reference: string, root = ROOT): [string, ReleaseRecord] {
   const raw = resolve(root, reference);
   if (isSymlink(raw)) {
-    throw new Error('Record must be directly under releases/');
+    throw new Error('Record must be directly under .build/release/');
   }
   const path = realpathSync(raw);
-  if (dirname(path) !== realpathSync(join(root, 'releases'))) {
-    throw new Error('Record must be directly under releases/');
+  if (dirname(path) !== realpathSync(join(root, '.build/release'))) {
+    throw new Error('Record must be directly under .build/release/');
   }
   const record = readReleaseRecord(readFileSync(path));
   const metadata = record.artifact;

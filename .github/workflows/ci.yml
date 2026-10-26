@@ -27,8 +27,8 @@ jobs:
           npm run release -- build plugin --profile standalone --channel ci-standalone
           npm run release -- build plugin --profile connected --channel ci-connected
           version="$(node -p "JSON.parse(require('node:fs').readFileSync('plugins/remote-device-hub/plugin.json', 'utf8')).version")"
-          npm run release -- check "releases/plugin-ci-standalone-${version}.json"
-          npm run release -- check "releases/plugin-ci-connected-${version}.json"
+          npm run release -- check ".build/release/plugin-ci-standalone-${version}.json"
+          npm run release -- check ".build/release/plugin-ci-connected-${version}.json"
       - uses: actions/upload-artifact@v4
         with:
           name: remote-device-hub-plugin-zips

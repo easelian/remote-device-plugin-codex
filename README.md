@@ -1,30 +1,25 @@
 # Remote Device Integrations
 
-This repository maintains the optional integration layer for Remote Device Hub: the canonical standalone MCP plugin, an optional connected ChatGPT adapter, branding assets, and public-submission materials. The Hub server and device Agent live in separate repositories.
+This repository prepares one public Remote Device Hub plugin for ChatGPT web and Codex desktop. Version 1.3.0 declares the public MCP endpoint and OAuth dynamic client registration, without a personal registered connection ID. Each user authorizes their own Hub account and pairs their own devices.
 
-The ChatGPT web client currently uses only the existing OAuth App, without a Skill. The additional private package was uninstalled, and its Skill was removed in cloud version 1.2.3. Historical uninstalled records remain in the Personal directory. See [Web integration](docs/chatgpt.md) for details. Public publication remains on hold.
+The public release is **not yet published or verified with a clean ChatGPT/Codex account**. The author-upload ZIP is an input to the official public submission workflow, not a proven direct desktop installer. Portal-generated connection bindings belong to the finalized release; do not copy a developer account's private binding into the upload.
 
-Optional integration source stays at `1.2.2`, including the original Skill, for possible restoration or use in other clients. It is not the current web entry point. The default build is standalone and does not require an App ID. Only the connected profile reads [`integrations/chatgpt/connected-app.json`](integrations/chatgpt/connected-app.json). These configurations are not runtime dependencies of the Server or Agent, and a successful build does not establish web-client acceptance.
-
-- `plugins/remote-device-hub/`: plugin manifests, MCP endpoint, the permissions and operation-confirmation Skill, and theme assets.
-- `integrations/chatgpt/`: App and channel metadata.
-- `assets/branding/`: branding source and validation materials.
-- `docs/chatgpt.md`: client connections and validation limits.
-- `docs/publication/`: listing copy, data-handling facts, and review test materials.
-
-Development tools require Node.js 22 or later. TypeScript compiles into `.build/tooling/`; plugin ZIPs contain only manifests, the Skill, and assets.
-
-```bash
+```sh
 npm ci
-npm run build
-npm run release -- build plugin --profile standalone
+npm test
+npm run style:check
+npm run package:draft
 ```
 
-Local builds produce an auditable ZIP and a `prepared` record. They do not upload a plugin, change the daily entry point, deploy the MCP service, or publish to a registry. Public publication remains on hold. `remote-device-server` owns the server URL and OAuth contract. Integration validation requires evidence of actual tool calls from the target client.
+The explicit draft command writes `dist/remote-device-hub-public-1.3.0-draft.zip` and its readiness report. `npm run package` is the strict publication-materials build and fails while required package fields are missing. Package validation does not establish publisher verification, review approval, publication, or client acceptance.
+
+Publisher requested by the owner: **EaseLian**, registered-company identity. Platform business verification remains pending. The recording URL, dedicated reviewer access, saved-version Portal checks, publication, and clean-account acceptance remain outstanding. See [cross-account release status](docs/chatgpt.md) and [review preparation](docs/publication/submission.md).
+
+Skills come from `plugins/remote-device-hub/` and are included in the public upload source. Version changes are summarized in [CHANGELOG.md](CHANGELOG.md). Build reports and client receipts are disposable local output and are not archived in the repository. `npm run package:standalone` remains a compatibility research build and does not publish anything.
 
 ## Code style
 
-`npm run format` formats development scripts and tests. `npm run style:check` checks formatting and lint rules; `npm run lint` runs only the linter. Biome is pinned as a development dependency. Use two-space indentation, single quotes, semicolons, trailing commas, one statement per line, and explicit type imports. Explicit `any` and `@ts-ignore` are prohibited. Plugin manifests, assets, historical release records, and fixed fixtures are excluded from formatting.
+`npm run format` formats development scripts and tests. `npm run style:check` checks formatting and lint rules; `npm run lint` runs only the linter. Biome is pinned as a development dependency. Use two-space indentation, single quotes, semicolons, trailing commas, one statement per line, and explicit type imports. Explicit `any` and `@ts-ignore` are prohibited. Plugin manifests, assets, generated build output, and fixed test fixtures are excluded from formatting.
 
 Manifests and release records are parsed into domain types while retaining existing fields and serialization order. ZIP construction preserves the existing format. Fixed fixtures generated by the legacy Python tools verify file hashes and archive bytes independently of current listing copy.
 
