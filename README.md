@@ -1,6 +1,15 @@
 # Remote Device Integrations
 
-This repository prepares one public Remote Device Hub plugin for ChatGPT web and Codex desktop. Version 1.3.0 declares the public MCP endpoint and OAuth dynamic client registration, without a personal registered connection ID. Each user authorizes their own Hub account and pairs their own devices.
+This repository prepares Remote Device Hub for ChatGPT web and Codex desktop. The public submission source declares the MCP endpoint and OAuth dynamic client registration, without a personal registered connection ID. Each user authorizes their own Hub account and pairs their own devices.
+
+The standalone Codex package is version 1.3.1. Its `mcp.json` contains the server type and URL only: Codex 0.163/0.164 rejects the portal's per-server `extensions` field and otherwise silently omits the MCP server. Codex discovers OAuth from the Hub's authentication challenge and resource metadata. The public submission source in `public/` retains the explicit OAuth DCR declaration.
+
+```sh
+npm run package:standalone
+npm run check:codex
+```
+
+The loader check must report `loaded_mcp_servers: ["remote-device-hub"]` and `passed: true`. It does not install the plugin, authorize a Hub account, or call a device tool. After updating the installed plugin, verify authorization and an actual `list_devices` call as well.
 
 The public release is **not yet published or verified with a clean ChatGPT/Codex account**. The author-upload ZIP is an input to the official public submission workflow, not a proven direct desktop installer. Portal-generated connection bindings belong to the finalized release; do not copy a developer account's private binding into the upload.
 
@@ -15,7 +24,7 @@ The explicit draft command writes `dist/remote-device-hub-public-1.3.0-draft.zip
 
 Publisher requested by the owner: **EaseLian**, registered-company identity. Platform business verification remains pending. The recording URL, dedicated reviewer access, saved-version Portal checks, publication, and clean-account acceptance remain outstanding. See [cross-account release status](docs/chatgpt.md) and [review preparation](docs/publication/submission.md).
 
-Skills come from `plugins/remote-device-hub/` and are included in the public upload source. Version changes are summarized in [CHANGELOG.md](CHANGELOG.md). Build reports and client receipts are disposable local output and are not archived in the repository. `npm run package:standalone` remains a compatibility research build and does not publish anything.
+Skills come from `plugins/remote-device-hub/` and are included in the public upload source. Version changes are summarized in [CHANGELOG.md](CHANGELOG.md). Build reports and client receipts are disposable local output and are not archived in the repository. `npm run package:standalone` builds the Codex package; it does not publish or install it.
 
 ## Code style
 

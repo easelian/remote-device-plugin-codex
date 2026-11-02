@@ -157,22 +157,29 @@ test('new releases reject invalid default prompts and preserve valid prompt form
     buildPlugin('standalone', 'prompt-test', validRoot);
   }
 });
-test('new standalone releases require packaged OAuth DCR and reject embedded credentials', (t) => {
+test('standalone releases reject the portal OAuth extension and embedded credentials', (t) => {
   const root = temporary(t);
   fixture(root);
   const path = join(root, 'plugins/remote-device-hub/mcp.json');
   const original = parseJson(readFileSync(path));
-  const mcp = parseJson(readFileSync(path));
-  const server = object(object(mcp.mcpServers)['remote-device-hub']);
-  delete server.extensions;
-  writeFileSync(path, canonicalJson(mcp));
-  assert.throws(() => buildPlugin('standalone', 'auth-test', root));
-  writeFileSync(path, canonicalJson(original));
   buildPlugin('standalone', 'auth-test', root);
-  const originalServer = object(object(original.mcpServers)['remote-device-hub']);
-  originalServer.headers = { Authorization: 'Bearer do-not-package' };
-  writeFileSync(path, canonicalJson(original));
-  assert.throws(() => buildPlugin('standalone', 'auth-test', root), /forbidden/);
+  const portal = parseJson(readFileSync(join(ROOT, 'public/remote-device-hub/mcp.json')));
+  const portalServer = object(object(portal.mcpServers)['remote-device-hub']);
+  assert.deepEqual(object(object(original.mcpServers)['remote-device-hub']), {
+    type: portalServer.type,
+    url: portalServer.url,
+  });
+  for (const [key, value] of [
+    ['extensions', portalServer.extensions],
+    ['headers', { Authorization: 'Bearer do-not-package' }],
+    ['env', { TOKEN: 'do-not-package' }],
+  ] as const) {
+    assert.ok(value !== undefined);
+    const mcp = parseJson(canonicalJson(original));
+    object(object(mcp.mcpServers)['remote-device-hub'])[key] = value;
+    writeFileSync(path, canonicalJson(mcp));
+    assert.throws(() => buildPlugin('standalone', 'auth-test', root), /forbidden/);
+  }
 });
 test('both profiles produce deterministic archives and retain immutable release records', (t) => {
   const root = temporary(t);
@@ -372,6 +379,10 @@ test('Python golden fixture preserves historical canonical bytes, profile hashes
   const overlayPath = join(source, '.codex-plugin/plugin.json');
   const overlay = parseJson(readFileSync(overlayPath));
   overlay.interface = object(object(object(original.extensions)['com.openai']).interface);
+  const historicalAuthor = object(original.author);
+  assert.ok(typeof historicalAuthor.name === 'string');
+  assert.ok(typeof historicalAuthor.email === 'string');
+  overlay.author = { name: historicalAuthor.name, email: historicalAuthor.email };
   const description = original.description;
   assert.ok(typeof description === 'string');
   overlay.description = description;

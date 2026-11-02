@@ -2,6 +2,7 @@
 """Read the actual Codex plugin loader; never install or create an account App."""
 import argparse
 import json
+import os
 import pathlib
 import select
 import shutil
@@ -38,7 +39,8 @@ def main():
         with (root / 'stderr.log').open('w+') as stderr:
             proc = subprocess.Popen([args.codex, 'app-server', '--stdio'],
                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                    stderr=stderr, text=True, bufsize=1)
+                                    stderr=stderr, text=True, bufsize=1,
+                                    env={**os.environ, 'RUST_LOG': 'codex_core_plugins=warn'})
             def rpc(ident, method, params):
                 proc.stdin.write(json.dumps({'id': ident, 'method': method, 'params': params}) + '\n')
                 proc.stdin.flush()
@@ -47,7 +49,10 @@ def main():
                     if select.select([proc.stdout], [], [], 1)[0]:
                         line = proc.stdout.readline()
                         if not line:
-                            raise RuntimeError('Codex app-server exited before responding')
+                            stderr.flush()
+                            stderr.seek(0)
+                            raise RuntimeError('Codex app-server exited before responding:\n' +
+                                               stderr.read(4096))
                         response = json.loads(line)
                         if response.get('id') == ident:
                             if 'error' in response:

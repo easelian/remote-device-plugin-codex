@@ -6,7 +6,9 @@
 
 默认源码采用 `public/remote-device-hub/plugin.json` 和 `mcp.json`，声明 `https://rdh.easelian.com/mcp`、OAuth 动态客户端注册及 `devices:control`。上传包不包含 `.app.json`、私人 App ID、授权头或凭据。官方发布流程中的连接注册和最终安装包生成仍需完成。
 
-当前 Codex 实际解析器会拒绝独立 `mcp.json` 的 OAuth 扩展，因此作者上传 ZIP 不能直接作为已验证的桌面安装包。最终必须测试平台生成的同一公开发行版本，不能拿上传格式检查或既有 OAuth 缓存代替安装验收。
+Codex 0.163/0.164 会拒绝 MCP 服务声明中的 `extensions` 字段，使技能可见但 MCP 服务列表为空。独立安装包 1.3.1 已移除该字段，由 Codex 通过 Hub 的认证响应和资源元数据发现 OAuth；`public/` 中的公开提交包仍保留显式 OAuth DCR 配置。`npm run check:codex` 检查实际加载器是否识别服务，授权和 `list_devices` 调用需另行验证。
+
+同一公开发行版本仍需完成平台生成、安装和双端首次授权验收，不能用独立包的解析结果或既有 OAuth 缓存代替。
 
 `npm run package:draft` 明确生成未完成材料的草稿；`npm run package` 在必填材料缺失时失败。发布者按用户指定填写 EaseLian，公司身份验证仍由平台确认。
 
@@ -22,6 +24,24 @@
 | 干净 Codex 账号安装及调用 | 未运行 | 必须使用最终公开版本，不复用开发者连接或 OAuth 缓存 |
 
 真实 Node Agent 测试运行在临时服务与文件目录中，不修改生产设备。它没有执行真实 Google 登录，也没有经过 ChatGPT/Codex 客户端。五个正例、三个反例的宿主模型审核用例仍需单独运行。
+
+## 个人私有插件的双端验证（2026-10-27）
+
+目标是在用户安装同一个私有插件后，通过登录授权使用 ChatGPT 网页和 Codex；用户不需要另行创建 MCP App 或填写服务器地址。以下是同一开发者账号上的验证，不代表其他账号的安装结果。
+
+| 版本与环境 | 观察结果 |
+| --- | --- |
+| 1.3.1，网页 Chat 和 Work | 插件和技能可见，`list_devices` 未暴露给会话，没有发出设备查询。 |
+| 1.3.2，个人私有插件更新 | 在 `mcp.json` 中声明 OAuth DCR；平台回读将该声明复制到 `.mcp.json`，未观察到 App 绑定或连接入口。网页 Work 仍未暴露 `list_devices`。 |
+| 1.3.2 配置，Codex 0.163 和 0.164 隔离加载器 | `mcp.json` 中的 `extensions` 导致 `unknown field extensions`，MCP 服务未加载。 |
+| 1.3.3，Codex 当前会话 | 移除扩展并恢复服务配置后，`list_devices` 返回已登记的在线设备。该结果使用既有账号授权，不证明新用户首次授权通过。 |
+| 1.3.3，网页 Work | 刷新插件页确认版本后，新聊天仍未获得 `list_devices`，未发出设备查询。 |
+
+当前个人私有插件更新接口尚未观察到从包中自动注册网页连接的行为。此结果只覆盖上述版本、账号和更新流程，不能证明所有私有发布方式均不支持。不得将已有 Codex 授权、页面展示 MCP server 或源码加载器通过作为网页连接验收。
+
+OpenAI 文档对[从 GitHub 导入工作区的 MCP 插件](https://learn.chatgpt.com/docs/enterprise/plugin-management)规定了 Desktop only；该规定不能直接推广到个人私有上传。[公开提交文档](https://developers.openai.com/plugins/deploy/app-review)说明提交面向公开发行，私有用途使用自定义连接。公开的 [Remote Desktop Commander 页面](https://desktopcommander.app/mcp/chatgpt/)说明其用户从目录安装插件后连接设备；它没有证明个人私有 ZIP 的连接生成机制相同。
+
+继续验证需要找到平台支持的私有连接注册或转换流程，并确认它不要求每位用户自行创建连接。每个候选版本必须分别验证网页端工具可用、首次 OAuth、`list_devices` 真实调用，以及 Codex 端加载、授权和同一查询；失败时保留已知可用版本及回退记录。
 
 ## 完成条件
 

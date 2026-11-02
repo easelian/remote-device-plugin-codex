@@ -1,5 +1,25 @@
 import { httpsUrl, object, type JsonObject } from './common.js';
 
+// Codex 0.163/0.164 rejects per-server extensions before OAuth discovery.
+// Keep portal authentication metadata in public/, and let Codex discover OAuth
+// from the Hub's WWW-Authenticate challenge and protected-resource metadata.
+export function validateCodexHubMcp(data: JsonObject): void {
+  const servers = object(data.mcpServers);
+  if (Object.keys(servers).length !== 1 || !Object.hasOwn(servers, 'remote-device-hub')) {
+    throw new Error('Expected exactly one remote-device-hub MCP server');
+  }
+  const server = object(servers['remote-device-hub']);
+  const url = httpsUrl(server.url);
+  if (server.type !== 'streamable-http' || url.search || url.hash) {
+    throw new Error('Expected credential-free HTTPS Streamable HTTP');
+  }
+  if (Object.keys(server).some((key) => !['type', 'url'].includes(key))) {
+    throw new Error(
+      'Codex Hub MCP accepts only type and url; extensions, headers and credentials are forbidden',
+    );
+  }
+}
+
 // This is the Hub's packaged connection contract. OAuth credentials belong to
 // the host's connection store, never to the distributable archive.
 export function validateHubMcp(data: JsonObject): void {

@@ -1,4 +1,4 @@
-import { validateHubMcp } from './mcp_contract.js';
+import { validateCodexHubMcp } from './mcp_contract.js';
 import {
   existsSync,
   lstatSync,
@@ -317,7 +317,7 @@ export function buildPlugin(
   const [manifest, files] = pluginFiles(join(root, 'plugins/remote-device-hub'), profile, root);
   // Validate new releases without rewriting historical renderer fixtures or artifacts.
   if (profile === 'standalone') {
-    validateHubMcp(parseJson(requiredFile(files, 'mcp.json')));
+    validateCodexHubMcp(parseJson(requiredFile(files, 'mcp.json')));
   }
   const ui = openai(manifest).interface;
   if ('defaultPrompt' in ui) {
