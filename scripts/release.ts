@@ -31,7 +31,7 @@ import {
   requiredFile,
   text,
   utf8,
-  validatePng,
+  validateIcon,
   type Files,
   type JsonObject,
 } from './common.js';
@@ -186,9 +186,13 @@ export function pluginFiles(
   for (const key of ['composerIcon', 'composerIconDark', 'logo', 'logoDark']) {
     if (key in ui) {
       const [path, data] = containedFile(source, ui[key]);
-      validatePng(key, data);
+      validateIcon(path, data);
       files.set(path, data);
     }
+  }
+  if (manifest.license) {
+    const [path, data] = containedFile(source, './LICENSE');
+    files.set(path, data);
   }
   if (profile === 'standalone') {
     const [path, data] = containedFile(source, './mcp.json');
@@ -315,7 +319,7 @@ export function buildPlugin(
   root = ROOT,
 ): string {
   const [manifest, files] = pluginFiles(join(root, 'plugins/remote-device-hub'), profile, root);
-  // Validate new releases without rewriting historical renderer fixtures or artifacts.
+  // Validate publication fields before constructing the release archive.
   if (profile === 'standalone') {
     validateCodexHubMcp(parseJson(requiredFile(files, 'mcp.json')));
   }

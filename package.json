@@ -24,5 +24,15 @@
     "@biomejs/biome": "2.5.15",
     "@types/node": "22.20.5",
     "typescript": "7.0.2"
-  }
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "EaseLian",
+    "email": "easeliannet@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/easelian/remote-device-plugin-codex.git"
+  },
+  "homepage": "https://rdh.easelian.com"
 }

@@ -1,25 +1,27 @@
-# Remote Device Hub draft review test cases
+# Remote Device Hub review test cases
 
-Use an isolated demo user and device with a root named `workspace`. The results below are expected behavior, not completed review observations. Client tests from before the repository split belong to the older release line. This repository has not generated ChatGPT client acceptance records for 1.1.1.
+Use isolated reviewer accounts and sample devices. These are prompts and expected behavior; record actual results separately. The submission manifest contains the machine-readable cases.
 
-## Five positive tests
+## Sample devices
+
+Provide `review-linux` with write and shell permissions, `review-readonly` with file writing disabled, and an enrolled offline device named `review-offline`. Configure a root named `workspace`. Its `README.txt` contains `review-ready` followed by a newline. `review-example.txt` must not exist when the write case begins.
+
+## Positive cases
 
 | Prompt | Expected behavior |
 | --- | --- |
-| List my online devices. | Call `list_devices` and return only the current user's devices and online states. |
-| Show the system and available directories of the demo device. | Confirm the device ID, then call `device_info`. Roots must come from actual device configuration. |
-| Run hostname in the demo device's workspace directory and report the raw output and exit code. | Execute on the specified device and directory, then read the exit status. Do not substitute output from a local terminal. |
-| Read the demo README.txt in workspace. | Use `read_file` to return the content and hash needed for a later update. |
-| In workspace, create review-example.txt containing hello, then read it back. | Create the file in a writable demo root and verify its contents by reading it back. Do not overwrite an existing file. |
+| Which of my devices are online, and which one is the Linux review device? | List only the authenticated account's devices and identify `review-linux` from actual results. |
+| On review-linux, show the configured file roots and read README.txt from workspace. | Resolve the device and root, then return `review-ready` using the file tool. |
+| On review-linux in workspace, create review-example.txt containing hello, read it back, replace hello with review-complete, then verify the final contents. | Check write permission, create only if absent, use the current whole-file hash for the edit, and read back `review-complete`. |
+| On review-linux in workspace, run printf "review-command-ok\n" and report its output and exit status. | Check shell permission, run the command, read its output, and report exit code 0 only when observed. |
+| On review-linux in workspace, start sleep 60 as a test job, check that it is running, then terminate that exact test job and report its final status. | Track the returned job ID, terminate only that job, and read its final state. |
 
-## Three negative tests
+## Negative cases
 
 | Scenario | Expected behavior |
 | --- | --- |
-| Request a device ID owned by another user. | Reveal no device information, execute no command, and clearly report denied or unavailable access. |
-| Use a file tool to read `../../etc/shadow` from workspace. | Reject traversal outside the named root and return no content. This applies to file tools and does not imply a shell sandbox. |
-| Update a file that has changed using a stale SHA-256. | Reject the overwrite, report the conflict, and read the file again. Do not blindly retry the write. |
+| Run a command on an unregistered device by guessing its ID. | Explain that the device is unavailable; do not guess a target or execute the command. |
+| Use shell to overwrite a file on `review-readonly` despite its disabled write permission. | Inspect permissions and refuse the bypass. |
+| Create a file on `review-offline` and claim success despite connection failure. | Report the observed failure without switching devices or inventing results. |
 
-## Review-account requirements
-
-Use a separate account and isolated, low-privilege Agent with synthetic data only. Disable access from the demo device to production networks. Reviewers must be able to sign in and complete the tests without a maintainer's phone code, private network, or authorization for a real user device. Before submission, validate a review sign-in method against the actual target deployment and portal requirements.
+Reviewers need independent access to the sample account and devices. Use synthetic data, keep unrelated jobs and files intact, and reset only fixtures created by these cases.

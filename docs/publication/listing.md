@@ -1,40 +1,28 @@
 # Remote Device Hub listing materials
 
-Use [review preparation](submission.md) for the current submission checklist and [CHANGELOG.md](../../CHANGELOG.md) for version changes.
+The listing source is `public/remote-device-hub/plugin.json`. Use [submission preparation](submission.md) to prepare the accompanying materials.
 
 ## Product details
 
-- English name: Remote Device Hub
-- Chinese name: 远程设备中心
+- Product: Remote Device Hub by EaseLian.
+- Category: Developer Tools.
 - Summary: Connect your Linux and macOS devices. Run commands, manage files, and monitor processes.
 - Chinese summary: 连接你的 Linux 和 macOS 设备，运行命令、管理文件与进程。
-- Category: Productivity
-- MCP URL: the generated `url` in `public/remote-device-hub/mcp.json`
-- Authentication: OAuth, PKCE S256, `devices:control`
-- Supported platforms: Linux and macOS
+- MCP URL: the generated `url` in `public/remote-device-hub/mcp.json`.
+- Authentication: OAuth with PKCE and dynamic client registration; `devices:control` scope.
+- License: Apache-2.0, included as `LICENSE`.
+- Artwork: the universal Remote Device Hub product icon as a 256 × 256 PNG, with a fixed midnight-blue badge and transparent corners.
 
-Remote Device Hub connects ChatGPT or another MCP client to Linux and macOS computers that a user enrolls and authorizes. It can list devices, inspect directories, run terminal commands, read and edit files, and manage Agent processes. Commands run with the selected device Agent account. Shell commands are not sandboxed by the file root configuration; production deployments should use a dedicated account and operating-system isolation.
+Each user enrolls and authorizes their own devices. Commands run with the selected Agent operating-system account. File tools use configured roots; those roots do not constrain shell execution. The plugin reports service entitlement and does not initiate purchases or promote upgrades.
 
 ## Build the upload package
 
-The public source is `public/remote-device-hub/`. From the repository root, run `npm ci`, then `npm run package:draft` while required materials are incomplete. Run `npm run package` once they are complete. The package and readiness report are generated under `dist/` and can be removed after use.
+Run `npm ci`, then `npm run package:draft` to inspect the package and its missing-materials report. Run `npm run package` when all required fields are complete. Archives and reports are generated under `dist/`.
 
-Compatibility builds use `npm run release -- build plugin --profile standalone` or the explicitly selected `connected` profile after `npm run build`. Their integrity manifests are temporary output under `.build/release/`. These commands do not upload a plugin or deploy the MCP service.
+The public upload declares the MCP endpoint and OAuth without an account-specific App binding. Standalone and connected builds use separate profiles described in [maintenance](../maintenance.md).
 
 ## Review materials
 
-Before a future submission, maintainers must supply:
+Provide a verified publisher identity, support contact, public website, privacy policy, terms of service, an independently usable reviewer account, and an isolated sample device. Complete the target platform's domain verification, scans, and recording requirements. Keep credentials out of repository files and upload archives.
 
-- A verified publisher identity, support email, and product homepage.
-- Publicly accessible privacy policy and terms of service.
-- A demo account and device isolated from production.
-- Domain verification, scan results, and final identity from the actual submission system.
-- The package to upload and the required client/device checks; keep generated reports outside version control.
-
-Submission for review is distinct from public publication. Even after approval, the publisher must explicitly publish on the target platform. Record building, uploading, deployment, and runtime validation separately.
-
-Official references:
-
-- <https://developers.openai.com/plugins/deploy/submission>
-- <https://developers.openai.com/plugins/build/plugins>
-- <https://developers.openai.com/apps-sdk/>
+The manifest provides review prompts and expected results. Verify them in the intended client and keep the resulting evidence with the submission. Building, uploading, review approval, publication, and client acceptance are separate outcomes.

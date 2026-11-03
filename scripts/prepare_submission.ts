@@ -154,7 +154,10 @@ export function validate(files: Files): [PluginManifest, string[]] {
       httpsUrl(ui[key]);
     }
   }
-  const allowed = new Set(['plugin.json', 'mcp.json']);
+  const allowed = new Set(['plugin.json', 'mcp.json', 'LICENSE']);
+  if (manifest.license !== 'Apache-2.0' || requiredFile(files, 'LICENSE').length === 0) {
+    throw new Error('Public package requires Apache-2.0 and its LICENSE text');
+  }
   for (const key of ['logo', 'composerIcon', 'logoDark', 'composerIconDark']) {
     if (!(key in ui)) {
       if (key === 'logo' || key === 'composerIcon') {
@@ -297,7 +300,7 @@ export function build(
     `remote-device-hub-public-${version}${gaps.length ? '-draft' : ''}.zip`,
   );
   const bytes = createArchive(files);
-  // Public drafts retain the existing replaceable-output behavior, separate from immutable releases.
+  // Draft output is replaceable; release archives use immutable writes.
   writeFileSync(archive, bytes);
   const actual = archiveContents(readFileSync(archive));
   validate(actual);

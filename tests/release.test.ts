@@ -24,6 +24,7 @@ import {
   object,
   parseJson,
   requiredFile,
+  validateIcon,
   type Files,
   type Json,
 } from '../scripts/common.js';
@@ -86,6 +87,8 @@ test('profiles preserve separate transport and App contracts and shared skill by
   assert.equal(standalone.version, parseJson(readFileSync(join(PLUGIN, 'plugin.json'))).version);
   assert.ok(!files.has('.app.json'));
   assert.ok(!('apps' in openai(standalone)));
+  assert.equal(standalone.license, 'Apache-2.0');
+  assert.deepEqual(requiredFile(files, 'LICENSE'), readFileSync(join(ROOT, 'LICENSE')));
   assert.equal(openai(standalone).requires_local_executor, false);
   assert.equal(
     parseJson(requiredFile(files, '.codex-plugin/plugin.json')).requires_local_executor,
@@ -268,8 +271,7 @@ test('CLI builds and checks a record in an isolated checkout', (t) => {
 });
 for (const size of [9999, 10000, 10001]) {
   test(`release icon boundary ${size}`, () => {
-    const icon = [...renderIcons().values()][0];
-    assert.ok(icon);
+    const icon = readFileSync(join(ROOT, 'public/remote-device-hub/assets/icon.png'));
     const data = Buffer.concat([icon, Buffer.alloc(size - icon.length)]);
     if (size < 10000) {
       validatePng('composerIcon', data);
@@ -278,6 +280,18 @@ for (const size of [9999, 10000, 10001]) {
     }
   });
 }
+test('standalone SVG icons obey the size and square-dimension contract', () => {
+  const [name, icon] = [...renderIcons()][0] ?? [];
+  assert.equal(name, 'assets/icon.svg');
+  assert.ok(icon);
+  validateIcon(name, icon);
+  const xml = icon.toString('utf8');
+  assert.throws(() => validateIcon(name, Buffer.from(xml.replace('height="256"', 'height="32"'))));
+  assert.throws(() => validateIcon(name, Buffer.from('<svg>invalid</svg>')), /Invalid SVG/);
+  const padded = Buffer.from(xml + ' '.repeat(9999 - icon.length));
+  validateIcon(name, padded);
+  assert.throws(() => validateIcon(name, Buffer.concat([padded, Buffer.from(' ')])), /below 10000/);
+});
 test('release state requires evidence and all checks, rejects backwards transitions and escaping evidence', (t) => {
   const root = temporary(t);
   const artifact = join(root, 'dist/a.zip');
@@ -364,7 +378,7 @@ test('canonical JSON preserves UTF-8, indentation, order and trailing newline', 
     ),
   );
 });
-test('Python golden fixture preserves historical canonical bytes, profile hashes and ZIP format', (t) => {
+test('fixed fixture verifies canonical bytes, profile hashes and ZIP format', (t) => {
   const golden = parseJson(readFileSync(join(ROOT, 'tests/fixtures/python-compatibility.json')));
   const profiles = object(golden.profiles);
   const root = temporary(t);
@@ -372,23 +386,26 @@ test('Python golden fixture preserves historical canonical bytes, profile hashes
   const source = join(root, 'plugins/remote-device-hub');
   cpSync(join(ROOT, 'tests/fixtures/python-mcp.json'), join(source, 'mcp.json'));
   cpSync(join(ROOT, 'tests/fixtures/python-skills'), join(source, 'skills'), { recursive: true });
-  // The Python fixture records historical copy. Restore those input values so
-  // current editorial changes do not weaken the byte-for-byte compatibility test.
+  cpSync(join(ROOT, 'tests/fixtures/icons'), join(source, 'assets'), { recursive: true });
+  // Fixed inputs keep the byte-for-byte archive check independent of listing copy.
   const original = object(object(profiles.standalone).manifest);
   writeFileSync(join(source, 'plugin.json'), canonicalJson(original));
   const overlayPath = join(source, '.codex-plugin/plugin.json');
   const overlay = parseJson(readFileSync(overlayPath));
   overlay.interface = object(object(object(original.extensions)['com.openai']).interface);
-  const historicalAuthor = object(original.author);
-  assert.ok(typeof historicalAuthor.name === 'string');
-  assert.ok(typeof historicalAuthor.email === 'string');
-  overlay.author = { name: historicalAuthor.name, email: historicalAuthor.email };
+  const fixtureAuthor = object(original.author);
+  assert.ok(typeof fixtureAuthor.name === 'string');
+  assert.ok(typeof fixtureAuthor.email === 'string');
+  overlay.author = { name: fixtureAuthor.name, email: fixtureAuthor.email };
   const description = original.description;
   assert.ok(typeof description === 'string');
   overlay.description = description;
   assert.ok(typeof original.version === 'string');
   overlay.version = original.version;
   delete overlay.requires_local_executor;
+  delete overlay.license;
+  delete overlay.homepage;
+  delete overlay.repository;
   writeFileSync(overlayPath, canonicalJson(overlay));
   for (const profile of ['standalone', 'connected'] as const) {
     const expected = object(profiles[profile]);

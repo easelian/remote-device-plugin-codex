@@ -161,6 +161,29 @@ export function validatePng(key: string, data: Buffer, minimum = 48): void {
     throw new Error(`Invalid icon dimensions: ${key}`);
   }
 }
+export function validateIcon(path: string, data: Buffer, minimum = 48): void {
+  if (!path.endsWith('.svg')) {
+    validatePng(path, data, minimum);
+    return;
+  }
+  if (data.length >= ICON_BYTE_LIMIT) {
+    throw new Error(`SVG icon must be below ${ICON_BYTE_LIMIT} bytes: ${path}`);
+  }
+  const content = utf8(data);
+  const root = /^\s*(?:<\?xml[^?]*\?>\s*)?(<svg\b[^>]*>)/u.exec(content)?.[1];
+  if (
+    !root ||
+    !/\bxmlns=["']http:\/\/www\.w3\.org\/2000\/svg["']/u.test(root) ||
+    !/<\/svg>\s*$/u.test(content)
+  ) {
+    throw new Error(`Invalid SVG icon: ${path}`);
+  }
+  const width = Number(/\bwidth=["']([\d.]+)(?:px)?["']/u.exec(root)?.[1]);
+  const height = Number(/\bheight=["']([\d.]+)(?:px)?["']/u.exec(root)?.[1]);
+  if (!Number.isFinite(width) || width !== height || width < minimum) {
+    throw new Error(`Invalid icon dimensions: ${path}`);
+  }
+}
 export function httpsUrl(value: unknown): URL {
   if (typeof value !== 'string' || [...value].length > 1024) {
     throw new Error('Expected an HTTPS URL of at most 1024 characters');

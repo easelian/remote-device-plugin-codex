@@ -1,25 +1,26 @@
 {
   "interface": {
-    "brandColor": "#52677D",
-    "brandColorDark": "#A5B5C5",
+    "brandColor": "#1D1D1F",
+    "brandColorDark": "#F5F5F7",
     "capabilities": [],
     "category": "Other",
-    "composerIcon": "./assets/remote-device-hub-theme-light-256.png",
-    "composerIconDark": "./assets/remote-device-hub-theme-dark-256.png",
+    "composerIcon": "./assets/icon.svg",
     "developerName": "EaseLian",
     "displayName": "Remote Device Hub",
-    "logo": "./assets/remote-device-hub-theme-light-512.png",
-    "logoDark": "./assets/remote-device-hub-theme-dark-512.png",
+    "logo": "./assets/icon.svg",
     "longDescription": "Connect and manage Linux and macOS devices you authorize. Check device status, run terminal commands, read and write files, and manage processes on the selected device.",
     "shortDescription": "Manage Linux and macOS devices"
   },
   "name": "remote-device-hub",
-  "version": "1.3.1",
+  "version": "1.3.11",
   "description": "Connect and manage Linux and macOS devices you authorize. Check device status, run terminal commands, read and write files, and manage processes on the selected device.",
   "author": {
-    "email": "easeliannet@gmail.com",
-    "name": "EaseLian"
+    "name": "EaseLian",
+    "email": "easeliannet@gmail.com"
   },
   "keywords": [],
-  "requires_local_executor": false
+  "requires_local_executor": false,
+  "license": "Apache-2.0",
+  "homepage": "https://rdh.easelian.com",
+  "repository": "https://github.com/easelian/remote-device-plugin-codex"
 }
