@@ -12,7 +12,7 @@
     "shortDescription": "Manage Linux and macOS devices"
   },
   "name": "remote-device-hub",
-  "version": "1.3.11",
+  "version": "1.3.12",
   "description": "Connect and manage Linux and macOS devices you authorize. Check device status, run terminal commands, read and write files, and manage processes on the selected device.",
   "author": {
     "name": "EaseLian",

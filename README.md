@@ -16,7 +16,7 @@ Each user signs in to their own Hub account and pairs their own devices. Availab
 | `public/remote-device-hub/` | Public submission source | MCP with explicit OAuth dynamic client registration | 256 × 256 PNG |
 | `integrations/chatgpt/connected-app.json` | Connected build profile | Registered App identity | SVG |
 
-The plugin name is `remote-device-hub`. Source manifests use version `1.3.11`. The Codex package contains a portable manifest and a `.codex-plugin/plugin.json` compatibility manifest with matching identity and presentation. The public upload excludes account-specific App bindings.
+The plugin name is `remote-device-hub`. Source manifests use version `1.3.12`. The Codex package contains a portable manifest and a `.codex-plugin/plugin.json` compatibility manifest with matching identity and presentation. The public upload excludes account-specific App bindings.
 
 ## Build and validate
 
@@ -30,13 +30,15 @@ npm run package:standalone
 npm run check:codex
 ```
 
-The standalone archive is `dist/remote-device-hub-plugin-standalone-1.3.11.zip`. Its integrity manifest is written under `.build/release/`. The loader check must report `loaded_mcp_servers: ["remote-device-hub"]` and `passed: true`. It checks discovery without installing the plugin, authorizing a Hub account, or calling a device tool.
+The standalone archive is `dist/remote-device-hub-plugin-standalone-1.3.12.zip`. Its integrity manifest is written under `.build/release/`. The loader check must report `loaded_mcp_servers: ["remote-device-hub"]` and `passed: true`. It checks discovery without installing the plugin, authorizing a Hub account, or calling a device tool.
 
 For public-submission materials, use `npm run package:draft` to generate a ZIP and readiness report under `dist/`. `npm run package` requires all mandatory metadata and fails when materials are missing. Building does not upload, submit, or publish a plugin. See [submission preparation](docs/publication/submission.md).
 
 ## Connect and use
 
 Install the package through the client's supported plugin flow, authorize your Hub account, and call `list_devices`. An empty list means the account has no visible devices. Follow the Agent setup and pairing instructions on the Hub website, then query again.
+
+If Codex shows the plugin as installed but does not expose its MCP tools, verify the `plugins."<plugin-name>@<marketplace-name>".enabled` setting in the user config and start a new conversation. Native Codex OAuth uses a loopback redirect, which the Hub Auth service must allow.
 
 Select a device returned by the service and inspect its roots and permissions before running file or process operations. Verify writes with readback and jobs with their returned status. See [ChatGPT and Codex verification](docs/chatgpt.md) for separate loader, authorization, and device-call checks.
 
