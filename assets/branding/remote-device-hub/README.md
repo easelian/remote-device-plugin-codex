@@ -1,20 +1,18 @@
 # Remote Device Hub product artwork
 
-The editable SVG masters are maintained in the sibling brand repository under [`products/remote-device-hub/icons/`](../../../../brand/products/remote-device-hub/icons/). EaseLian company logos live separately under `brand/company/easelian/` and identify the publisher.
+The editable SVG master is maintained in the sibling brand repository at [`products/remote-device-hub/icons/remote-device-hub.svg`](../../../../brand/products/remote-device-hub/icons/remote-device-hub.svg). EaseLian company logos live separately under `brand/company/easelian/` and identify the publisher.
 
-The default product icon is `remote-device-hub.svg`: the Access mark combines a rounded device outline, an opening at the upper right, and a diagonal connection reaching a central hub. It uses solid blue (`#0A84FF`) on a transparent background, without a background tile or shadow. The same icon is used on light and dark surfaces. The plugin manifests use one icon for both appearances and do not require separate dark-icon fields.
+The product icon is the Access mark: a rounded device outline with an opening at the upper right and a diagonal connection reaching a central hub. It uses solid blue (`#0A84FF`) on a transparent background, without a background tile or shadow. The same icon is used on light and dark surfaces.
 
-| Copy | Purpose |
-| --- | --- |
-| `plugins/remote-device-hub/assets/icon.svg` | Universal icon in standalone and connected packages |
-| `public/remote-device-hub/assets/icon.png` | Universal 256 × 256 PNG for public submission |
-| `tests/fixtures/icons/*.svg` | Universal, light, and dark product SVGs used in archive checks |
+The canonical plugin copy is `plugins/remote-device-hub/assets/icon.png`, a 256 × 256 export of that SVG. Local development and public ZIPs use the same file; there is no separately maintained public icon.
 
-Run from the brand repository to update the plugin copies:
+Run from the brand repository to synchronize or check workspace copies:
 
 ```sh
 python3 tools/export_product.py --sync-workspace ..
 python3 tools/export_product.py --check-workspace ..
 ```
 
-Each packaged icon must be below 10,000 bytes. Public-submission logos must be square PNGs of at least 256 × 256 pixels, and composer icons at least 48 × 48. SVG masters use a 256 × 256 viewBox and contain editable paths rather than embedded bitmaps. Test fixtures and packaged assets are copies; edit the brand masters, synchronize, update affected fixed archive hashes, and run `npm test`. Plugin packaging works without the brand checkout.
+The synchronization command updates the named consumers in the workspace, including other plugins and the Server if present. Use the check command for read-only verification. After changing this plugin's copy, regenerate its development output and ZIPs and run `npm test`.
+
+The under-10,000-byte limit is a project constraint. OpenAI also supports other image formats; this project uses PNG consistently. Ordinary plugin builds use the bundled image and do not require Inkscape or a sibling brand checkout.

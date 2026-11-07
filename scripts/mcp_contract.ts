@@ -1,8 +1,8 @@
 import { httpsUrl, object, type JsonObject } from './common.js';
 
-// Codex 0.163/0.164 rejects per-server extensions before OAuth discovery.
-// Keep portal authentication metadata in public/, and let Codex discover OAuth
-// from the Hub's WWW-Authenticate challenge and protected-resource metadata.
+// Validate only the generated local-development connection. Codex 0.167 rejects
+// per-server extensions before OAuth discovery. The canonical source retains
+// its explicit OAuth metadata for public submission.
 export function validateCodexHubMcp(data: JsonObject): void {
   const servers = object(data.mcpServers);
   if (Object.keys(servers).length !== 1 || !Object.hasOwn(servers, 'remote-device-hub')) {
@@ -45,8 +45,13 @@ export function validateHubMcp(data: JsonObject): void {
     Object.keys(server).some((key) => !['type', 'url', 'extensions'].includes(key)) ||
     Object.keys(extensions).some((key) => key !== 'com.openai') ||
     Object.keys(extension).some((key) => key !== 'auth') ||
-    Object.keys(auth).some((key) => !['type', 'client', 'baseScopes'].includes(key)) ||
+    Object.keys(auth).some(
+      (key) => !['type', 'client', 'baseScopes', 'oidcEnabled', 'defaultScopes'].includes(key),
+    ) ||
     Object.keys(client).some((key) => key !== 'mode') ||
+    auth.oidcEnabled !== false ||
+    !Array.isArray(auth.defaultScopes) ||
+    auth.defaultScopes.length !== 0 ||
     auth.type !== expected.type ||
     client.mode !== expected.client.mode ||
     !Array.isArray(auth.baseScopes) ||
@@ -54,7 +59,7 @@ export function validateHubMcp(data: JsonObject): void {
     auth.baseScopes[0] !== expected.baseScopes[0]
   ) {
     throw new Error(
-      'Hub MCP requires OAuth DCR and devices:control; credentials and headers are forbidden',
+      'Hub MCP requires OAuth DCR with only devices:control and OIDC disabled; credentials and headers are forbidden',
     );
   }
 }

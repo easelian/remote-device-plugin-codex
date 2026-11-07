@@ -5,7 +5,7 @@ import { basename, join } from 'node:path';
 import { test } from 'node:test';
 import { archiveContents } from '../scripts/archive.js';
 import { canonicalJson, object, parseJson, requiredFile } from '../scripts/common.js';
-import { openai } from '../scripts/release.js';
+import { openai } from '../scripts/models.js';
 import { SOURCE, build, localPath, sourceFiles, validate } from '../scripts/prepare_submission.js';
 
 function temporary(t: { after(fn: () => void): void }): string {
@@ -47,6 +47,17 @@ test('public MCP preserves OAuth DCR and rejects missing authentication', () => 
   delete object(object(mcp.mcpServers)['remote-device-hub']).extensions;
   files.set('mcp.json', canonicalJson(mcp));
   assert.throws(() => validate(files));
+});
+test('public MCP prevents website OIDC defaults from entering device authorization', () => {
+  for (const change of [{ oidcEnabled: true }, { defaultScopes: ['openid', 'email'] }]) {
+    const files = sourceFiles(SOURCE);
+    const mcp = parseJson(requiredFile(files, 'mcp.json'));
+    const server = object(object(mcp.mcpServers)['remote-device-hub']);
+    const auth = object(object(object(server.extensions)['com.openai']).auth);
+    Object.assign(auth, change);
+    files.set('mcp.json', canonicalJson(mcp));
+    assert.throws(() => validate(files), /OIDC disabled/);
+  }
 });
 test('public MCP headers and unreferenced files are rejected', () => {
   const files = sourceFiles(SOURCE);
@@ -130,4 +141,35 @@ test('default package command cannot silently build the personal-account adapter
   const pkg = parseJson(readFileSync(join(SOURCE, '../../package.json')));
   const command = object(pkg.scripts).package;
   assert.equal(command, 'npm run build && npm run submission');
+});
+
+test('candidate archives are immutable and drafts cannot replace them', (t) => {
+  const root = temporary(t);
+  const source = join(root, 'remote-device-hub');
+  cpSync(SOURCE, source, { recursive: true });
+  const path = join(source, 'plugin.json');
+  const manifest = parseJson(readFileSync(path));
+  object(openai(manifest).review).demo_recording_url = 'https://example.com/test-fixture.mp4';
+  writeFileSync(path, canonicalJson(manifest));
+  const [candidate] = build(source, join(root, 'dist'));
+  const bytes = readFileSync(candidate);
+  manifest.description = 'Changed fixture';
+  writeFileSync(path, canonicalJson(manifest));
+  assert.throws(() => build(source, join(root, 'dist')), /Refusing/);
+  const [draft] = build(source, join(root, 'dist'), true);
+  assert.notEqual(draft, candidate);
+  assert.match(draft, /-draft.zip$/);
+  assert.deepEqual(readFileSync(candidate), bytes);
+});
+
+test('publication identifies EaseLian and uses the public company website', () => {
+  const [manifest] = validate(sourceFiles(SOURCE));
+  const ui = openai(manifest).interface;
+  assert.equal(object(manifest.author).name, 'EaseLian');
+  assert.equal(object(manifest.author).url, 'https://easelian.com/');
+  assert.equal(ui.developerName, 'EaseLian');
+  assert.equal(ui.websiteURL, 'https://easelian.com/');
+  assert.equal(ui.supportURL, 'https://easelian.com/contact');
+  assert.equal(ui.privacyPolicyURL, 'https://easelian.com/privacy');
+  assert.equal(ui.termsOfServiceURL, 'https://easelian.com/terms');
 });

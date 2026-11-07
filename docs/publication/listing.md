@@ -1,28 +1,25 @@
 # Remote Device Hub listing materials
 
-The listing source is `public/remote-device-hub/plugin.json`. Use [submission preparation](submission.md) to prepare the accompanying materials.
+Maintain listing metadata in `plugins/remote-device-hub/plugin.json`. The same source supplies local development and public submission; do not edit generated copies.
 
 ## Product details
 
-- Product: Remote Device Hub by EaseLian.
+- Product: Remote Device Hub.
+- Publisher: EaseLian.
+- Website: https://easelian.com/.
+- Support: https://easelian.com/contact.
+- Privacy: https://easelian.com/privacy.
+- Terms: https://easelian.com/terms.
 - Category: Developer Tools.
-- Summary: Connect your Linux and macOS devices. Run commands, manage files, and monitor processes.
-- Chinese summary: 连接你的 Linux 和 macOS 设备，运行命令、管理文件与进程。
-- MCP URL: the generated `url` in `public/remote-device-hub/mcp.json`.
-- Authentication: OAuth with PKCE and dynamic client registration; `devices:control` scope.
+- MCP URL: `https://rdh.easelian.com/mcp`, declared in the canonical `mcp.json`.
+- Authentication: OAuth with dynamic client registration and `devices:control` scope. Set `oidcEnabled: false` and `defaultScopes: []` so website OIDC discovery does not add `openid email` to MCP authorization.
 - License: Apache-2.0, included as `LICENSE`.
-- Artwork: the universal Remote Device Hub product icon as a 256 × 256 PNG, with a fixed midnight-blue badge and transparent corners.
+- Artwork: the shared 256 × 256 transparent gray-and-blue Remote Device Hub product icon. Company logos identify EaseLian separately.
 
-Each user enrolls and authorizes their own devices. Commands run with the selected Agent operating-system account. File tools use configured roots; those roots do not constrain shell execution. The plugin reports service entitlement and does not initiate purchases or promote upgrades.
+Each user enrolls and authorizes their own devices. Commands run with the selected Agent operating-system account. File tools use configured roots; those roots do not constrain shell execution. The plugin reports service entitlement and does not initiate purchases or promote upgrades. Keep advertised capabilities aligned with the deployed service and verified client workflows.
 
-## Build the upload package
+## Build and review
 
-Run `npm ci`, then `npm run package:draft` to inspect the package and its missing-materials report. Run `npm run package` when all required fields are complete. Archives and reports are generated under `dist/`.
+Run `npm ci`, then `npm run package:draft` to inspect the ZIP and missing-materials report. Use `npm run package` when package metadata is complete. Generated ZIPs contain the canonical OAuth declaration and exclude account-specific App bindings, local marketplace catalogs, development reports, and credentials.
 
-The public upload declares the MCP endpoint and OAuth without an account-specific App binding. Standalone and connected builds use separate profiles described in [maintenance](../maintenance.md).
-
-## Review materials
-
-Provide a verified publisher identity, support contact, public website, privacy policy, terms of service, an independently usable reviewer account, and an isolated sample device. Complete the target platform's domain verification, scans, and recording requirements. Keep credentials out of repository files and upload archives.
-
-The manifest provides review prompts and expected results. Verify them in the intended client and keep the resulting evidence with the submission. Building, uploading, review approval, publication, and client acceptance are separate outcomes.
+Follow [submission preparation](submission.md) to prepare reviewer access, real test results, an accessible video, domain verification, and portal checks. Do not count a populated field or a successful local build as proof of those external steps.

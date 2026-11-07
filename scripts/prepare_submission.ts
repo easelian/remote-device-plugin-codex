@@ -10,6 +10,7 @@ import {
   fullMatch,
   hashes,
   httpsUrl,
+  immutableWrite,
   isMain,
   isSymlink,
   localPath,
@@ -23,10 +24,10 @@ import {
   type Json,
   type JsonObject,
 } from './common.js';
-import { openai } from './release.js';
+import { openai } from './models.js';
 import { readPluginManifest, type PluginManifest } from './models.js';
 export { localPath } from './common.js';
-export const SOURCE = join(ROOT, 'public/remote-device-hub');
+export const SOURCE = join(ROOT, 'plugins/remote-device-hub');
 const URL_FIELDS = ['websiteURL', 'supportURL', 'privacyPolicyURL', 'termsOfServiceURL'];
 function truthy(value: Json | undefined): boolean {
   if (Array.isArray(value)) {
@@ -297,11 +298,15 @@ export function build(
   const version = manifest.version;
   const archive = join(
     destination,
-    `remote-device-hub-public-${version}${gaps.length ? '-draft' : ''}.zip`,
+    `remote-device-hub-public-${version}${allowIncomplete ? '-draft' : ''}.zip`,
   );
   const bytes = createArchive(files);
-  // Draft output is replaceable; release archives use immutable writes.
-  writeFileSync(archive, bytes);
+  // A published-version candidate must not silently change under the same name.
+  if (allowIncomplete) {
+    writeFileSync(archive, bytes);
+  } else {
+    immutableWrite(archive, bytes);
+  }
   const actual = archiveContents(readFileSync(archive));
   validate(actual);
   if (!sameFiles(actual, files)) {

@@ -20,17 +20,15 @@ jobs:
       - run: npm run style:check
       - run: npm run typecheck
       - run: npm test
-      - name: Build and check both plugin profiles
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run release -- build plugin --profile standalone --channel ci-standalone
-          npm run release -- build plugin --profile connected --channel ci-connected
-          version="$(node -p "JSON.parse(require('node:fs').readFileSync('plugins/remote-device-hub/plugin.json', 'utf8')).version")"
-          npm run release -- check ".build/release/plugin-ci-standalone-${version}.json"
-          npm run release -- check ".build/release/plugin-ci-connected-${version}.json"
+      - name: Prepare the local marketplace
+        run: npm run dev:prepare
+      - name: Build and inspect the public draft
+        run: npm run package:draft
       - uses: actions/upload-artifact@v4
         with:
-          name: remote-device-hub-plugin-zips
-          path: dist/remote-device-hub-plugin-*.zip
+          name: remote-device-hub-public-draft
+          path: |
+            dist/remote-device-hub-public-*-draft.zip
+            dist/remote-device-hub-public-*-draft.zip.sha256
+            dist/remote-device-hub-public-*-draft.report.json
           if-no-files-found: error

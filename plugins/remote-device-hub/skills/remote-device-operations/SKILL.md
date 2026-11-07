@@ -19,8 +19,8 @@ connection failures separately from device failures.
 
 After authorization, call `list_devices`. An empty list is a valid result for
 a new Hub account; it does not mean the plugin connection failed. Direct the
-user to https://rdh.easelian.com/ to sign in to the same Hub account and
-follow the device Agent installation and pairing instructions there. Device
+user to https://easelian.com/ for Agent installation instructions and sign in
+to the same Hub account when pairing the device. Device
 pairing requires the user's explicit approval. Do not silently pair a machine,
 reuse the publisher's device, switch Hub accounts, or change device permissions.
 Do not request pairing secrets or passwords in chat.

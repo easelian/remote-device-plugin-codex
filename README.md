@@ -1,66 +1,58 @@
 # Remote Device Hub for ChatGPT and Codex
 
-![Remote Device Hub](plugins/remote-device-hub/assets/icon.svg)
+![Remote Device Hub](plugins/remote-device-hub/assets/icon.png)
 
-Remote Device Hub by EaseLian connects ChatGPT and Codex to Linux and macOS devices that you enroll and authorize. The plugin provides an operations skill and an authenticated MCP connection for device status, files, shell commands, and Agent-managed processes.
+Remote Device Hub by EaseLian connects ChatGPT and Codex to Linux and macOS devices that you enroll and authorize. It provides an operations skill and an authenticated MCP connection for device status, files, shell commands, and Agent-managed processes.
 
-[Remote Device Hub](https://rdh.easelian.com) · [Source](https://github.com/easelian/remote-device-plugin-codex) · [Support](https://rdh.easelian.com/contact)
+[Website](https://easelian.com/) · [Source](https://github.com/easelian/remote-device-plugin-codex) · [Support](https://easelian.com/contact)
 
-Each user signs in to their own Hub account and pairs their own devices. Available operations depend on the selected device's permissions and capabilities. File roots constrain file tools; shell commands run with the Agent operating-system account's permissions.
+Each user signs in to their own Hub account and pairs their own devices. Available operations depend on device permissions and capabilities. File roots constrain file tools; shell commands run with the Agent operating-system account's permissions.
 
-## Packages
+## One plugin source
 
-| Source | Purpose | Connection | Icon |
-| --- | --- | --- | --- |
-| `plugins/remote-device-hub/` | Codex standalone package | MCP type and URL; OAuth discovery by the client | SVG |
-| `public/remote-device-hub/` | Public submission source | MCP with explicit OAuth dynamic client registration | 256 × 256 PNG |
-| `integrations/chatgpt/connected-app.json` | Connected build profile | Registered App identity | SVG |
+`plugins/remote-device-hub/` is the only maintained plugin source. Its portable `plugin.json`, OAuth configuration in `mcp.json`, skill files, product icon, and Apache-2.0 license are used for both local development and public submission. The plugin name is `remote-device-hub` and the current version is `1.3.14`.
 
-The plugin name is `remote-device-hub`. Source manifests use version `1.3.12`. The Codex package contains a portable manifest and a `.codex-plugin/plugin.json` compatibility manifest with matching identity and presentation. The public upload excludes account-specific App bindings.
+| Output | Purpose | Generated location |
+| --- | --- | --- |
+| Local marketplace | Install and test the complete plugin with Codex | `.build/development/` |
+| Public draft ZIP | Inspect the upload package and missing review materials | `dist/remote-device-hub-public-1.3.14-draft.zip` |
+| Public submission ZIP | Upload a candidate after required package metadata is complete | `dist/remote-device-hub-public-1.3.14.zip` |
 
-## Build and validate
+Generated files are not a second source. Edit the canonical directory, then regenerate. The local adapter currently removes only per-server OAuth extension metadata because Codex 0.167 rejects it; Codex discovers OAuth from the Hub instead. The public ZIP retains the explicit OAuth DCR declaration and `devices:control` scope. Authentication is still required in both flows.
 
-Use Node.js 22 or later. Run from the repository root:
+## Develop and install locally
+
+Use Node.js 22 or later, Python 3, and a Codex client with `plugin marketplace` and `plugin add` support. Run from this repository:
 
 ```sh
 npm ci
 npm run style:check
 npm test
-npm run package:standalone
-npm run check:codex
+npm run dev:prepare
+npm run dev:check
+npm run dev:install
+npm run dev:status
 ```
 
-The standalone archive is `dist/remote-device-hub-plugin-standalone-1.3.12.zip`. Its integrity manifest is written under `.build/release/`. The loader check must report `loaded_mcp_servers: ["remote-device-hub"]` and `passed: true`. It checks discovery without installing the plugin, authorizing a Hub account, or calling a device tool.
+`dev:prepare` generates the `rdh-development` marketplace. `dev:check` asks the actual Codex loader to read it; it does not install, authorize, or call a device. `dev:install` regenerates the source, registers the marketplace, and installs `remote-device-hub@rdh-development` through the official Codex commands. It changes the current user's local Codex installation. It does not publish to a workspace or the public directory.
 
-For public-submission materials, use `npm run package:draft` to generate a ZIP and readiness report under `dist/`. `npm run package` requires all mandatory metadata and fails when materials are missing. Building does not upload, submit, or publish a plugin. See [submission preparation](docs/publication/submission.md).
+Open the installed development plugin in the desktop client and complete its Connect flow. The Hub authorization page explains the requested access before sign-in. Continue or cancel, then confirm access for the intended account. Run `npm run dev:verify` to check the installed files, OAuth status, and a real `list_devices` call. Then start a new conversation with this plugin enabled and ask which of your devices are online. Judge success from an actual result, including a legitimate empty list.
 
-## Connect and use
+Repeat `dev:install` after edits and start a new conversation; restart the desktop client if it retains old files. Check the installed version and source rather than editing the plugin cache. See [installation, OAuth, and tool validation](docs/chatgpt.md) for full steps and cleanup.
 
-Install the package through the client's supported plugin flow, authorize your Hub account, and call `list_devices`. An empty list means the account has no visible devices. Follow the Agent setup and pairing instructions on the Hub website, then query again.
-
-If Codex shows the plugin as installed but does not expose its MCP tools, verify the `plugins."<plugin-name>@<marketplace-name>".enabled` setting in the user config and start a new conversation. Native Codex OAuth uses a loopback redirect, which the Hub Auth service must allow.
-
-Select a device returned by the service and inspect its roots and permissions before running file or process operations. Verify writes with readback and jobs with their returned status. See [ChatGPT and Codex verification](docs/chatgpt.md) for separate loader, authorization, and device-call checks.
-
-## Brand assets and license
-
-The icons use the Remote Device Hub Access mark: a rounded device outline with an upper-right opening and a diagonal connection reaching a central hub. The solid blue (`#0A84FF`) artwork has a transparent background and uses the same icon on light and dark surfaces. EaseLian is the publisher. The standalone package uses SVG. Public submission requires PNG and includes the same artwork at 256 × 256 pixels. Each icon is below 10,000 bytes. See [asset export instructions](assets/branding/remote-device-hub/README.md).
-
-The repository and plugin packages use Apache License 2.0. The full [LICENSE](LICENSE) is included in each package.
-
-## Development
-
-Skills are maintained in `plugins/remote-device-hub/skills/` and synchronized with the public source. Scripts parse manifests and build deterministic ZIPs. Fixed test inputs verify canonical JSON, file hashes, archive bytes, and release-record checks independently of the listing text.
-
-`npm run format` formats scripts and tests. `npm run style:check` checks formatting and lint rules; `npm run lint` runs only the linter. Biome uses two-space indentation, single quotes, semicolons, trailing commas, and explicit type imports. Generated files and fixed fixtures are outside its formatting scope. See [maintenance](docs/maintenance.md).
-
-## Deployment addresses
-
-MCP and public-listing URLs are generated from the Server repository's `deploy/config.json`. With sibling checkouts, run:
+## Prepare public submission
 
 ```sh
-python3 ../remote-device-server/scripts/sync-deployment.py
-python3 ../remote-device-server/scripts/sync-deployment.py --check
+npm run package:draft
+npm run package
 ```
 
-The generator also accepts `--project remote-device-plugin-codex` with an explicit `--workspace` parent directory. Builds use the generated manifests and do not require the Server checkout. Registered account Apps are managed separately through their platform connection settings.
+The draft command writes a ZIP, SHA-256 checksum, and report even when review materials are incomplete. The strict command fails on missing required package metadata and refuses to replace a candidate ZIP with different bytes under the same version. Both inspect the resulting archive. Neither command uploads or publishes anything.
+
+A complete package still needs portal connection checks, domain verification, review, and publication. The user has confirmed EaseLian business verification; select that verified identity in the portal. See [submission preparation](docs/publication/submission.md).
+
+## Brand and maintenance
+
+EaseLian is the publisher and Remote Device Hub is the product. Both outputs use the same solid blue Access mark on a transparent background, exported from the sibling `brand` repository. The mark combines an open device outline with a diagonal connection reaching a central hub. Company artwork is reserved for the company identity. [Brand instructions](assets/branding/remote-device-hub/README.md) describe synchronization.
+
+See [maintenance](docs/maintenance.md) for generated output, existing account-bound development connections, and validation. The repository and plugin are licensed under [Apache-2.0](LICENSE).

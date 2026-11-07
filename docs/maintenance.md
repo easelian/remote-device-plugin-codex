@@ -1,33 +1,54 @@
 # Maintenance and packaging
 
-This repository contains plugin sources, ChatGPT connection metadata, EaseLian assets, public-submission materials, and packaging tools. The Server, Protocol, and Agent have separate repositories.
+Maintain plugin content only in `plugins/remote-device-hub/`. The Server, Protocol, and Agent have separate repositories. Changes here do not deploy the Hub or update device Agents.
 
-## Local builds
+## Build and validate
 
-With Node.js 22 or later, run from the repository root:
+Use Node.js 22 or later and Python 3. Run from the repository root:
 
 ```sh
 npm ci
 npm run style:check
 npm run typecheck
 npm test
-npm run package:standalone
-npm run release -- build plugin --profile connected
+npm run dev:prepare
+npm run dev:check
 npm run package:draft
 ```
 
-Standalone packages use the MCP endpoint and client OAuth discovery. The connected profile uses the registered App identity in `integrations/chatgpt/connected-app.json` and is account-bound. Public submission uses `public/remote-device-hub/` and excludes that binding.
+The build removes stale emitted modules under `.build/tooling/` before compiling current TypeScript sources. Tests cover canonical metadata, isolated development generation, archive readback, immutability, traversal and symlink rejection, and public-package credential exclusion. The fixed archive fixture contains only serialization and ZIP interoperability samples; it is not a copy of the plugin.
 
-Packages are written to `dist/`; release integrity manifests are written to `.build/release/`. These are ignored build outputs. Release archives are immutable: change the manifest version before building different bytes under the same release name. Draft submission outputs are replaceable.
+`dev:check` requires the intended Codex executable on PATH. It proves component discovery only. Use the separate [installation and account validation procedure](chatgpt.md) to verify installation, OAuth, and actual tools.
 
-## Source consistency
+After installation and OAuth, `npm run dev:verify` checks the installed version and cache hashes, opens an ephemeral read-only Codex session, verifies the connection belongs to `rdh-development`, and calls `list_devices`. Its report contains counts, not device identifiers or file contents. It refuses stale installs, another plugin's connection, missing OAuth, and unsuccessful tool responses. Python regression checks exercise those refusal paths and run as part of `npm test`.
 
-Keep the portable and compatibility manifests aligned in name, version, author, license, and interface fields. Synchronize skill files between the standalone and public source trees. Both source trees include the repository's Apache-2.0 LICENSE.
+## Generated local marketplace
 
-Standalone icons are SVG. Public-submission icons are square PNGs, at least 256 × 256 pixels for the listing logo and 48 × 48 for the composer. Both use the universal Remote Device Hub product icon and remain below the project's 10,000-byte per-icon limit. [Brand instructions](../assets/branding/remote-device-hub/README.md) describe the source and PNG export.
+`npm run dev:prepare` replaces only its marked `.build/development/` tree. It writes a marketplace catalog, a plugin copy, and `development.json` with canonical-source and generated-file hashes. Unknown directories or symlinks at the output path are refused. Do not edit generated files or the Codex installation cache.
 
-## Validation
+The canonical MCP configuration declares OAuth DCR and `devices:control`. For the current Codex 0.167 local loader, generation removes the per-server `extensions` field and validates a connection containing only `type` and `url`. The client must still discover and complete OAuth against the Hub. This adapter does not disable Hub authentication, embed credentials, or change the public upload.
 
-Tests cover package construction, archive readback, component containment, metadata, and release records. Fixed inputs verify canonical JSON bytes, profile hashes, and ZIPs with empty files, binary data, and Unicode filenames.
+Install or refresh with `npm run dev:install`. Installation uses the user's official Codex configuration and plugin cache. It does not overwrite other marketplace entries or publish an account plugin. The local marketplace is named `rdh-development`; the plugin identity remains `remote-device-hub`.
 
-Run `npm run check:codex` against the intended Codex executable to verify MCP discovery. Then verify account authorization and a real `list_devices` call in each target client. Package validation and client acceptance are separate checks. [Submission preparation](publication/submission.md) covers the public workflow.
+## Existing account-bound development connection
+
+`integrations/chatgpt/connected-app.json` retains an existing account-specific App binding. It is not part of the canonical plugin or any public ZIP. If that App is still accessible to the intended account, generate the local development copy with:
+
+```sh
+npm run dev:prepare -- --app-binding integrations/chatgpt/connected-app.json
+codex plugin marketplace add ./.build/development
+codex plugin add remote-device-hub@rdh-development --json
+npm run dev:check
+```
+
+This substitutes the supplied App binding for direct MCP discovery only in generated files. It does not prove that the App is authorized or usable. `npm run dev:install` regenerates the default direct-MCP configuration; use the explicit commands above for an App-bound test. Do not copy a publisher's App ID into another user's setup.
+
+## Public ZIPs
+
+`npm run package:draft` writes replaceable draft ZIPs and reports under `dist/`. `npm run package` requires complete package metadata and writes an immutable candidate ZIP. Change the canonical version before changing an existing candidate. Both builds read only the canonical source, so neither can accidentally package the generated local authentication adapter or an account binding.
+
+Inspect the report's `missing_materials` and `package_metadata_complete`. `submission_ready` remains false because local packaging cannot establish portal scans, reviewer access, legal attestations, approval, or publication. Keep those checks distinct from the local artifact checksum.
+
+## Brand
+
+`plugins/remote-device-hub/assets/icon.png` is the shared 256 × 256 product icon. Sync it from `brand`; both outputs use the same bytes. The under-10,000-byte asset limit is this repository's constraint, not a platform-wide limit. Ordinary builds do not need the sibling brand checkout.
