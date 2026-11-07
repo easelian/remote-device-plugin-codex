@@ -1,6 +1,6 @@
 # Remote Device Hub product artwork
 
-The editable SVG master is maintained in the sibling brand repository at [`products/remote-device-hub/icons/remote-device-hub.svg`](../../../../brand/products/remote-device-hub/icons/remote-device-hub.svg). EaseLian company logos live separately under `brand/company/easelian/` and identify the publisher.
+The editable SVG master is maintained in the sibling brand repository at [`products/remote-device-hub/icons/remote-device-hub.svg`](../../../../brand/products/remote-device-hub/icons/remote-device-hub.svg). Easelian company logos live separately under `brand/company/easelian/` and identify the publisher.
 
 The product icon is the Access mark: a rounded device outline with an opening at the upper right and a diagonal connection reaching a central hub. It uses solid blue (`#0A84FF`) on a transparent background, without a background tile or shadow. The same icon is used on light and dark surfaces.
 

@@ -1,12 +1,12 @@
 # 公开投稿准备
 
-公开 ZIP 从唯一源码 `plugins/remote-device-hub/` 生成。发布者为 EaseLian，产品为 Remote Device Hub，类别为 Developer Tools。公司官网为 `https://easelian.com/`。插件包包含操作技能、MCP 与 OAuth 声明、产品图标和 Apache-2.0 许可。
+公开 ZIP 从唯一源码 `plugins/remote-device-hub/` 生成。发布者为 Easelian，产品为 Remote Device Hub，类别为 Developer Tools。公司官网为 `https://easelian.com/`。插件包包含操作技能、MCP 与 OAuth 声明、产品图标和 Apache-2.0 许可。
 
 本地开发安装、上传投稿草稿、提交审核和公开发布分别完成。上传草稿不会自动公开，构建 ZIP 也不会上传草稿。
 
 ## 检查材料
 
-- 在目标组织中选择 EaseLian 的已验证企业身份。
+- 在目标组织中选择 Easelian 的已验证企业身份。
 - 核对产品网站、支持、隐私和服务条款。四个地址维护在源码的 `extensions.com.openai.interface` 中，均使用公司官网。
 - 核对英文与中文说明、首次使用提示、支持地区和账户权益说明。
 - 本项目统一使用品牌库导出的透明灰蓝色 256 × 256 PNG；PNG 是本项目的选择，不是平台唯一支持的图像格式。
@@ -40,7 +40,7 @@ npm run package
 
 ## 上传、审核和发布
 
-材料齐全后，在目标组织的投稿后台上传严格 ZIP，选择 EaseLian 企业身份。核对保存的元数据和审核用例，再连接包中声明的远程 HTTPS MCP，完成域名验证、OAuth 和工具扫描。公开包不包含 `.app.json` 或个人 App 标识；保留平台在保存版本中生成的绑定信息，不要手工删除。
+材料齐全后，在目标组织的投稿后台上传严格 ZIP，选择 Easelian 企业身份。核对保存的元数据和审核用例，再连接包中声明的远程 HTTPS MCP，完成域名验证、OAuth 和工具扫描。公开包不包含 `.app.json` 或个人 App 标识；保留平台在保存版本中生成的绑定信息，不要手工删除。
 
 修复必需的检查问题，补充安全字段中的审核账户资料，由有权代表公司的用户确认法律声明并提交审核。审核通过后选择公开发布，再分别验证 ChatGPT 和 Codex 的目录安装与实际调用。
 

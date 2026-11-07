@@ -109,7 +109,7 @@ export function prepare(root = ROOT, binding?: JsonObject): JsonObject {
       catalogue,
       canonicalJson({
         name: MARKETPLACE,
-        interface: { displayName: 'EaseLian RDH Development' },
+        interface: { displayName: 'Easelian RDH Development' },
         plugins: [
           {
             name: manifest.name,

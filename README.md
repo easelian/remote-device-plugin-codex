@@ -2,7 +2,7 @@
 
 ![Remote Device Hub](plugins/remote-device-hub/assets/icon.png)
 
-Remote Device Hub by EaseLian connects ChatGPT and Codex to Linux and macOS devices that you enroll and authorize. It provides an operations skill and an authenticated MCP connection for device status, files, shell commands, and Agent-managed processes.
+Remote Device Hub by Easelian connects ChatGPT and Codex to Linux and macOS devices that you enroll and authorize. It provides an operations skill and an authenticated MCP connection for device status, files, shell commands, and Agent-managed processes.
 
 [Website](https://easelian.com/) · [Source](https://github.com/easelian/remote-device-plugin-codex) · [Support](https://easelian.com/contact)
 
@@ -49,10 +49,10 @@ npm run package
 
 The draft command writes a ZIP, SHA-256 checksum, and report even when review materials are incomplete. The strict command fails on missing required package metadata and refuses to replace a candidate ZIP with different bytes under the same version. Both inspect the resulting archive. Neither command uploads or publishes anything.
 
-A complete package still needs portal connection checks, domain verification, review, and publication. The user has confirmed EaseLian business verification; select that verified identity in the portal. See [submission preparation](docs/publication/submission.md).
+A complete package still needs portal connection checks, domain verification, review, and publication. The user has confirmed Easelian business verification; select that verified identity in the portal. See [submission preparation](docs/publication/submission.md).
 
 ## Brand and maintenance
 
-EaseLian is the publisher and Remote Device Hub is the product. Both outputs use the same solid blue Access mark on a transparent background, exported from the sibling `brand` repository. The mark combines an open device outline with a diagonal connection reaching a central hub. Company artwork is reserved for the company identity. [Brand instructions](assets/branding/remote-device-hub/README.md) describe synchronization.
+Easelian is the publisher and Remote Device Hub is the product. Both outputs use the same solid blue Access mark on a transparent background, exported from the sibling `brand` repository. The mark combines an open device outline with a diagonal connection reaching a central hub. Company artwork is reserved for the company identity. [Brand instructions](assets/branding/remote-device-hub/README.md) describe synchronization.
 
 See [maintenance](docs/maintenance.md) for generated output, existing account-bound development connections, and validation. The repository and plugin are licensed under [Apache-2.0](LICENSE).

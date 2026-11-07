@@ -162,12 +162,12 @@ test('candidate archives are immutable and drafts cannot replace them', (t) => {
   assert.deepEqual(readFileSync(candidate), bytes);
 });
 
-test('publication identifies EaseLian and uses the public company website', () => {
+test('publication identifies Easelian and uses the public company website', () => {
   const [manifest] = validate(sourceFiles(SOURCE));
   const ui = openai(manifest).interface;
-  assert.equal(object(manifest.author).name, 'EaseLian');
+  assert.equal(object(manifest.author).name, 'Easelian');
   assert.equal(object(manifest.author).url, 'https://easelian.com/');
-  assert.equal(ui.developerName, 'EaseLian');
+  assert.equal(ui.developerName, 'Easelian');
   assert.equal(ui.websiteURL, 'https://easelian.com/');
   assert.equal(ui.supportURL, 'https://easelian.com/contact');
   assert.equal(ui.privacyPolicyURL, 'https://easelian.com/privacy');

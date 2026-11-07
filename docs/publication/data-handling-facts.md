@@ -16,4 +16,4 @@ The skill requires selecting an authorized device, respecting denied capabilitie
 
 ## Published service information
 
-EaseLian is the service operator and company identity. Website, support, privacy, and terms links are maintained in the canonical manifest and point to the company website. Confirm hosting and traffic-processing providers, stored fields, audit contents, retention, deletion, backups, and commercial terms against the deployed service before publishing policy claims. Source fields do not prove those operational facts.
+Easelian is the service operator and company identity. Website, support, privacy, and terms links are maintained in the canonical manifest and point to the company website. Confirm hosting and traffic-processing providers, stored fields, audit contents, retention, deletion, backups, and commercial terms against the deployed service before publishing policy claims. Source fields do not prove those operational facts.

@@ -2,14 +2,14 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "remote-device-hub",
   "version": "1.3.15",
-  "description": "Connect ChatGPT and Codex to Linux and macOS devices that you enroll and authorize with Remote Device Hub. Inspect device status, browse and read files, make reviewed file changes, run remote commands, and manage Agent-started jobs. A Hub account and a running device Agent are required. Available actions depend on device permissions and Agent capabilities. File tools use configured roots; shell commands run with the Agent operating-system account and are not sandboxed by those roots. Service access depends on the account's current entitlements. This plugin reports available entitlement and does not initiate purchases or promote upgrades. Results are verified with tool readback; timeouts can leave an operation outcome unknown. Remote Device Hub is provided by EaseLian. The authorization page explains the requested access before sign-in; you can continue or cancel, then confirm access for your account after signing in.",
+  "description": "Connect ChatGPT and Codex to Linux and macOS devices that you enroll and authorize with Remote Device Hub. Inspect device status, browse and read files, make reviewed file changes, run remote commands, and manage Agent-started jobs. A Hub account and a running device Agent are required. Available actions depend on device permissions and Agent capabilities. File tools use configured roots; shell commands run with the Agent operating-system account and are not sandboxed by those roots. Service access depends on the account's current entitlements. This plugin reports available entitlement and does not initiate purchases or promote upgrades. Results are verified with tool readback; timeouts can leave an operation outcome unknown. Remote Device Hub is provided by Easelian. The authorization page explains the requested access before sign-in; you can continue or cancel, then confirm access for your account after signing in.",
   "extensions": {
     "com.openai": {
       "interface": {
         "capabilities": [],
         "category": "Developer Tools",
         "displayName": "Remote Device Hub",
-        "longDescription": "Connect ChatGPT and Codex to Linux and macOS devices that you enroll and authorize with Remote Device Hub. Inspect device status, browse and read files, make reviewed file changes, run remote commands, and manage Agent-started jobs. A Hub account and a running device Agent are required. Available actions depend on device permissions and Agent capabilities. File tools use configured roots; shell commands run with the Agent operating-system account and are not sandboxed by those roots. Service access depends on the account's current entitlements. This plugin reports available entitlement and does not initiate purchases or promote upgrades. Results are verified with tool readback; timeouts can leave an operation outcome unknown. Remote Device Hub is provided by EaseLian. The authorization page explains the requested access before sign-in; you can continue or cancel, then confirm access for your account after signing in.",
+        "longDescription": "Connect ChatGPT and Codex to Linux and macOS devices that you enroll and authorize with Remote Device Hub. Inspect device status, browse and read files, make reviewed file changes, run remote commands, and manage Agent-started jobs. A Hub account and a running device Agent are required. Available actions depend on device permissions and Agent capabilities. File tools use configured roots; shell commands run with the Agent operating-system account and are not sandboxed by those roots. Service access depends on the account's current entitlements. This plugin reports available entitlement and does not initiate purchases or promote upgrades. Results are verified with tool readback; timeouts can leave an operation outcome unknown. Remote Device Hub is provided by Easelian. The authorization page explains the requested access before sign-in; you can continue or cancel, then confirm access for your account after signing in.",
         "shortDescription": "Control your own devices",
         "composerIcon": "./assets/icon.png",
         "logo": "./assets/icon.png",
@@ -24,7 +24,7 @@
           "Which of my devices are online?",
           "Show the configured file roots on my selected device."
         ],
-        "developerName": "EaseLian"
+        "developerName": "Easelian"
       },
       "review": {
         "test_cases": {
@@ -97,7 +97,7 @@
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "EaseLian",
+    "name": "Easelian",
     "email": "easeliannet@gmail.com",
     "url": "https://easelian.com/"
   },
