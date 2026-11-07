@@ -44,7 +44,7 @@ Select a device returned by the service and inspect its roots and permissions be
 
 ## Brand assets and license
 
-The icons use the Remote Device Hub product artwork: an off-white desktop display with an upper-right opening, centered lock, and short key with two teeth on a fixed charcoal badge. The same two-color icon works on light and dark surfaces without host theme selection. EaseLian is the publisher. The standalone package uses SVG. Public submission requires PNG and includes the same artwork at 256 × 256 pixels. Each icon is below 10,000 bytes. See [asset export instructions](assets/branding/remote-device-hub/README.md).
+The icons use the Remote Device Hub Access mark: a rounded device outline with an upper-right opening and a diagonal connection reaching a central hub. The solid blue (`#0A84FF`) artwork has a transparent background and uses the same icon on light and dark surfaces. EaseLian is the publisher. The standalone package uses SVG. Public submission requires PNG and includes the same artwork at 256 × 256 pixels. Each icon is below 10,000 bytes. See [asset export instructions](assets/branding/remote-device-hub/README.md).
 
 The repository and plugin packages use Apache License 2.0. The full [LICENSE](LICENSE) is included in each package.
 

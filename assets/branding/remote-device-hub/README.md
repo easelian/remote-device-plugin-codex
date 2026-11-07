@@ -2,7 +2,7 @@
 
 The editable SVG masters are maintained in the sibling brand repository under [`products/remote-device-hub/icons/`](../../../../brand/products/remote-device-hub/icons/). EaseLian company logos live separately under `brand/company/easelian/` and identify the publisher.
 
-The default product icon is `remote-device-hub.svg`: an off-white desktop display with an upper-right opening, centered lock, and short key with two teeth on an opaque charcoal badge with rounded corners and an off-white border. It uses two solid colors without gradients and remains legible on light and dark surfaces without platform theme support. The plugin manifests use one icon for both appearances and do not require separate dark-icon fields.
+The default product icon is `remote-device-hub.svg`: the Access mark combines a rounded device outline, an opening at the upper right, and a diagonal connection reaching a central hub. It uses solid blue (`#0A84FF`) on a transparent background, without a background tile or shadow. The same icon is used on light and dark surfaces. The plugin manifests use one icon for both appearances and do not require separate dark-icon fields.
 
 | Copy | Purpose |
 | --- | --- |
