@@ -2,7 +2,7 @@
 
 ![Remote Device Hub](plugins/remote-device-hub/assets/icon.png)
 
-Remote Device Hub by Easelian connects ChatGPT and Codex to Linux and macOS devices that you enroll and authorize. It provides an operations skill and an authenticated MCP connection for device status, files, shell commands, and Agent-managed processes.
+Remote Device Hub by Easelian connects ChatGPT and Codex to Linux, macOS, and Windows devices that you enroll and authorize. It provides an operations skill and an authenticated MCP connection for device status, files, shell commands, and Agent-managed processes.
 
 [Website](https://easelian.com/) · [Source](https://github.com/easelian/remote-device-plugin-codex) · [Support](https://easelian.com/contact)
 

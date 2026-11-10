@@ -28,7 +28,7 @@ npm run package
 
 使用只包含样例数据的独立账户。审核员必须能够独立登录，不能依赖开发者的邮箱验证码、手机或私人网络。Hub 服务所有者的恢复凭据不用于普通审核账户。
 
-准备三个样例设备：在线可写且允许 shell 的 `review-linux`、禁止写入的 `review-readonly`、已登记但离线的 `review-offline`。前两者配置命名根目录 `workspace`，其中 `README.txt` 的内容为 `review-ready` 加换行。写入用例开始前确保 `review-example.txt` 不存在；每轮只清理用例创建的文件与作业。
+准备三个样例设备：在线可写且允许 shell 的 `Write-Read PC`、禁止写入的 `Read-only PC`、已登记但离线的 `Offline PC`。前两者配置命名根目录 `workspace`，其中 `README.txt` 的内容为 `review-ready` 加换行。写入用例开始前确保 `hello.txt` 不存在；每轮只清理用例创建的文件与作业。
 
 ## 用例与录像
 

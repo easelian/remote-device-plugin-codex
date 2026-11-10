@@ -1,6 +1,6 @@
 ---
 name: remote-device-operations
-description: Manage Linux and macOS devices enrolled with Remote Device Hub. Use for device status, bounded file reads and edits, remote commands, and Agent-managed jobs after the user identifies the intended device and task.
+description: Manage Linux, macOS, and Windows devices enrolled with Remote Device Hub. Use for device status, bounded file reads and edits, remote commands, and Agent-managed jobs after the user identifies the intended device and task.
 ---
 
 # Remote Device Hub
