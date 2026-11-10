@@ -7,68 +7,45 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
-import { parseArgs } from 'node:util';
+import { dirname, join } from 'node:path';
 import {
   ROOT,
   canonicalJson,
   fingerprint,
-  fullMatch,
   hashes,
   isMain,
   isSymlink,
-  object,
   parseJson,
   requiredFile,
-  text,
   type Files,
   type JsonObject,
 } from './common.js';
+import { sourceFiles } from './plugin_source.js';
+import { validatePlugin } from './app_contract.js';
 import { openai } from './models.js';
-import { sourceFiles, validate } from './prepare_submission.js';
-import { validateCodexHubMcp } from './mcp_contract.js';
 
 export const MARKETPLACE = 'rdh-development';
 const GENERATED = 'development.json';
 
-export function developmentFiles(source: Files, binding?: JsonObject): Files {
-  validate(source);
+export function developmentFiles(source: Files): Files {
+  validatePlugin(source);
   const files = new Map(source);
-  if (binding) {
-    const apps = object(binding.apps);
-    if (
-      Object.keys(binding).length !== 1 ||
-      Object.keys(apps).length !== 1 ||
-      Object.values(apps).some((app) => {
-        const entry = object(app);
-        return (
-          Object.keys(entry).length !== 1 ||
-          !fullMatch(/(?:asdk_app_|connector_|templated_apps_)[a-zA-Z0-9_-]+/, text(entry.id))
-        );
-      })
-    ) {
-      throw new Error('Use exactly one existing registered App binding without credentials');
-    }
-    const manifest = parseJson(requiredFile(source, 'plugin.json'));
-    openai(manifest).apps = './.app.json';
-    files.set('plugin.json', canonicalJson(manifest));
-    files.set('.app.json', canonicalJson(binding));
-    files.delete('mcp.json');
-  } else {
-    // Codex 0.167 rejects per-server extensions. Let this local development
-    // connection discover OAuth from the server; keep the source/upload intact.
-    const mcp = parseJson(requiredFile(source, 'mcp.json'));
-    delete object(object(mcp.mcpServers)['remote-device-hub']).extensions;
-    validateCodexHubMcp(mcp);
-    files.set('mcp.json', canonicalJson(mcp));
-  }
+  const manifest = parseJson(requiredFile(source, 'plugin.json'));
+  // Codex 0.167 discovers registered Apps only through the same compatibility
+  // manifest used by OpenAI's installed plugins. Do not ship a root manifest:
+  // its presence masks the compatibility manifest even when it has no overlay.
+  const compatibility: JsonObject = { ...manifest, ...openai(manifest), skills: './skills' };
+  delete compatibility.$schema;
+  delete compatibility.extensions;
+  files.delete('plugin.json');
+  files.set('.codex-plugin/plugin.json', canonicalJson(compatibility));
   return files;
 }
 
-export function prepare(root = ROOT, binding?: JsonObject): JsonObject {
+export function prepare(root = ROOT): JsonObject {
   const source = sourceFiles(join(root, 'plugins/remote-device-hub'));
-  const [manifest] = validate(source);
-  const files = developmentFiles(source, binding);
+  const [manifest] = validatePlugin(source);
+  const files = developmentFiles(source);
   const buildRoot = join(root, '.build');
   const destination = join(buildRoot, 'development');
   if (isSymlink(buildRoot) || isSymlink(destination)) {
@@ -92,7 +69,7 @@ export function prepare(root = ROOT, binding?: JsonObject): JsonObject {
     version: manifest.version,
     canonical_source: 'plugins/remote-device-hub',
     source_sha256: fingerprint(source),
-    authentication: binding ? 'existing-app' : 'server-oauth-discovery',
+    authentication: 'registered-app',
     files: hashes(files),
     installed: false,
     note: 'Generated development files only. Installation, OAuth and actual tool calls are separate checks.',
@@ -132,11 +109,12 @@ export function prepare(root = ROOT, binding?: JsonObject): JsonObject {
 }
 
 export function main(args = process.argv.slice(2)): void {
-  const { values } = parseArgs({ args, options: { 'app-binding': { type: 'string' } } });
-  const binding = values['app-binding']
-    ? parseJson(readFileSync(resolve(values['app-binding'])))
-    : undefined;
-  console.log(JSON.stringify(prepare(ROOT, binding), null, 2));
+  if (args.length) {
+    throw new Error(
+      'No connection mode options are supported; configure the required App in plugins/remote-device-hub/.app.json',
+    );
+  }
+  console.log(JSON.stringify(prepare(ROOT), null, 2));
 }
 
 if (isMain(import.meta.url)) {

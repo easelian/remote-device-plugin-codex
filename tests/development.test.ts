@@ -15,7 +15,8 @@ import { test } from 'node:test';
 import { canonicalJson, hashes, object, parseJson, requiredFile } from '../scripts/common.js';
 import { developmentFiles, prepare, MARKETPLACE } from '../scripts/prepare_development.js';
 import { openai } from '../scripts/models.js';
-import { SOURCE, sourceFiles, validate } from '../scripts/prepare_submission.js';
+import { SOURCE, sourceFiles } from '../scripts/plugin_source.js';
+import { validatePlugin } from '../scripts/app_contract.js';
 
 function fixture(t: { after(fn: () => void): void }): string {
   const root = mkdtempSync(join(tmpdir(), 'rdh-development-'));
@@ -24,53 +25,52 @@ function fixture(t: { after(fn: () => void): void }): string {
   return root;
 }
 
-test('development preserves canonical bytes except the generated OAuth discovery config', () => {
+test('local package uses the official compatibility layout without direct MCP', () => {
   const source = sourceFiles(SOURCE);
   const before = hashes(source);
   const local = developmentFiles(source);
   assert.deepEqual(hashes(source), before);
-  for (const [name, data] of source) {
-    if (name !== 'mcp.json') {
-      assert.deepEqual(requiredFile(local, name), data, name);
+  assert.ok(!local.has('plugin.json'));
+  assert.ok(local.has('.codex-plugin/plugin.json'));
+  for (const [name, bytes] of source) {
+    if (name !== 'plugin.json') {
+      assert.deepEqual(local.get(name), bytes);
     }
   }
-  const mcp = parseJson(requiredFile(local, 'mcp.json'));
-  const original = object(
-    object(parseJson(requiredFile(source, 'mcp.json')).mcpServers)['remote-device-hub'],
-  );
-  assert.deepEqual(object(mcp.mcpServers)['remote-device-hub'], {
-    type: original.type,
-    url: original.url,
-  });
-  assert.ok(original.extensions);
-  assert.ok(!local.has('.codex-plugin/plugin.json'));
-  assert.ok(!local.has('.app.json'));
+  assert.ok(local.has('.app.json'));
+  assert.ok(!local.has('mcp.json'));
+  assert.ok(!local.has('.mcp.json'));
+  const compatibility = parseJson(requiredFile(local, '.codex-plugin/plugin.json'));
+  assert.equal(compatibility.apps, './.app.json');
+  assert.equal(compatibility.skills, './skills');
   const manifest = parseJson(requiredFile(source, 'plugin.json'));
+  assert.deepEqual(compatibility.interface, openai(manifest).interface);
   delete object(openai(manifest).review).demo_recording_url;
-  const withoutDemo = new Map(source);
-  withoutDemo.set('plugin.json', canonicalJson(manifest));
-  assert.ok(validate(withoutDemo)[1].includes('verified_demo_recording_url'));
-  developmentFiles(withoutDemo);
+  const incomplete = new Map(source);
+  incomplete.set('plugin.json', canonicalJson(manifest));
+  assert.ok(validatePlugin(incomplete)[1].includes('verified_demo_recording_url'));
+  developmentFiles(incomplete);
 });
 
-test('existing private App bindings are applied only to generated development files', () => {
+test('missing, optional or credential-bearing App dependencies fail closed', () => {
   const source = sourceFiles(SOURCE);
-  const before = hashes(source);
-  const binding = { apps: { fixture: { id: 'asdk_app_local_test' } } };
-  const local = developmentFiles(source, binding);
-  assert.deepEqual(hashes(source), before);
-  assert.deepEqual(parseJson(requiredFile(local, '.app.json')), binding);
-  assert.equal(openai(parseJson(requiredFile(local, 'plugin.json'))).apps, './.app.json');
-  assert.ok(!local.has('mcp.json'));
-  assert.throws(() => validate(local), /Private file|must not contain|Account-specific/);
   for (const bad of [
     { apps: {} },
-    { apps: { fixture: { id: 'not-an-app' } } },
-    { apps: { fixture: { id: 'asdk_app_local_test', token: 'secret' } } },
-    { apps: { fixture: { id: 'asdk_app_local_test' } }, token: 'secret' },
+    { apps: { 'remote-device-hub': { id: 'invalid', required: true } } },
+    { apps: { 'remote-device-hub': { id: 'asdk_app_fixture', required: false } } },
+    { apps: { 'remote-device-hub': { id: 'asdk_app_fixture', required: true, token: 'secret' } } },
+    { apps: { 'remote-device-hub': { id: 'asdk_app_fixture', required: true } }, token: 'secret' },
   ]) {
-    assert.throws(() => developmentFiles(source, bad), /binding|credentials/);
+    const invalid = new Map(source);
+    invalid.set('.app.json', canonicalJson(bad));
+    assert.throws(() => developmentFiles(invalid), /App binding|registered id/);
   }
+  const missing = new Map(source);
+  missing.delete('.app.json');
+  assert.throws(() => developmentFiles(missing));
+  const fallback = new Map(source);
+  fallback.set('mcp.json', canonicalJson({ mcpServers: {} }));
+  assert.throws(() => developmentFiles(fallback), /Unexpected plugin files/);
 });
 
 test('marketplace points at generated files and refresh removes retired content', (t) => {
@@ -122,10 +122,10 @@ test('invalid canonical data fails before replacing an existing development inst
   prepare(root);
   const output = join(root, '.build/development/plugins/remote-device-hub');
   const before = hashes(sourceFiles(output));
-  const path = join(root, 'plugins/remote-device-hub/mcp.json');
-  const mcp = parseJson(readFileSync(path));
-  object(object(mcp.mcpServers)['remote-device-hub']).headers = { Authorization: 'Bearer fixture' };
-  writeFileSync(path, canonicalJson(mcp));
-  assert.throws(() => prepare(root), /headers/);
+  const path = join(root, 'plugins/remote-device-hub/.app.json');
+  const binding = parseJson(readFileSync(path));
+  object(object(binding.apps)['remote-device-hub']).token = 'fixture';
+  writeFileSync(path, canonicalJson(binding));
+  assert.throws(() => prepare(root), /credentials/);
   assert.deepEqual(hashes(sourceFiles(output)), before);
 });

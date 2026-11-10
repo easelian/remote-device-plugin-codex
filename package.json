@@ -20,7 +20,8 @@
     "dev:check": "python3 scripts/check_codex_plugin.py --source .build/development/plugins/remote-device-hub",
     "dev:verify": "python3 scripts/check_codex_plugin.py --installed",
     "dev:status": "codex plugin list --marketplace rdh-development --json",
-    "package:draft": "npm run build && npm run submission -- --allow-incomplete"
+    "package:draft": "npm run build && npm run submission -- --allow-incomplete",
+    "dev:connection": "python3 scripts/check_codex_plugin.py --connection"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

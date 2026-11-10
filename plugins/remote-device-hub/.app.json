@@ -1,0 +1,8 @@
+{
+  "apps": {
+    "remote-device-hub": {
+      "id": "asdk_app_6aef4124304c8191ace42f97a2054ee4",
+      "required": true
+    }
+  }
+}

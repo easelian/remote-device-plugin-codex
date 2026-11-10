@@ -1,6 +1,6 @@
 # 公开投稿准备
 
-公开 ZIP 从唯一源码 `plugins/remote-device-hub/` 生成。发布者为 Easelian，产品为 Remote Device Hub，类别为 Developer Tools。公司官网为 `https://easelian.com/`。插件包包含操作技能、MCP 与 OAuth 声明、产品图标和 Apache-2.0 许可。
+公开 ZIP 以 `plugins/remote-device-hub/` 的 App 插件为源码导出。导出时移除 `.app.json` 及其 manifest 引用，并加入 `integrations/openai/submission-mcp.json` 的服务声明。发布者为 Easelian，产品为 Remote Device Hub，类别为 Developer Tools。公司官网为 `https://easelian.com/`。插件包包含操作技能、MCP 与 OAuth 声明、产品图标和 Apache-2.0 许可。
 
 本地开发安装、上传投稿草稿、提交审核和公开发布分别完成。上传草稿不会自动公开，构建 ZIP 也不会上传草稿。
 
@@ -20,7 +20,7 @@ npm run package:draft
 npm run package
 ```
 
-草稿命令生成 `dist/remote-device-hub-public-<版本>-draft.zip`、校验和及报告，并列出缺失材料。严格命令要求必填包内材料完整，生成不带 `-draft` 的 ZIP；已有同版本候选包内容不同会被拒绝。两者都会重新读取并校验 ZIP，且不会从本地开发副本取文件。
+草稿命令生成 `dist/remote-device-hub-public-<版本>-draft.zip`、校验和及报告，并列出缺失材料。严格命令要求必填包内材料完整，生成不带 `-draft` 的 ZIP；已有同版本候选包内容不同会被拒绝。两者都会重新读取并校验 ZIP，且不会从本地开发副本取文件。投稿 ZIP 仅供平台 With MCP 投稿使用；本地安装始终使用 App 插件。
 
 报告中的 `package_metadata_complete` 只表示包内字段齐全。平台扫描、域名验证、独立审核账户、法律声明和最终批准仍需分别完成，因此构建报告不会宣称 `submission_ready: true`。
 
@@ -46,6 +46,6 @@ npm run package
 
 ## OAuth 权限范围不匹配
 
-如果平台提示 `OAuth completion failed: Internal service error`，先核对 Auth 审计中的实际错误。`invalid_scope` 可能由网站 OIDC 发现向 MCP 请求加入 `openid email` 引起。MCP 客户端仅使用 `devices:control`；`mcp.json` 应设置 `oidcEnabled: false` 和空的 `defaultScopes`，由 `baseScopes` 指定设备权限。
+如果平台提示 `OAuth completion failed: Internal service error`，先核对 Auth 审计中的实际错误。`invalid_scope` 可能由网站 OIDC 发现向 MCP 请求加入 `openid email` 引起。MCP 客户端仅使用 `devices:control`；投稿配置 `integrations/openai/submission-mcp.json` 应设置 `oidcEnabled: false` 和空的 `defaultScopes`，由 `baseScopes` 指定设备权限。
 
 更新投稿草稿后，核对平台保存的认证设置和实际授权请求，再重新连接。若旧绑定仍携带原权限，检查平台保存的连接状态；以实际授权、工具发现和扫描结果确认恢复。

@@ -6,6 +6,7 @@ import json
 import os
 import pathlib
 import queue
+import re
 import shutil
 import subprocess
 import tempfile
@@ -98,7 +99,64 @@ def device_summary(result):
             'online_count': sum(item.get('online') is True for item in devices)}
 
 
-def check_installed(client, source, manifest, report):
+def app_id_from_source(source, manifest):
+    if any((source / name).exists() for name in ('mcp.json', '.mcp.json')):
+        raise RuntimeError('Direct MCP configuration is not supported; use the registered App package')
+    extension = manifest.get('extensions', {}).get('com.openai', {}) if '$schema' in manifest else manifest
+    if extension.get('apps') != './.app.json':
+        raise RuntimeError('Missing required App declaration')
+    binding = json.loads((source / '.app.json').read_text())
+    apps = binding.get('apps', {})
+    if set(binding) != {'apps'} or set(apps) != {'remote-device-hub'}:
+        raise RuntimeError('Expected exactly one remote-device-hub App binding')
+    app = apps['remote-device-hub']
+    if (set(app) != {'id', 'required'} or app.get('required') is not True or
+            not isinstance(app.get('id'), str) or
+            not re.fullmatch(r'(?:asdk_app_|connector_|templated_apps_)[a-zA-Z0-9_-]+', app['id'])):
+        raise RuntimeError('Invalid required App binding')
+    return app['id']
+
+
+def check_connection(client, source, manifest, report, connection_id=None):
+    app_id = app_id_from_source(source, manifest)
+    report.update(app_id=app_id, connection='registered-app', passed=False)
+    thread = client.rpc('thread/start', {'cwd': str(source), 'ephemeral': True,
+                                       'sandbox': 'read-only', 'approvalPolicy': 'never'})
+    thread_id = thread['thread']['id']
+    metadata = client.rpc('app/read', {'threadId': thread_id, 'appIds': [app_id], 'includeTools': True})
+    apps = [app for app in metadata.get('apps', []) if app.get('id') == app_id]
+    if len(apps) != 1 or app_id in metadata.get('missingAppIds', []):
+        raise RuntimeError('Required RDH App is unavailable to this account; verify its registered identity and access')
+    report['app_available'] = True
+    snapshot = client.rpc('app/installed', {'threadId': thread_id, 'forceRefresh': True})
+    installed = [app for app in snapshot.get('apps', []) if app.get('id') == app_id]
+    if len(installed) != 1 or not installed[0].get('enabled') or not installed[0].get('callable'):
+        raise RuntimeError('Required RDH App is not connected and callable; complete its Connect flow for the intended RDH account')
+    report['app_callable'] = True
+    status = client.rpc('mcpServerStatus/list', {'threadId': thread_id, 'serverName': 'codex_apps', 'detail': 'full'})
+    servers = [item for item in status.get('data', []) if item.get('name') == 'codex_apps']
+    if len(servers) != 1 or servers[0].get('toolsError'):
+        raise RuntimeError('Hosted App tools are unavailable')
+    candidates = []
+    for tool in servers[0].get('tools', {}).values():
+        meta = tool.get('_meta') or {}
+        if (meta.get('connector_id') == app_id and
+                tool.get('name', '').rsplit('.', 1)[-1] == 'list_devices' and
+                (connection_id is None or meta.get('link_id') == connection_id)):
+            candidates.append(tool)
+    if len(candidates) != 1:
+        raise RuntimeError('Expected one list_devices tool for this App connection; select the intended account or pass --connection-id')
+    tool = candidates[0]
+    if ((tool.get('annotations') or {}).get('readOnlyHint') is not True or
+            tool.get('inputSchema', {}).get('required')):
+        raise RuntimeError('App list_devices must be read-only and accept empty arguments')
+    result = client.rpc('mcpServer/tool/call', {'threadId': thread_id, 'server': 'codex_apps',
+                                              'tool': tool['name'], 'arguments': {}})
+    report.update(tool=tool['name'], **device_summary(result), passed=True)
+
+
+def check_installed(client, source, manifest, report, connection_id=None):
+    app_id_from_source(source, manifest)
     plugin_id = manifest['name'] + '@rdh-development'
     report['plugin_id'] = plugin_id
     catalog = client.rpc('plugin/installed', {'cwds': [str(source)]})
@@ -116,28 +174,7 @@ def check_installed(client, source, manifest, report):
     report['installed_files_match'] = file_hashes(source) == file_hashes(cache)
     if not report['installed_files_match']:
         raise RuntimeError('Installed files differ from the generated source; run npm run dev:install')
-    if not (source / 'mcp.json').is_file():
-        raise RuntimeError('Installed verification requires the default direct-MCP development build')
-    thread = client.rpc('thread/start', {'cwd': str(source), 'ephemeral': True,
-                                       'sandbox': 'read-only', 'approvalPolicy': 'never'})
-    thread_id = thread['thread']['id']
-    status = client.rpc('mcpServerStatus/list', {
-        'threadId': thread_id, 'serverName': manifest['name'], 'detail': 'full'})
-    servers = [item for item in status['data'] if item['name'] == manifest['name']]
-    if len(servers) != 1 or servers[0].get('pluginId') != plugin_id:
-        raise RuntimeError('The active MCP server does not belong to the development plugin')
-    server = servers[0]
-    report.update(auth_status=server['authStatus'], runtime_status=server.get('runtimeStatus'),
-                  tool_count=len(server['tools']))
-    if server['authStatus'] != 'oAuth':
-        raise RuntimeError('OAuth authorization required; connect the development plugin in Codex, then rerun')
-    if server.get('toolsError'):
-        raise RuntimeError(server['toolsError'])
-    if not any(tool.get('name') == 'list_devices' for tool in server['tools'].values()):
-        raise RuntimeError('The installed server did not expose list_devices')
-    result = client.rpc('mcpServer/tool/call', {
-        'threadId': thread_id, 'server': manifest['name'], 'tool': 'list_devices', 'arguments': {}})
-    report.update(tool='list_devices', **device_summary(result), passed=True)
+    check_connection(client, source, manifest, report, connection_id)
 
 
 def main():
@@ -146,7 +183,9 @@ def main():
     parser.add_argument('--source', type=pathlib.Path,
                         default=pathlib.Path(__file__).resolve().parents[1] / '.build/development/plugins/remote-device-hub')
     parser.add_argument('--installed', action='store_true',
-                        help='Verify the installed rdh-development version, OAuth, and list_devices')
+                        help='Verify the installed App package and call its authenticated list_devices')
+    parser.add_argument('--connection', action='store_true', help='Verify the registered App connection without requiring local plugin installation')
+    parser.add_argument('--connection-id', help='Explicit hosted connection ID when multiple RDH accounts are connected')
     args = parser.parse_args()
     source = args.source.resolve()
     manifest_path = source / 'plugin.json'
@@ -154,10 +193,9 @@ def main():
         manifest_path = source / '.codex-plugin/plugin.json'
     manifest = json.loads(manifest_path.read_text())
     name = manifest['name']
-    mcp_path = next((source / p for p in ['mcp.json', '.mcp.json'] if (source / p).exists()), None)
-    expected = sorted(json.loads(mcp_path.read_text())['mcpServers']) if mcp_path else []
-    apps_path = source / '.app.json'
-    expected_apps = sorted(a['id'] for a in json.loads(apps_path.read_text())['apps'].values()) if apps_path.exists() else []
+    expected_apps = [app_id_from_source(source, manifest)]
+    if args.installed and args.connection:
+        parser.error('Choose --installed or --connection')
     with tempfile.TemporaryDirectory(prefix='rdh-plugin-preflight-') as temp:
         root = pathlib.Path(temp)
         shutil.copytree(source, root / name)
@@ -177,15 +215,19 @@ def main():
                     'capabilities': {'experimentalApi': True}})
                 report['client'] = initialized['userAgent']
                 if args.installed:
-                    check_installed(client, source, manifest, report)
+                    check_installed(client, source, manifest, report, args.connection_id)
+                    print(json.dumps(report, indent=2))
+                    return 0
+                if args.connection:
+                    check_connection(client, source, manifest, report, args.connection_id)
                     print(json.dumps(report, indent=2))
                     return 0
                 result = client.rpc('plugin/read', {'marketplacePath': str(market), 'pluginName': name})
                 loaded = sorted(result['plugin']['mcpServers'])
                 loaded_apps = sorted(a['id'] for a in result['plugin']['apps'])
-                passed = bool(expected or expected_apps) and loaded == expected and loaded_apps == expected_apps
+                passed = not loaded and loaded_apps == expected_apps
                 print(json.dumps({'client': initialized['userAgent'], 'source': str(source),
-                                  'expected_mcp_servers': expected, 'loaded_mcp_servers': loaded,
+                                  'direct_mcp_servers': loaded,
                                   'expected_apps': expected_apps, 'loaded_apps': loaded_apps,
                                   'passed': passed, 'installed': False}, indent=2))
                 if not passed:

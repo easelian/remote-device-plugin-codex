@@ -1,10 +1,35 @@
-# Maintenance and packaging
+# Plugin architecture and maintenance
 
-Maintain plugin content only in `plugins/remote-device-hub/`. The Server, Protocol, and Agent have separate repositories. Changes here do not deploy the Hub or update device Agents.
+## Source ownership
 
-## Build and validate
+The canonical installable plugin is `plugins/remote-device-hub/`. Maintain its skills, listing metadata, assets and required App reference there. The Server and Agent repositories own tool behavior, OAuth enforcement, device connections and local permissions.
 
-Use Node.js 22 or later and Python 3. Run from the repository root:
+The package uses a portable `plugin.json` with the OpenAI `apps` extension and root `.app.json`. This follows the dependency structure of the installed OpenAI Plugin Creator plugin: one registered integration with `required: true`. It does not copy that plugin's connector identity, private implementation, or legacy manifest layout.
+
+| Source | Purpose |
+| --- | --- |
+| `plugins/remote-device-hub/plugin.json` | Product identity, version, skills metadata and App reference |
+| `plugins/remote-device-hub/.app.json` | Required RDH App identity; no credentials |
+| `integrations/openai/submission-mcp.json` | Public portal transport/auth declaration only |
+| `scripts/plugin_source.ts` | Shared content and file validation |
+| `scripts/app_contract.ts` | Required App contract; rejects direct-MCP packages |
+| `scripts/prepare_development.ts` | Generates a local marketplace from the App package |
+| `scripts/prepare_submission.ts` | Projects that source into the portal's accepted upload format |
+| `scripts/check_codex_plugin.py` | Loader, App-runtime and installed-package checks |
+
+The previous optional App adapter, separate `connected-app.json`, direct server generation and Codex 0.167 OAuth-extension stripping have been removed. There is one installation path and no transport-mode switch.
+
+## Registered App identity
+
+The source references the individual Remote Device Hub development App `asdk_app_6aef14393cd881919ab337bd3a080302`; keep `required: true` and package version `1.4.0`. The public submission App `asdk_app_6aee938018808191a76a3ea4d0dc579f` is separate and must not be changed here.
+
+Metadata availability does not prove an authorized tool connection. The registered integration remains individual in scope. Confirm eligibility before using it from another OpenAI account. Public rollout must use the platform's approved integration identity; never distribute the publisher's OAuth credentials or infer that an individual ID is public. When replacing the integration after approval, update the one `.app.json` declaration and repeat loader, account and device tests.
+
+### Reproducible development connection
+
+For the local `1.4.0` development App, configure OAuth dynamic client registration (DCR) against the `auth.easelian.com` authorization domain for the MCP resource `https://rdh.easelian.com/mcp`. Disable website OIDC discovery (`oidcEnabled: false`), set `defaultScopes` to `["devices:control"]`, and leave `baseScopes` empty (`[]`). Automatic OIDC discovery adds `openid` and `email`, which the Hub rejects as `invalid_scope`; do not include those scopes. Complete login through the host's normal OAuth flow after saving this configuration.
+
+## Build and checks
 
 ```sh
 npm ci
@@ -16,39 +41,25 @@ npm run dev:check
 npm run package:draft
 ```
 
-The build removes stale emitted modules under `.build/tooling/` before compiling current TypeScript sources. Tests cover canonical metadata, isolated development generation, archive readback, immutability, traversal and symlink rejection, and public-package credential exclusion. The fixed archive fixture contains only serialization and ZIP interoperability samples; it is not a copy of the plugin.
+Tests enforce required App wiring, reject accidental direct-MCP files and credential fields, preserve source data during submission export, and verify archive integrity and immutable candidates. Runtime verification rejects another App's identically named tool, unavailable or disabled connections, ambiguous account selection, and non-read-only probes.
 
-`dev:check` requires the intended Codex executable on PATH. It proves component discovery only. Use the separate [installation and account validation procedure](chatgpt.md) to verify installation, OAuth, and actual tools.
+`dev:prepare` replaces only its marked `.build/development/` output. Generation converts only the root manifest into `.codex-plugin/plugin.json`; App bindings, skills, assets and licensing retain their bytes. The generated package deliberately omits root `plugin.json`, which masks App discovery in the tested Codex 0.167 loader. `dev:install` invokes the supported Codex marketplace/install commands; it does not modify another plugin, revoke OAuth grants or publish anything. Do not edit installed caches.
 
-After installation and OAuth, `npm run dev:verify` checks the installed version and cache hashes, opens an ephemeral read-only Codex session, verifies the connection belongs to `rdh-development`, and calls `list_devices`. Its report contains counts, not device identifiers or file contents. It refuses stale installs, another plugin's connection, missing OAuth, and unsuccessful tool responses. Python regression checks exercise those refusal paths and run as part of `npm test`.
+`dev:check` proves loader discovery only. `dev:connection` uses `app/read`, `app/installed` and the hosted App tool catalog. The probe requires an exact `connector_id` match and calls only `list_devices`. `dev:verify` also checks enabled installation, version and hashes. These CLI checks do not prove that an existing desktop chat has refreshed; perform a native call in the intended chat separately.
 
-## Generated local marketplace
+## Public submission export
 
-`npm run dev:prepare` replaces only its marked `.build/development/` tree. It writes a marketplace catalog, a plugin copy, and `development.json` with canonical-source and generated-file hashes. Unknown directories or symlinks at the output path are refused. Do not edit generated files or the Codex installation cache.
+Public portal uploads currently reject `.app.json` and `apps` references. The exporter removes only that wiring and inserts `integrations/openai/submission-mcp.json` into the upload copy. Metadata, prompts, skills, icons and licensing come from the canonical package. Both output validation and archive readback must pass. This export is never a `dev:install` input.
 
-The canonical MCP configuration declares OAuth DCR and `devices:control`. For the current Codex 0.167 local loader, generation removes the per-server `extensions` field and validates a connection containing only `type` and `url`. The client must still discover and complete OAuth against the Hub. This adapter does not disable Hub authentication, embed credentials, or change the public upload.
+Preserve platform-generated bindings in the finalized hosted release. A local source change does not modify that release. Strict exports require complete package metadata; draft reports retain missing materials and never claim public-review readiness.
 
-Install or refresh with `npm run dev:install`. Installation uses the user's official Codex configuration and plugin cache. It does not overwrite other marketplace entries or publish an account plugin. The local marketplace is named `rdh-development`; the plugin identity remains `remote-device-hub`.
+## Official references
 
-## Existing account-bound development connection
+Checked against the current documentation on 2026-11-07:
 
-`integrations/chatgpt/connected-app.json` retains an existing account-specific App binding. It is not part of the canonical plugin or any public ZIP. If that App is still accessible to the intended account, generate the local development copy with:
+- [Package structure and registered App references](https://developers.openai.com/plugins/build/plugins)
+- [Public submission and the App-reference restriction](https://developers.openai.com/plugins/deploy/submission)
+- [MCP reference validation errors](https://developers.openai.com/plugins/deploy/submission-errors)
+- [Multiple account connections and profile metadata](https://developers.openai.com/plugins/build/auth#support-multiple-accounts)
 
-```sh
-npm run dev:prepare -- --app-binding integrations/chatgpt/connected-app.json
-codex plugin marketplace add ./.build/development
-codex plugin add remote-device-hub@rdh-development --json
-npm run dev:check
-```
-
-This substitutes the supplied App binding for direct MCP discovery only in generated files. It does not prove that the App is authorized or usable. `npm run dev:install` regenerates the default direct-MCP configuration; use the explicit commands above for an App-bound test. Do not copy a publisher's App ID into another user's setup.
-
-## Public ZIPs
-
-`npm run package:draft` writes replaceable draft ZIPs and reports under `dist/`. `npm run package` requires complete package metadata and writes an immutable candidate ZIP. Change the canonical version before changing an existing candidate. Both builds read only the canonical source, so neither can accidentally package the generated local authentication adapter or an account binding.
-
-Inspect the report's `missing_materials` and `package_metadata_complete`. `submission_ready` remains false because local packaging cannot establish portal scans, reviewer access, legal attestations, approval, or publication. Keep those checks distinct from the local artifact checksum.
-
-## Brand
-
-`plugins/remote-device-hub/assets/icon.png` is the shared 256 × 256 product icon. Sync it from `brand`; both outputs use the same bytes. The under-10,000-byte asset limit is this repository's constraint, not a platform-wide limit. Ordinary builds do not need the sibling brand checkout.
+An App reference does not implement account selection or a profile tool. Those features belong to the host and authenticated server respectively and must be tested in the target client.

@@ -6,7 +6,19 @@ import { test } from 'node:test';
 import { archiveContents } from '../scripts/archive.js';
 import { canonicalJson, object, parseJson, requiredFile } from '../scripts/common.js';
 import { openai } from '../scripts/models.js';
-import { SOURCE, build, localPath, sourceFiles, validate } from '../scripts/prepare_submission.js';
+import {
+  SOURCE,
+  SUBMISSION_MCP,
+  submissionFiles,
+  build,
+  localPath,
+  sourceFiles,
+  validate,
+} from '../scripts/prepare_submission.js';
+
+function publicFiles() {
+  return submissionFiles(sourceFiles(SOURCE), parseJson(readFileSync(SUBMISSION_MCP)));
+}
 
 function temporary(t: { after(fn: () => void): void }): string {
   const root = mkdtempSync(join(tmpdir(), 'rdh-submission-'));
@@ -15,7 +27,7 @@ function temporary(t: { after(fn: () => void): void }): string {
 }
 for (const size of [9999, 10000, 10001]) {
   test(`public icon boundary ${size}`, () => {
-    const files = sourceFiles(SOURCE);
+    const files = publicFiles();
     const manifest = parseJson(requiredFile(files, 'plugin.json'));
     const name = localPath(object(openai(manifest).interface).logo);
     const icon = requiredFile(files, name);
@@ -33,15 +45,35 @@ for (const [field, value] of [
   ['clientSecret', 'do-not-package'],
 ] as const) {
   test(`rejects public ${field}`, () => {
-    const files = sourceFiles(SOURCE);
+    const files = publicFiles();
     const manifest = parseJson(requiredFile(files, 'plugin.json'));
     openai(manifest)[field] = value;
     files.set('plugin.json', canonicalJson(manifest));
     assert.throws(() => validate(files), /must not contain|Private submission/);
   });
 }
+for (const field of ['apps', 'hooks']) {
+  for (const name of ['plugin.json', 'mcp.json']) {
+    test(`rejects public ${field} in ${name} regardless of its value`, () => {
+      for (const value of [null, false, 0, '', [], {}]) {
+        const files = publicFiles();
+        const document = parseJson(requiredFile(files, name));
+        const target =
+          name === 'plugin.json'
+            ? openai(document)
+            : object(object(document.mcpServers)['remote-device-hub']);
+        target[field] = value;
+        files.set(name, canonicalJson(document));
+        assert.throws(
+          () => validate(files),
+          new RegExp(`Public uploads must not contain ${field}`),
+        );
+      }
+    });
+  }
+}
 test('public MCP preserves OAuth DCR and rejects missing authentication', () => {
-  const files = sourceFiles(SOURCE);
+  const files = publicFiles();
   validate(files);
   const mcp = parseJson(requiredFile(files, 'mcp.json'));
   delete object(object(mcp.mcpServers)['remote-device-hub']).extensions;
@@ -50,7 +82,7 @@ test('public MCP preserves OAuth DCR and rejects missing authentication', () => 
 });
 test('public MCP prevents website OIDC defaults from entering device authorization', () => {
   for (const change of [{ oidcEnabled: true }, { defaultScopes: ['openid', 'email'] }]) {
-    const files = sourceFiles(SOURCE);
+    const files = publicFiles();
     const mcp = parseJson(requiredFile(files, 'mcp.json'));
     const server = object(object(mcp.mcpServers)['remote-device-hub']);
     const auth = object(object(object(server.extensions)['com.openai']).auth);
@@ -60,14 +92,14 @@ test('public MCP prevents website OIDC defaults from entering device authorizati
   }
 });
 test('public MCP headers and unreferenced files are rejected', () => {
-  const files = sourceFiles(SOURCE);
+  const files = publicFiles();
   const mcp = parseJson(requiredFile(files, 'mcp.json'));
   object(object(mcp.mcpServers)['remote-device-hub']).headers = { Authorization: 'Bearer fixture' };
   files.set('mcp.json', canonicalJson(mcp));
   assert.throws(() => validate(files), /headers/);
-  const clean = sourceFiles(SOURCE);
+  const clean = publicFiles();
   clean.set('owner-password.local.txt', Buffer.from('not a secret'));
-  assert.throws(() => validate(clean), /Unexpected public files/);
+  assert.throws(() => validate(clean), /Unexpected plugin files/);
   assert.throws(() => localPath('./../private.png'), /escapes/);
 });
 test('incomplete drafts stay explicit and deterministic, never contain App bindings', (t) => {
@@ -98,7 +130,7 @@ test('public source rejects dangling symlinks', (t) => {
   assert.throws(() => sourceFiles(source), /symlink/);
 });
 test('positive review cases require observable expected behavior', () => {
-  const files = sourceFiles(SOURCE);
+  const files = publicFiles();
   const manifest = parseJson(requiredFile(files, 'plugin.json'));
   const positive = object(object(openai(manifest).review).test_cases).positive;
   assert.ok(Array.isArray(positive));
@@ -108,21 +140,36 @@ test('positive review cases require observable expected behavior', () => {
 });
 test('malformed external JSON fails closed', () => {
   for (const content of ['null', '[]', '{"name":3}', '{"extensions":null}']) {
-    const files = sourceFiles(SOURCE);
+    const files = publicFiles();
     files.set('plugin.json', Buffer.from(content));
     assert.throws(() => validate(files));
   }
 });
 
-test('public archive rejects account identities even when hidden in skill text', () => {
-  const files = sourceFiles(SOURCE);
-  const name = 'skills/remote-device-operations/SKILL.md';
-  files.set(
-    name,
-    Buffer.concat([requiredFile(files, name), Buffer.from('\nUse asdk_app_private_fixture.\n')]),
-  );
-  assert.throws(() => validate(files), /Account-specific/);
-});
+for (const id of [
+  'asdk_app_private_fixture',
+  'connector_private_fixture',
+  'templated_apps_private_fixture',
+]) {
+  for (const identity of [id, `plugin_${id}`]) {
+    for (const name of ['plugin.json', 'skills/remote-device-operations/SKILL.md']) {
+      test(`public archive rejects ${identity} in ${name}`, () => {
+        const files = publicFiles();
+        if (name === 'plugin.json') {
+          const manifest = parseJson(requiredFile(files, name));
+          manifest.description = `Use ${identity}.`;
+          files.set(name, canonicalJson(manifest));
+        } else {
+          files.set(
+            name,
+            Buffer.concat([requiredFile(files, name), Buffer.from(`\nUse ${identity}.\n`)]),
+          );
+        }
+        assert.throws(() => validate(files), /Account-specific registered App ID/);
+      });
+    }
+  }
+}
 test('public category and prompt metadata follow submission constraints', () => {
   for (const change of [
     { category: 'developer-tools' },
@@ -130,7 +177,7 @@ test('public category and prompt metadata follow submission constraints', () => 
     { defaultPrompt: ['first\nsecond'] },
     { defaultPrompt: ['x'.repeat(129)] },
   ]) {
-    const files = sourceFiles(SOURCE);
+    const files = publicFiles();
     const manifest = parseJson(requiredFile(files, 'plugin.json'));
     Object.assign(object(openai(manifest).interface), change);
     files.set('plugin.json', canonicalJson(manifest));
@@ -163,7 +210,7 @@ test('candidate archives are immutable and drafts cannot replace them', (t) => {
 });
 
 test('publication identifies Easelian and uses the public company website', () => {
-  const [manifest] = validate(sourceFiles(SOURCE));
+  const [manifest] = validate(publicFiles());
   const ui = openai(manifest).interface;
   assert.equal(object(manifest.author).name, 'Easelian');
   assert.equal(object(manifest.author).url, 'https://easelian.com/');
@@ -172,4 +219,21 @@ test('publication identifies Easelian and uses the public company website', () =
   assert.equal(ui.supportURL, 'https://easelian.com/contact');
   assert.equal(ui.privacyPolicyURL, 'https://easelian.com/privacy');
   assert.equal(ui.termsOfServiceURL, 'https://easelian.com/terms');
+});
+
+test('portal projection preserves content and removes only the registered App wiring', () => {
+  const source = sourceFiles(SOURCE);
+  const before = new Map(source);
+  const output = publicFiles();
+  assert.deepEqual(source, before);
+  assert.ok(!output.has('.app.json'));
+  assert.ok(output.has('mcp.json'));
+  const expected = parseJson(requiredFile(source, 'plugin.json'));
+  delete openai(expected).apps;
+  assert.deepEqual(parseJson(requiredFile(output, 'plugin.json')), expected);
+  for (const [name, bytes] of source) {
+    if (name !== 'plugin.json' && name !== '.app.json') {
+      assert.deepEqual(output.get(name), bytes);
+    }
+  }
 });

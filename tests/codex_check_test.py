@@ -18,18 +18,26 @@ class InstalledCheckTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.source = pathlib.Path(self.temp.name)
-        (self.source / 'mcp.json').write_text('{}')
-        self.manifest = {'name': 'remote-device-hub', 'version': '1.3.14'}
+        self.app_id = 'asdk_app_fixture'
+        (self.source / '.app.json').write_text(json.dumps({'apps': {
+            'remote-device-hub': {'id': self.app_id, 'required': True}}}))
+        self.manifest = {'$schema': 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json', 'name': 'remote-device-hub', 'version': '1.4.0',
+                         'extensions': {'com.openai': {'apps': './.app.json'}}}
         self.entry = {'id': 'remote-device-hub@rdh-development', 'installed': True,
-                      'enabled': True, 'localVersion': '1.3.14'}
-        self.server = {'name': 'remote-device-hub', 'pluginId': self.entry['id'],
-                       'authStatus': 'oAuth', 'runtimeStatus': 'connected',
-                       'tools': {'list_devices': {'name': 'list_devices'}}}
+                      'enabled': True, 'localVersion': '1.4.0'}
+        self.app = {'id': self.app_id, 'enabled': True, 'callable': True}
+        self.metadata = {'apps': [{'id': self.app_id}], 'missingAppIds': []}
+        self.tool = {'name': 'remote_device_hub.list_devices',
+                     'inputSchema': {'type': 'object', 'properties': {}},
+                     'annotations': {'readOnlyHint': True},
+                     '_meta': {'connector_id': self.app_id, 'link_id': 'connection-one'}}
+        self.server = {'name': 'codex_apps', 'authStatus': 'bearerToken',
+                       'tools': {'remote_device_hub.list_devices': self.tool}}
         self.tool_result = {'structuredContent': {'devices': [
             {'device_id': 'private-device-id', 'online': True}, {'online': False}]}}
         self.client = Mock()
         self.client.rpc.side_effect = self.rpc
-        self.hashes = patch.object(CHECK, 'file_hashes', return_value={'mcp.json': 'hash'})
+        self.hashes = patch.object(CHECK, 'file_hashes', return_value={'.app.json': 'hash'})
         self.hash_mock = self.hashes.start()
         self.addCleanup(self.hashes.stop)
 
@@ -37,26 +45,29 @@ class InstalledCheckTests(unittest.TestCase):
         return {
             'plugin/installed': {'marketplaces': [{'plugins': [self.entry]}]},
             'thread/start': {'thread': {'id': 'test-thread'}},
+            'app/read': self.metadata,
+            'app/installed': {'apps': [self.app]},
             'mcpServerStatus/list': {'data': [self.server]},
             'mcpServer/tool/call': self.tool_result,
         }[method]
 
-    def verify(self):
+    def verify(self, connection_id=None):
         report = {'passed': False}
-        CHECK.check_installed(self.client, self.source, self.manifest, report)
+        CHECK.check_installed(self.client, self.source, self.manifest, report, connection_id)
         return report
 
     def assert_no_tool_call(self):
         self.assertNotIn('mcpServer/tool/call', [call.args[0] for call in self.client.rpc.call_args_list])
 
-    def test_installed_call_returns_counts_without_device_data(self):
+    def test_app_call_returns_counts_without_device_or_connection_data(self):
         report = self.verify()
         self.assertTrue(report['passed'])
         self.assertEqual((report['device_count'], report['online_count']), (2, 1))
         self.assertNotIn('private-device-id', json.dumps(report))
+        self.assertNotIn('connection-one', json.dumps(report))
         self.client.rpc.assert_any_call('mcpServer/tool/call', {
-            'threadId': 'test-thread', 'server': 'remote-device-hub',
-            'tool': 'list_devices', 'arguments': {}})
+            'threadId': 'test-thread', 'server': 'codex_apps',
+            'tool': 'remote_device_hub.list_devices', 'arguments': {}})
 
     def test_old_version_cannot_pass(self):
         self.entry['localVersion'] = '1.0.0'
@@ -70,15 +81,52 @@ class InstalledCheckTests(unittest.TestCase):
             self.verify()
         self.assert_no_tool_call()
 
-    def test_another_plugin_connection_is_rejected(self):
-        self.server['pluginId'] = 'remote-device-hub@another-marketplace'
-        with self.assertRaisesRegex(RuntimeError, 'does not belong'):
+    def test_another_app_with_same_tool_name_is_rejected(self):
+        self.tool['_meta']['connector_id'] = 'asdk_app_another'
+        with self.assertRaisesRegex(RuntimeError, 'one list_devices'):
             self.verify()
         self.assert_no_tool_call()
 
-    def test_missing_authorization_cannot_pass(self):
-        self.server['authStatus'] = 'notLoggedIn'
-        with self.assertRaisesRegex(RuntimeError, 'OAuth authorization required'):
+    def test_unavailable_app_is_not_replaced_by_direct_mcp(self):
+        self.metadata = {'apps': [], 'missingAppIds': [self.app_id]}
+        with self.assertRaisesRegex(RuntimeError, 'unavailable'):
+            self.verify()
+        self.assert_no_tool_call()
+
+    def test_missing_or_disabled_connection_cannot_pass(self):
+        for field in ['callable', 'enabled']:
+            with self.subTest(field=field):
+                self.app[field] = False
+                with self.assertRaisesRegex(RuntimeError, 'not connected and callable'):
+                    self.verify()
+                self.app[field] = True
+        self.assert_no_tool_call()
+
+    def test_ambiguous_account_selection_requires_explicit_connection(self):
+        other = {**self.tool, 'name': 'remote_device_hub_second.list_devices',
+                 '_meta': {'connector_id': self.app_id, 'link_id': 'connection-two'}}
+        self.server['tools'][other['name']] = other
+        with self.assertRaisesRegex(RuntimeError, 'select the intended account'):
+            self.verify()
+        self.assert_no_tool_call()
+        self.assertTrue(self.verify('connection-two')['passed'])
+        self.client.rpc.assert_any_call('mcpServer/tool/call', {
+            'threadId': 'test-thread', 'server': 'codex_apps',
+            'tool': other['name'], 'arguments': {}})
+
+    def test_non_readonly_or_parameterized_tool_is_not_called(self):
+        self.tool['annotations']['readOnlyHint'] = False
+        with self.assertRaisesRegex(RuntimeError, 'read-only'):
+            self.verify()
+        self.tool['annotations']['readOnlyHint'] = True
+        self.tool['inputSchema']['required'] = ['user_id']
+        with self.assertRaisesRegex(RuntimeError, 'empty arguments'):
+            self.verify()
+        self.assert_no_tool_call()
+
+    def test_direct_mcp_source_is_rejected(self):
+        (self.source / 'mcp.json').write_text('{}')
+        with self.assertRaisesRegex(RuntimeError, 'Direct MCP'):
             self.verify()
         self.assert_no_tool_call()
 
