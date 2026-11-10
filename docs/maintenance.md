@@ -17,7 +17,7 @@ The package uses a portable `plugin.json` with the OpenAI `apps` extension and r
 | `scripts/prepare_submission.ts` | Projects that source into the portal's accepted upload format |
 | `scripts/check_codex_plugin.py` | Loader, App-runtime and installed-package checks |
 
-The previous optional App adapter, separate `connected-app.json`, direct server generation and Codex 0.167 OAuth-extension stripping have been removed. There is one installation path and no transport-mode switch.
+Local installation uses the required App reference. The development package and public submission export are generated from the same canonical source.
 
 ## Registered App identity
 
@@ -54,8 +54,6 @@ Public portal uploads currently reject `.app.json` and `apps` references. The ex
 Preserve platform-generated bindings in the finalized hosted release. A local source change does not modify that release. Strict exports require complete package metadata; draft reports retain missing materials and never claim public-review readiness.
 
 ## Official references
-
-Checked against the current documentation on 2026-11-07:
 
 - [Package structure and registered App references](https://developers.openai.com/plugins/build/plugins)
 - [Public submission and the App-reference restriction](https://developers.openai.com/plugins/deploy/submission)

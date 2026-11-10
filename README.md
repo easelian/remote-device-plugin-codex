@@ -21,7 +21,7 @@ plugins/remote-device-hub/
 
 The maintained portable manifest declares `extensions.com.openai.apps: "./.app.json"`. The dependency is required, matching the App dependency pattern used by OpenAI's plugins. The generated local package uses `.codex-plugin/plugin.json`, as OpenAI’s installed plugins do, because the tested Codex 0.167 loader does not discover App references from the portable manifest. It has no `mcp.json`, local server process, direct server URL, or direct-MCP fallback. Local installation describes where the plugin files come from; it does not require a local or directly configured MCP server.
 
-The registered App currently referenced by the source is an individual RDH integration, not a public listing. Its metadata was verified on 2026-11-07; access and authorization must still be checked for the intended account. Do not distribute an individual App ID as a universally accessible integration. A new RDH account connects through the App's normal authorization flow; it does not need a new App definition.
+The registered App currently referenced by the source is an individual RDH integration, not a public listing. Check access and authorization for the intended account. Do not distribute an individual App ID as a universally accessible integration. A new RDH account connects through the App's normal authorization flow; it does not need a new App definition.
 
 ## Develop and validate
 
