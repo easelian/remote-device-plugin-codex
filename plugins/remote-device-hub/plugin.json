@@ -27,6 +27,7 @@
         "developerName": "Easelian"
       },
       "review": {
+        "demo_recording_url": "https://easelian.com/demos/remote-device-hub/",
         "test_cases": {
           "positive": [
             {
