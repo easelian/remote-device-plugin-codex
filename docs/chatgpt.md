@@ -23,7 +23,7 @@ npm run dev:install
 npm run dev:status
 ```
 
-安装更新的是 `remote-device-hub@rdh-development`。旧的直接 MCP 安装会由新版本替换；其他插件和授权不自动删除。更新后新建聊天，必要时重启桌面客户端，使旧聊天之外的工具状态重新加载。
+`dev:install` 安装 `remote-device-hub@rdh-development`；其他插件和授权分别管理。安装后新建聊天，必要时重启桌面客户端，使工具状态重新加载。
 
 ## 连接目标 RDH 账号
 
@@ -63,7 +63,7 @@ npm run dev:connection -- --connection-id <目标连接ID>
 | App not connected and callable | 尚未授权、已禁用或工具不可调用；完成目标 App 的连接流程 |
 | Expected one list_devices tool | 缺少该 App 的工具或存在多连接歧义；核对工具刷新和账号选择 |
 | Installed version/files differ | 本地安装仍旧；重新安装并刷新客户端 |
-| Direct MCP configuration is not supported | 使用了旧生成包或投稿包；重新执行 `dev:prepare` |
+| Direct MCP configuration is not supported | 安装包包含不支持的直接 MCP 配置；重新执行 `dev:prepare` |
 
 修改源码后重新执行 `dev:install`。不要编辑客户端缓存，也不要把公开投稿 ZIP 安装成本地插件。若要移除开发安装：
 
