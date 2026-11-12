@@ -85,7 +85,7 @@
       },
       "publication": {
         "countries": [],
-        "release_notes": "Use a required registered App connection for local installation. Keep public portal transport settings outside the installed plugin.",
+        "release_notes": "Connect your authorized Linux, macOS, and Windows devices to Codex and ChatGPT. Inspect device status, read and update files, run remote commands, and manage Agent-started jobs, with device permission checks and operation-result verification.",
         "translations": {
           "zh-CN": {
             "subtitle": "管理 Linux、macOS 和 Windows 设备",

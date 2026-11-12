@@ -14,7 +14,7 @@ Maintain listing metadata in `plugins/remote-device-hub/plugin.json`. The same s
 - MCP URL: `https://rdh.easelian.com/mcp`, declared in the canonical `mcp.json`.
 - Authentication: OAuth with dynamic client registration and `devices:control` scope. Set `oidcEnabled: false` and `defaultScopes: []` so website OIDC discovery does not add `openid email` to MCP authorization.
 - License: Apache-2.0, included as `LICENSE`.
-- Artwork: the shared 256 × 256 transparent gray-and-blue Remote Device Hub product icon. Company logos identify Easelian separately.
+- Artwork: the shared 256 × 256 transparent blue Remote Device Hub product icon. Company logos identify Easelian separately.
 
 Each user enrolls and authorizes their own devices. Commands run with the selected Agent operating-system account. File tools use configured roots; those roots do not constrain shell execution. The plugin reports service entitlement and does not initiate purchases or promote upgrades. Keep advertised capabilities aligned with the deployed service and verified client workflows.
 
