@@ -56,7 +56,7 @@ npm run dev:verify
 
 `dev:connection` verifies App availability, the committed callable App runtime, and an actual read-only `list_devices` call. `dev:verify` additionally checks the installed plugin version and file hashes. The checks identify tools by the registered App ID, not a similar display name. If multiple eligible connections are exposed, select the intended account in the host or pass its explicit `--connection-id` to the verification command. Missing App access never falls back to a direct server connection.
 
-After installation or updates, use a new chat and confirm the actual returned device list. Reload the desktop client if it retains an old package. [Installation and acceptance](docs/chatgpt.md) explains the evidence and migration boundaries.
+After installation or updates, use a new chat and confirm the actual returned device list. Reload the desktop client if it retains an old package. [Installation and acceptance](docs/chatgpt.md) explains installation, authorization and acceptance requirements.
 
 ## Public directory submission
 
@@ -73,6 +73,6 @@ The strict command requires complete package metadata and refuses to change an e
 
 ## Architecture and maintenance
 
-The App may communicate with the Hub over MCP. Removing the plugin's direct-MCP mode does not remove the Hub's protocol or change device enrollment, permissions, or Agent deployment. File roots constrain file tools; shell commands execute with the Agent OS user's authority.
+The App communicates with RDH over MCP. RDH manages device enrollment, permissions and Agent deployment. File roots constrain file tools; shell commands execute with the Agent OS user's authority.
 
 See [maintenance and architecture](docs/maintenance.md) for source ownership, official references, App identity and validation. The repository and plugin are licensed under [Apache-2.0](LICENSE). The product icon is maintained through the [brand instructions](assets/branding/remote-device-hub/README.md).

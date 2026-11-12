@@ -4,7 +4,7 @@
 
 The canonical installable plugin is `plugins/remote-device-hub/`. Maintain its skills, listing metadata, assets and required App reference there. The Server and Agent repositories own tool behavior, OAuth enforcement, device connections and local permissions.
 
-The package uses a portable `plugin.json` with the OpenAI `apps` extension and root `.app.json`. This follows the dependency structure of the installed OpenAI Plugin Creator plugin: one registered integration with `required: true`. It does not copy that plugin's connector identity, private implementation, or legacy manifest layout.
+The package uses a portable `plugin.json` with the OpenAI `apps` extension and root `.app.json`. It declares one registered integration with `required: true`; the App supplies authenticated tools.
 
 | Source | Purpose |
 | --- | --- |
