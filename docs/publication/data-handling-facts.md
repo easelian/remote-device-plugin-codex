@@ -4,9 +4,9 @@ This file records behavior visible in plugin source. It is not a published priva
 
 ## Connection and identity
 
-The canonical source declares the HTTPS MCP endpoint, OAuth dynamic client registration, and the `devices:control` scope. Public-package validation rejects account-specific App identities, embedded authorization headers, client secrets, and private submission credentials.
+The maintained installable plugin declares a required registered App dependency. The public submission export replaces that dependency with an HTTPS MCP descriptor declaring OAuth dynamic client registration and the `devices:control` scope. Public-package validation rejects account-specific App identities, embedded authorization headers, client secrets, and private submission credentials.
 
-The generated local connection currently relies on the Hub's OAuth discovery for compatibility with Codex 0.167. It does not disable authentication. An optional existing App binding is confined to generated development files. Tokens belong to the client's connection store, not to source or distributable archives.
+The generated local package retains the required App dependency and has no direct-MCP fallback. The App supplies authenticated RDH tools; its access and account authorization must be checked in the host. MCP OAuth is provided by Auth, while Gate exposes the protected MCP resource. Tokens belong to the client's connection store, not to source or distributable archives. See [terminology](../terminology.md) and [installation](../../README.md).
 
 ## Device operations
 
