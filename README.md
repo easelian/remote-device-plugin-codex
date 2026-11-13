@@ -6,7 +6,7 @@ Remote Device Hub by Easelian connects ChatGPT and Codex to enrolled Linux, macO
 
 [Website](https://easelian.com/) · [Source](https://github.com/easelian/remote-device-plugin-codex) · [Support](https://easelian.com/contact)
 
-See [RDH terminology and service responsibilities](docs/terminology.md) for the shared product, Agent, authorization and execution concepts.
+See [RDH terminology](docs/terminology.md) for the shared product, Agent, authorization and execution concepts.
 
 ## Installable plugin
 
