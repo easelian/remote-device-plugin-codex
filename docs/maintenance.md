@@ -21,13 +21,13 @@ Local installation uses the required App reference. The development package and 
 
 ## Registered App identity
 
-The source references the individual Remote Device Hub development App `asdk_app_6aef14393cd881919ab337bd3a080302`; keep `required: true` and package version `1.4.0`. The public submission App `asdk_app_6aee938018808191a76a3ea4d0dc579f` is separate and must not be changed here.
+The source references the individual Remote Device Hub development App `asdk_app_6aef14393cd881919ab337bd3a080302`; keep `required: true`. The public submission App `asdk_app_6aee938018808191a76a3ea4d0dc579f` is separate and must not be changed here.
 
 Metadata availability does not prove an authorized tool connection. The registered integration remains individual in scope. Confirm eligibility before using it from another OpenAI account. Public rollout must use the platform's approved integration identity; never distribute the publisher's OAuth credentials or infer that an individual ID is public. When replacing the integration after approval, update the one `.app.json` declaration and repeat loader, account and device tests.
 
 ### Reproducible development connection
 
-For the local `1.4.0` development App, configure OAuth dynamic client registration (DCR) against the `auth.easelian.com` authorization domain for the MCP resource `https://rdh.easelian.com/mcp`. Disable website OIDC discovery (`oidcEnabled: false`), set `defaultScopes` to `["devices:control"]`, and leave `baseScopes` empty (`[]`). Automatic OIDC discovery adds `openid` and `email`, which the Hub rejects as `invalid_scope`; do not include those scopes. Complete login through the host's normal OAuth flow after saving this configuration.
+For the local development App, configure OAuth dynamic client registration (DCR) against the `auth.easelian.com` authorization domain for the MCP resource `https://rdh.easelian.com/mcp`. Disable website OIDC discovery (`oidcEnabled: false`), set `defaultScopes` to `["devices:control"]`, and leave `baseScopes` empty (`[]`). Automatic OIDC discovery adds `openid` and `email`, which the Hub rejects as `invalid_scope`; do not include those scopes. Complete login through the host's normal OAuth flow after saving this configuration.
 
 ## Build and checks
 

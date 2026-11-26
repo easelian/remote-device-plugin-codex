@@ -8,7 +8,7 @@ Maintain listing metadata in `plugins/remote-device-hub/plugin.json`. The same s
 - Publisher: Easelian.
 - Website: https://easelian.com/.
 - Support: https://easelian.com/contact.
-- Privacy: https://easelian.com/privacy.
+- Privacy: https://easelian.com/privacy. Before submitting, open the URL signed out and verify that the English Remote Device Hub Privacy Policy covers data categories, purposes, recipients, retention periods, and user controls. The policy text and contact link should be readable with JavaScript disabled.
 - Terms: https://easelian.com/terms.
 - Category: Developer Tools.
 - MCP URL: `https://rdh.easelian.com/mcp`, declared in the canonical `mcp.json`.
